@@ -46,10 +46,14 @@ public class Network {
 		return allNodes;
 	}
 
+	public NeuronColumn getColumn(int index) {
+		return allColumns.get(index);
+	}
+
 	public void setAllNodes() {
 		for (NeuronColumn col : allColumns) {
 			for (NeuronPool pool : col.getPools()) {
-				for (NeuronTypePool typePool : pool.getNeuronTypes()) {
+				for (NeuronTypePool typePool : pool.getTypePool()) {
 					for (Neuron neuron : typePool.getNeurons()) {
 						allNodes.add(neuron);
 						for (Synapse syn : neuron.getNeuronConnections()) {
@@ -61,4 +65,7 @@ public class Network {
 		}
 	}
 
+	public void addColumn(NeuronColumn col) {
+		allColumns.add(col);
+	}
 }
