@@ -3,13 +3,15 @@ package networkPackage;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
-import neuronPackage.Neuron;
 import neuronPackage.Type;
 
 public class NetworkBuilder {
 
+	private final List<ConnectionDescriptor> allProbabilities = new ArrayList<ConnectionDescriptor>();
 	private final HashMap<Type, double[]> neuronParameters = new HashMap<Type, double[]>();
 	private int columnNumber = 0;
 	private int poolNumber = 0;
@@ -45,8 +47,48 @@ public class NetworkBuilder {
 
 		}
 
-		// while ((newLine = in.readLine()) != null)
+		while ((newLine = in.readLine()) != null) {
+			if (!newLine.trim().equals("")) {
+				parsedLine = newLine.trim().split("\\s+");
 
+				ConnectionDescriptor descr = new ConnectionDescriptor();
+
+				int layerNum = Integer.parseInt(parsedLine[0]);
+				Type type = stringToType(parsedLine[1]);
+				int colnum = Integer.parseInt(parsedLine[2]);
+				int targetLayer = Integer.parseInt(parsedLine[3]);
+				Type targetType = stringToType(parsedLine[4]);
+				double prob = Double.parseDouble(parsedLine[5]);
+				double w = Double.parseDouble(parsedLine[6]) * weightMultiplier;
+
+				descr.setDescription(colnum, layerNum, targetLayer, type,
+						targetType, w, prob);
+
+				allProbabilities.add(descr);
+			}
+		}
+
+	}
+
+	Network setUpNetwork() {
+		Network net = new Network();
+
+		return net;
+	}
+
+	Type stringToType(String s) {
+
+		if (s.equals("RS")) {
+			return Type.RS;
+		}
+		if (s.equals("IB")) {
+			return Type.IB;
+		}
+		if (s.equals("FS")) {
+			return Type.FS;
+		} else {
+			return Type.LTS;
+		}
 	}
 
 	public NetworkBuilder() {
@@ -59,19 +101,19 @@ public class NetworkBuilder {
 		neuronParameters.put(Type.RS, rsPar);
 		neuronParameters.put(Type.LTS, ltsPar);
 	}
-
-	public void buildNetwork(Network n) {
-		double[] par = { 1, 1, 1, 1 };
-		Neuron n1 = new Neuron(par, Type.RS);
-		Neuron n2 = new Neuron(par, Type.RS);
-		Neuron n3 = new Neuron(par, Type.RS);
-		n.addNeuron(n1);
-		n.addNeuron(n2);
-		n.addNeuron(n3);
-		n.addConnection(n1, n2, 10);
-		n.addConnection(n2, n3, 10);
-		n.addConnection(n3, n1, 10);
-
-	}
+	//
+	// public void buildNetwork(Network n) {
+	// double[] par = { 1, 1, 1, 1 };
+	// Neuron n1 = new Neuron(par, Type.RS);
+	// Neuron n2 = new Neuron(par, Type.RS);
+	// Neuron n3 = new Neuron(par, Type.RS);
+	// n.addNeuron(n1);
+	// n.addNeuron(n2);
+	// n.addNeuron(n3);
+	// n.addConnection(n1, n2, 10);
+	// n.addConnection(n2, n3, 10);
+	// n.addConnection(n3, n1, 10);
+	//
+	// }
 
 }
