@@ -53,12 +53,10 @@ public class Network {
 	public void setAllNodes() {
 		for (NeuronColumn col : allColumns) {
 			for (NeuronPool pool : col.getPools()) {
-				for (NeuronTypePool typePool : pool.getTypePool()) {
+				for (NeuronTypePool typePool : pool.getTypePools()) {
 					for (Neuron neuron : typePool.getNeurons()) {
 						allNodes.add(neuron);
-						for (Synapse syn : neuron.getNeuronConnections()) {
-							allNodes.add(syn);
-						}
+
 					}
 				}
 			}
