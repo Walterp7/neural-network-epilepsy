@@ -15,7 +15,7 @@ public class NetworkBuilder {
 
 	private final List<ConnectionDescriptor> allProbabilities = new ArrayList<ConnectionDescriptor>();
 	HashMap<Type, double[]> neuronParameters = new HashMap<Type, double[]>();
-	private int columnNumber = 0;
+	private int totalColumnNumber = 0;
 	private int poolNumber = 0;
 	private double weightMultiplier = 1;
 
@@ -31,7 +31,7 @@ public class NetworkBuilder {
 		newLine = in.readLine();
 		parsedLine = newLine.trim().split("\\s+");
 
-		columnNumber = Integer.parseInt(parsedLine[0]);
+		totalColumnNumber = Integer.parseInt(parsedLine[0]);
 		poolNumber = Integer.parseInt(parsedLine[1]);
 		weightMultiplier = Integer.parseInt(parsedLine[3]);
 
@@ -76,20 +76,59 @@ public class NetworkBuilder {
 
 		Network net = new Network();
 		pushNeurons(net);
-		// set connections
-		// for (ConnectionDescriptor conDesc : allProbabilities) {
-		// for(NeuronColumn currentColumn: net.getAllColumns()){
-		// NeuronTypePool outPool = currentColumn.get
-		// }
-		//
-		// }
-
+		setUpConnections(net);
+		net.setAllNodes();
 		return net;
+	}
+
+	void setUpConnections(Network net) {
+		Random generator = new Random(19580427);
+		for (ConnectionDescriptor conDesc : allProbabilities) {
+
+			for (int colnumber = 1; colnumber < totalColumnNumber - 1; colnumber++) {
+				double prob = conDesc.getProbability();
+				double weight = conDesc.getWeight();
+				NeuronTypePool outPool = net.getColumn(colnumber)
+						.getPool(conDesc.getPoolNumber())
+						.getTypePool(conDesc.getType());
+				ArrayList<NeuronTypePool> inPools = new ArrayList<NeuronTypePool>();
+				if (conDesc.getTargetCol() == 0) {
+					inPools.add(net.getColumn(colnumber)
+							.getPool(conDesc.getTargetPoolNumber())
+							.getTypePool(conDesc.getTargetType()));
+				} else {
+					if (net.getColumn(colnumber + conDesc.getTargetCol()) != null) {
+						inPools.add(net
+								.getColumn(colnumber + conDesc.getTargetCol())
+								.getPool(conDesc.getTargetPoolNumber())
+								.getTypePool(conDesc.getTargetType()));
+					}
+					if (net.getColumn(colnumber - conDesc.getTargetCol()) != null) {
+						inPools.add(net
+								.getColumn(colnumber - conDesc.getTargetCol())
+								.getPool(conDesc.getTargetPoolNumber())
+								.getTypePool(conDesc.getTargetType()));
+					}
+				}
+				for (Neuron outNeuron : outPool.getNeurons()) {
+					for (NeuronTypePool inP : inPools) {
+						for (Neuron inNeuron : inP.getNeurons()) {
+							double r = generator.nextDouble();
+							if (r < prob) {
+								net.addConnection(outNeuron, inNeuron, weight);
+							}
+
+						}
+					}
+				}
+
+			}
+		}
 	}
 
 	void pushNeurons(Network net) {
 		Random generator = new Random(19580427);
-		for (int colnum = 0; colnum < columnNumber; colnum++) {
+		for (int colnum = 0; colnum < totalColumnNumber; colnum++) {
 			NeuronColumn col = new NeuronColumn();
 			net.addColumn(col);
 			for (int layer = 0; layer < poolNumber; layer++) {

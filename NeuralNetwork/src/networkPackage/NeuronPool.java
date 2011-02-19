@@ -16,7 +16,7 @@ public class NeuronPool {
 		typePools.put(t, newType);
 	}
 
-	public ArrayList<NeuronTypePool> getTypePool() {
+	public ArrayList<NeuronTypePool> getTypePools() {
 		ArrayList<NeuronTypePool> l = new ArrayList<NeuronTypePool>();
 
 		for (NeuronTypePool entry : typePools.values()) {
@@ -24,6 +24,10 @@ public class NeuronPool {
 		}
 		return l;
 
+	}
+
+	NeuronTypePool getTypePool(Type t) {
+		return typePools.get(t);
 	}
 
 	public void setTypePool(HashMap<Type, NeuronTypePool> neuronTypes) {

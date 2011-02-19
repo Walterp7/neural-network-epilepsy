@@ -3,7 +3,7 @@ package networkPackage;
 import java.util.ArrayList;
 
 public class NeuronColumn {
-	ArrayList<NeuronPool> pools = new ArrayList<NeuronPool>();
+	private ArrayList<NeuronPool> pools = new ArrayList<NeuronPool>();
 
 	void addPool(NeuronPool newPool) {
 		pools.add(newPool);
@@ -17,4 +17,7 @@ public class NeuronColumn {
 		this.pools = pools;
 	}
 
+	public NeuronPool getPool(int index) {
+		return pools.get(index);
+	}
 }
