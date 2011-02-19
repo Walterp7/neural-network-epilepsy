@@ -9,6 +9,15 @@ public class NeuronTypePool {
 	ArrayList<Neuron> neurons = new ArrayList<Neuron>();
 	Type type;
 
+	public NeuronTypePool(Type t) {
+		type = t;
+	}
+
+	public boolean isEmpty() {
+
+		return neurons.isEmpty();
+	}
+
 	void addNeuron(Neuron newNeuron) {
 		if (newNeuron.getType() != type) {
 			// thrwo exception
@@ -17,6 +26,7 @@ public class NeuronTypePool {
 	}
 
 	public ArrayList<Neuron> getNeurons() {
+
 		return neurons;
 	}
 

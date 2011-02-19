@@ -1,19 +1,32 @@
 package networkPackage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+
+import neuronPackage.Type;
 
 public class NeuronPool {
-	ArrayList<NeuronTypePool> neuronTypes = new ArrayList<NeuronTypePool>();
 
-	void addTypePool(NeuronTypePool newType) {
-		neuronTypes.add(newType);
+	Map<Type, NeuronTypePool> typePools = new HashMap<Type, NeuronTypePool>();
+
+	// ArrayList<NeuronTypePool> typePool = new ArrayList<NeuronTypePool>();
+
+	void addTypePool(Type t, NeuronTypePool newType) {
+		typePools.put(t, newType);
 	}
 
-	public ArrayList<NeuronTypePool> getNeuronTypes() {
-		return neuronTypes;
+	public ArrayList<NeuronTypePool> getTypePool() {
+		ArrayList<NeuronTypePool> l = new ArrayList<NeuronTypePool>();
+
+		for (NeuronTypePool entry : typePools.values()) {
+			l.add(entry);
+		}
+		return l;
+
 	}
 
-	public void setNeuronTypes(ArrayList<NeuronTypePool> neuronTypes) {
-		this.neuronTypes = neuronTypes;
+	public void setTypePool(HashMap<Type, NeuronTypePool> neuronTypes) {
+		this.typePools = neuronTypes;
 	}
 }

@@ -6,13 +6,15 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
+import neuronPackage.Neuron;
 import neuronPackage.Type;
 
 public class NetworkBuilder {
 
 	private final List<ConnectionDescriptor> allProbabilities = new ArrayList<ConnectionDescriptor>();
-	private final HashMap<Type, double[]> neuronParameters = new HashMap<Type, double[]>();
+	HashMap<Type, double[]> neuronParameters = new HashMap<Type, double[]>();
 	private int columnNumber = 0;
 	private int poolNumber = 0;
 	private double weightMultiplier = 1;
@@ -71,9 +73,76 @@ public class NetworkBuilder {
 	}
 
 	Network setUpNetwork() {
+
 		Network net = new Network();
+		pushNeurons(net);
+		// set connections
+		// for (ConnectionDescriptor conDesc : allProbabilities) {
+		// for(NeuronColumn currentColumn: net.getAllColumns()){
+		// NeuronTypePool outPool = currentColumn.get
+		// }
+		//
+		// }
 
 		return net;
+	}
+
+	void pushNeurons(Network net) {
+		Random generator = new Random(19580427);
+		for (int colnum = 0; colnum < columnNumber; colnum++) {
+			NeuronColumn col = new NeuronColumn();
+			net.addColumn(col);
+			for (int layer = 0; layer < poolNumber; layer++) {
+				NeuronPool pool = new NeuronPool();
+				col.addPool(pool);
+				NeuronTypePool rsPool = new NeuronTypePool(Type.RS);
+				NeuronTypePool ibPool = new NeuronTypePool(Type.IB);
+				NeuronTypePool fsPool = new NeuronTypePool(Type.FS);
+				NeuronTypePool ltsPool = new NeuronTypePool(Type.LTS);
+
+				for (int i = 0; i < totalNueronsInPool[layer]; i++) {
+					double r = 100 * generator.nextDouble();
+					Neuron newNeuron;
+					if (r <= proportions[layer][0]) {
+						newNeuron = new Neuron(neuronParameters.get(Type.RS),
+								Type.RS);
+						rsPool.addNeuron(newNeuron);
+					}
+					double p = proportions[layer][0];
+
+					if ((r > p) && (r <= p + proportions[layer][1])) {
+						newNeuron = new Neuron(neuronParameters.get(Type.IB),
+								Type.IB);
+						ibPool.addNeuron(newNeuron);
+					}
+					p = p + proportions[layer][1];
+					if ((r > p) && (r <= p + proportions[layer][2])) {
+						newNeuron = new Neuron(neuronParameters.get(Type.FS),
+								Type.FS);
+						fsPool.addNeuron(newNeuron);
+					}
+					p = p + proportions[layer][2];
+					if (r > p) {
+						newNeuron = new Neuron(neuronParameters.get(Type.LTS),
+								Type.LTS);
+						ltsPool.addNeuron(newNeuron);
+					}
+				}
+				if (!rsPool.isEmpty()) {
+					pool.addTypePool(Type.RS, rsPool);
+				}
+				if (!fsPool.isEmpty()) {
+					pool.addTypePool(Type.FS, fsPool);
+				}
+				if (!ltsPool.isEmpty()) {
+					pool.addTypePool(Type.LTS, rsPool);
+				}
+				if (!ibPool.isEmpty()) {
+					pool.addTypePool(Type.IB, rsPool);
+				}
+
+			}
+		}
 	}
 
 	Type stringToType(String s) {
