@@ -47,6 +47,9 @@ public class Network {
 	}
 
 	public NeuronColumn getColumn(int index) {
+		if ((index < 0) || (index >= allColumns.size())) {
+			return null;
+		}
 		return allColumns.get(index);
 	}
 
