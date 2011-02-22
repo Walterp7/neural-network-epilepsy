@@ -1,11 +1,10 @@
 package neuronPackage;
 
-import java.util.ArrayList;
 import java.util.Random;
 
-public abstract class GaussianInputer implements NetworkNode {
+public class GaussianInputer extends Inputer {
 	private final double mu, sigma;
-	private final ArrayList<Synapse> inputConnections = new ArrayList<Synapse>();
+
 	Random generator = new Random(12364579);
 
 	public GaussianInputer() {
@@ -27,8 +26,8 @@ public abstract class GaussianInputer implements NetworkNode {
 	@Override
 	public void advance(double timeStep) {
 		double val = mu + sigma * generator.nextGaussian();
-		for (Synapse s : inputConnections) {
-			s.addInput(val);
+		for (Neuron n : inputConnections) {
+			n.addInput(val);
 		}
 
 	}
@@ -37,10 +36,6 @@ public abstract class GaussianInputer implements NetworkNode {
 	public void setCurrentInput() {
 		// TODO Auto-generated method stub
 
-	}
-
-	public void addSynapse(Synapse newSyn) {
-		inputConnections.add(newSyn);
 	}
 
 }

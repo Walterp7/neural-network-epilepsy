@@ -3,6 +3,7 @@ package networkPackage;
 import java.util.ArrayList;
 import java.util.List;
 
+import neuronPackage.Inputer;
 import neuronPackage.NetworkNode;
 import neuronPackage.Neuron;
 import neuronPackage.Synapse;
@@ -12,6 +13,7 @@ public class Network {
 
 	private final List<NeuronColumn> allColumns = new ArrayList<NeuronColumn>();
 	private final List<NetworkNode> allNodes = new ArrayList<NetworkNode>();
+	private final List<Inputer> allInputs = new ArrayList<Inputer>();
 
 	public void nextStep(int time) {
 		for (NetworkNode nod : allNodes) {
@@ -64,9 +66,26 @@ public class Network {
 				}
 			}
 		}
+		for (NetworkNode inp : allInputs) {
+			allNodes.add(inp);
+		}
+	}
+
+	public int numberOfColumns() {
+
+		return allColumns.size();
+	}
+
+	public int numberOfPools() {
+
+		return allColumns.get(0).numberOfPools();
 	}
 
 	public void addColumn(NeuronColumn col) {
 		allColumns.add(col);
+	}
+
+	public void addInput(Inputer i) {
+		allInputs.add(i);
 	}
 }
