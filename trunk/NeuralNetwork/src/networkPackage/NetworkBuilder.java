@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import neuronPackage.GaussianInputer;
+import neuronPackage.Inputer;
 import neuronPackage.Neuron;
 import neuronPackage.Type;
 
@@ -77,8 +79,72 @@ public class NetworkBuilder {
 		Network net = new Network();
 		pushNeurons(net);
 		setUpConnections(net);
+		setInputs("inputs.txt", net);
 		net.setAllNodes();
 		return net;
+	}
+
+	private void setInputs(String pathname, Network net) throws IOException {
+		BufferedReader in = new BufferedReader(new FileReader(pathname));
+		String newLine;
+		String[] parsedLine;
+
+		while ((newLine = in.readLine()) != null) {
+			parsedLine = newLine.trim().split("\\s+");
+			Inputer newInput = null;
+			if (parsedLine[0].equals("Gaussian")) {
+				int m = Integer.parseInt(parsedLine[1]);
+				int s = Integer.parseInt(parsedLine[2]);
+				newInput = new GaussianInputer(m, s);
+			} else {
+				throw new IOException();
+			}
+
+			List<Type> typesToConnect = new ArrayList<Type>();
+
+			if (!parsedLine[3].equals("*")) {
+				typesToConnect.add(stringToType(parsedLine[3]));
+			} else {
+				for (Type t : Type.values()) {
+					typesToConnect.add(t);
+				}
+			}
+
+			int colNum = Integer.parseInt(parsedLine[4]);
+			int poolNum = Integer.parseInt(parsedLine[4]);
+			List<Integer> columns = new ArrayList<Integer>();
+			List<Integer> pools = new ArrayList<Integer>();
+			if (colNum > 0) {
+				columns.add(colNum);
+			} else {
+				for (int i = 0; i < net.numberOfColumns(); i++) {
+					columns.add(i);
+				}
+			}
+
+			if (poolNum > 0) {
+				pools.add(poolNum);
+			} else {
+				int size = net.numberOfPools();
+				for (int i = 0; i < size; i++) {
+					pools.add(i);
+				}
+			}
+
+			for (Type type : typesToConnect) {
+				for (Integer col : columns) {
+					for (Integer pool : pools) {
+						ArrayList<Neuron> listNeuron = net.getColumn(col)
+								.getPool(pool).getTypePool(type).getNeurons();
+						for (Neuron neur : listNeuron) {
+							newInput.addConnection(neur);
+						}
+					}
+				}
+
+			}
+			net.addInput(newInput);
+		}
 	}
 
 	void setUpConnections(Network net) {

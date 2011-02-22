@@ -20,4 +20,9 @@ public class NeuronColumn {
 	public NeuronPool getPool(int index) {
 		return pools.get(index);
 	}
+
+	public int numberOfPools() {
+
+		return pools.size();
+	}
 }
