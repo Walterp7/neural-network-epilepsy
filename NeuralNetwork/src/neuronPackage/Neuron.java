@@ -38,7 +38,7 @@ public class Neuron implements NetworkNode {
 		u = u + timeStep * a * (b * v - u);
 
 		v = v + currentInput;
-		System.out.println();
+		// System.out.println();
 		// System.out.println("action potential  "+v);
 		if (isFiring()) {
 			v = c;

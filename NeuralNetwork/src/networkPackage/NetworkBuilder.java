@@ -33,7 +33,7 @@ public class NetworkBuilder {
 
 		totalColumnNumber = Integer.parseInt(parsedLine[0]);
 		poolNumber = Integer.parseInt(parsedLine[1]);
-		weightMultiplier = Integer.parseInt(parsedLine[3]);
+		weightMultiplier = Integer.parseInt(parsedLine[2]);
 
 		proportions = new double[poolNumber][4];
 
@@ -44,7 +44,7 @@ public class NetworkBuilder {
 			newLine = in.readLine();
 			parsedLine = newLine.trim().split("\\s+");
 			for (int j = 0; j < 4; j++) {
-				proportions[i][j] = Integer.parseInt(parsedLine[j]);
+				proportions[i][j] = Double.parseDouble(parsedLine[j]);
 			}
 
 		}
@@ -72,8 +72,8 @@ public class NetworkBuilder {
 
 	}
 
-	Network setUpNetwork() {
-
+	public Network setUpNetwork() throws IOException {
+		loadConfig("config.txt");
 		Network net = new Network();
 		pushNeurons(net);
 		setUpConnections(net);
@@ -209,19 +209,5 @@ public class NetworkBuilder {
 		neuronParameters.put(Type.RS, rsPar);
 		neuronParameters.put(Type.LTS, ltsPar);
 	}
-	//
-	// public void buildNetwork(Network n) {
-	// double[] par = { 1, 1, 1, 1 };
-	// Neuron n1 = new Neuron(par, Type.RS);
-	// Neuron n2 = new Neuron(par, Type.RS);
-	// Neuron n3 = new Neuron(par, Type.RS);
-	// n.addNeuron(n1);
-	// n.addNeuron(n2);
-	// n.addNeuron(n3);
-	// n.addConnection(n1, n2, 10);
-	// n.addConnection(n2, n3, 10);
-	// n.addConnection(n3, n1, 10);
-	//
-	// }
 
 }
