@@ -25,11 +25,11 @@ public class Synapse implements NetworkNode { // connects node with neuron
 	}
 
 	@Override
-	public void advance(double timeStep) {
+	public Status advance(double timeStep, int time) {
 		currentValue = nextValue; // in the future PSP calculated
 		nextValue = 0;
 		postSynapticNeuron.addInput(currentValue);
 		currentValue = 0;
-
+		return null;
 	}
 }

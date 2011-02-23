@@ -9,7 +9,7 @@ public class Neuron implements NetworkNode {
 	private double nextInput;
 	private final Type type;
 	private final double a, b, c, d;
-
+	private int neuronId;
 	private final ArrayList<Synapse> neuronConnections = new ArrayList<Synapse>();
 
 	public Neuron(double[] parameters, Type type) {
@@ -31,25 +31,25 @@ public class Neuron implements NetworkNode {
 	}
 
 	@Override
-	public void advance(double timeStep) {
+	public Status advance(double timeStep, int timeofSimulation) {
 
+		Status stat = null;
 		v = v + timeStep * 0.5
 				* (0.04 * v * v + 5 * v + 140 - u + currentInput);
+
 		u = u + timeStep * a * (b * v - u);
 
 		v = v + currentInput;
-		// System.out.println();
-		// System.out.println("action potential  "+v);
 		if (isFiring()) {
+			stat = new Status(neuronId, timeofSimulation, v, type);
 			v = c;
 			u = u + d;
-			v = 0;
+
 			for (Synapse s : neuronConnections) {
 				s.addInput(1);
 			}
-			// System.out.println("action potential AFTER SPIKE "+v);
 		}
-
+		return stat;
 	}
 
 	@Override
@@ -79,4 +79,8 @@ public class Neuron implements NetworkNode {
 		return neuronConnections;
 	}
 
+	public void setId(int n) {
+
+		this.neuronId = n;
+	}
 }

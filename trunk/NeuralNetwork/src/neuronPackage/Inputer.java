@@ -22,8 +22,8 @@ public abstract class Inputer implements NetworkNode {
 	}
 
 	@Override
-	public void advance(double timeStep) {
+	public Status advance(double timeStep, int timeofSimulation) {
 		// TODO Auto-generated method stub
-
+		return null;
 	}
 }
