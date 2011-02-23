@@ -63,14 +63,16 @@ public class NetworkBuilder {
 				int targetLayer = Integer.parseInt(parsedLine[3]);
 				Type targetType = stringToType(parsedLine[4]);
 				double prob = Double.parseDouble(parsedLine[5]);
-				double w = Double.parseDouble(parsedLine[6]) * weightMultiplier;
+				double newWeight = Double.parseDouble(parsedLine[6])
+						* weightMultiplier;
 
 				descr.setDescription(colnum, layerNum, targetLayer, type,
-						targetType, w, prob);
+						targetType, newWeight, prob);
 
 				allProbabilities.add(descr);
 			}
 		}
+		in.close();
 
 	}
 
@@ -93,9 +95,9 @@ public class NetworkBuilder {
 			parsedLine = newLine.trim().split("\\s+");
 			Inputer newInput = null;
 			if (parsedLine[0].equals("Gaussian")) {
-				int m = Integer.parseInt(parsedLine[1]);
-				int s = Integer.parseInt(parsedLine[2]);
-				newInput = new GaussianInputer(m, s);
+				int mean = Integer.parseInt(parsedLine[1]);
+				int deviation = Integer.parseInt(parsedLine[2]);
+				newInput = new GaussianInputer(mean, deviation);
 			} else {
 				throw new IOException();
 			}
@@ -145,19 +147,23 @@ public class NetworkBuilder {
 			}
 			net.addInput(newInput);
 		}
+		in.close();
 	}
 
 	void setUpConnections(Network net) {
 		Random generator = new Random(19580427);
 		for (ConnectionDescriptor conDesc : allProbabilities) {
 
-			for (int colnumber = 1; colnumber < totalColumnNumber - 1; colnumber++) {
+			for (int colnumber = 0; colnumber < totalColumnNumber; colnumber++) {
 				double prob = conDesc.getProbability();
 				double weight = conDesc.getWeight();
+
 				NeuronTypePool outPool = net.getColumn(colnumber)
 						.getPool(conDesc.getPoolNumber())
 						.getTypePool(conDesc.getType());
+
 				ArrayList<NeuronTypePool> inPools = new ArrayList<NeuronTypePool>();
+
 				if (conDesc.getTargetCol() == 0) {
 					inPools.add(net.getColumn(colnumber)
 							.getPool(conDesc.getTargetPoolNumber())
@@ -194,6 +200,7 @@ public class NetworkBuilder {
 
 	void pushNeurons(Network net) {
 		Random generator = new Random(19580427);
+		int neurNum = 0;
 		for (int colnum = 0; colnum < totalColumnNumber; colnum++) {
 			NeuronColumn col = new NeuronColumn();
 			net.addColumn(col);
@@ -204,14 +211,48 @@ public class NetworkBuilder {
 				NeuronTypePool ibPool = new NeuronTypePool(Type.IB);
 				NeuronTypePool fsPool = new NeuronTypePool(Type.FS);
 				NeuronTypePool ltsPool = new NeuronTypePool(Type.LTS);
+				int counter = 0;
+				if (proportions[layer][0] != 0) {
+					Neuron newNeuron;
+					newNeuron = new Neuron(neuronParameters.get(Type.RS),
+							Type.RS);
+					newNeuron.setId(neurNum++);
+					rsPool.addNeuron(newNeuron);
+					counter++;
+				}
+				if (proportions[layer][1] != 0) {
+					Neuron newNeuron;
+					newNeuron = new Neuron(neuronParameters.get(Type.IB),
+							Type.IB);
+					newNeuron.setId(neurNum++);
+					ibPool.addNeuron(newNeuron);
+					counter++;
+				}
 
-				for (int i = 0; i < totalNueronsInPool[layer]; i++) {
+				if (proportions[layer][2] != 0) {
+					Neuron newNeuron;
+					newNeuron = new Neuron(neuronParameters.get(Type.FS),
+							Type.FS);
+					newNeuron.setId(neurNum++);
+					fsPool.addNeuron(newNeuron);
+					counter++;
+				}
+				if (proportions[layer][3] != 0) {
+					Neuron newNeuron;
+					newNeuron = new Neuron(neuronParameters.get(Type.LTS),
+							Type.LTS);
+					newNeuron.setId(neurNum++);
+					ltsPool.addNeuron(newNeuron);
+					counter++;
+				}
+				for (int i = 0; i < totalNueronsInPool[layer] - counter; i++) {
 					double r = 100 * generator.nextDouble();
 					Neuron newNeuron;
 					if (r <= proportions[layer][0]) {
 						newNeuron = new Neuron(neuronParameters.get(Type.RS),
 								Type.RS);
 						rsPool.addNeuron(newNeuron);
+
 					}
 					double p = proportions[layer][0];
 
@@ -240,10 +281,10 @@ public class NetworkBuilder {
 					pool.addTypePool(Type.FS, fsPool);
 				}
 				if (!ltsPool.isEmpty()) {
-					pool.addTypePool(Type.LTS, rsPool);
+					pool.addTypePool(Type.LTS, ltsPool);
 				}
 				if (!ibPool.isEmpty()) {
-					pool.addTypePool(Type.IB, rsPool);
+					pool.addTypePool(Type.IB, ibPool);
 				}
 
 			}
@@ -266,10 +307,10 @@ public class NetworkBuilder {
 	}
 
 	public NetworkBuilder() {
-		double[] rsPar = { 1, 1, 1, 1 };
-		double[] ibPar = { 1, 1, 1, 1 };
-		double[] ltsPar = { 1, 1, 1, 1 };
-		double[] fsPar = { 1, 1, 1, 1 };
+		double[] rsPar = { 0.02, 0.2, -65, 8 };
+		double[] ibPar = { 0.02, 0.2, -65, 8 };
+		double[] ltsPar = { 0.02, 0.25, -65, 2 };
+		double[] fsPar = { 0.02, 0.25, -65, 2 };
 		neuronParameters.put(Type.FS, fsPar);
 		neuronParameters.put(Type.IB, ibPar);
 		neuronParameters.put(Type.RS, rsPar);

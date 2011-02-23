@@ -6,27 +6,30 @@ import java.util.List;
 import neuronPackage.Inputer;
 import neuronPackage.NetworkNode;
 import neuronPackage.Neuron;
+import neuronPackage.Status;
 import neuronPackage.Synapse;
 
 public class Network {
-	// public ArrayList<NetworkNode> allNodes = new ArrayList<NetworkNode>();
-
 	private final List<NeuronColumn> allColumns = new ArrayList<NeuronColumn>();
 	private final List<NetworkNode> allNodes = new ArrayList<NetworkNode>();
 	private final List<Inputer> allInputs = new ArrayList<Inputer>();
 
-	public void nextStep(int time) {
+	public List<Status> nextStep(int time, int timeofSimulation) {
+		List<Status> stats = new ArrayList<Status>();
+
 		for (NetworkNode nod : allNodes) {
-			if (nod instanceof Neuron) {
-				// CURRENT INPUT
+			Status s = null;
+			s = nod.advance(time, timeofSimulation);
+			if (s != null) {
+				stats.add(s);
 			}
-			nod.advance(time);
 		}
 		for (NetworkNode nod : allNodes) {
 			if (nod instanceof Neuron) {
 				nod.setCurrentInput();
 			}
 		}
+		return stats;
 	}
 
 	void addNeuron(Neuron newNode) {
@@ -56,16 +59,19 @@ public class Network {
 	}
 
 	public void setAllNodes() {
+		int neurNum = 0;
 		for (NeuronColumn col : allColumns) {
 			for (NeuronPool pool : col.getPools()) {
 				for (NeuronTypePool typePool : pool.getTypePools()) {
 					for (Neuron neuron : typePool.getNeurons()) {
-						allNodes.add(neuron);
 
+						allNodes.add(neuron);
+						neuron.setId(neurNum++);
 					}
 				}
 			}
 		}
+		System.out.println("total number of neurons " + neurNum);
 		for (NetworkNode inp : allInputs) {
 			allNodes.add(inp);
 		}
@@ -87,5 +93,6 @@ public class Network {
 
 	public void addInput(Inputer i) {
 		allInputs.add(i);
+
 	}
 }
