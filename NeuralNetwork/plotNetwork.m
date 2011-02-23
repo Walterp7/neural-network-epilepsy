@@ -1,8 +1,6 @@
 function plotNetwork( a )
 startNeuron = 1;
 endNeuron = 4*764;
-neuronIndx = find(startNeuron <a(:,2)< endNeuron);
-
 
 RS = a(a(:,3)==0,:);
 IB = a(a(:,3)==1,:);
@@ -23,7 +21,7 @@ plot(LTS(:,1),LTS(:,2),'.r');
 %hold off;
 xlabel('time [ms]');
 title('Network activity');
-legend('RS','IB','FS','LTS', 'Location','EastOutside')
+legend('RS','IB','FS','LTS', 'X','X')
 xlim([1 1000]) 
 ylim([startNeuron endNeuron]) 
 set(gca,'YTick',(startNeuron+350):764:endNeuron)

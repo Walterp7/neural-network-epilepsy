@@ -14,9 +14,7 @@ public class RunSimulation {
 		int timeStep = 1;
 
 		NetworkBuilder mag = new NetworkBuilder();
-		Network net = mag.setUpNetwork();
-		int n = Integer.parseInt("-1");
-		System.out.println(n);
+		Network net = mag.setUpNetwork("config_all.txt", "inputs.txt");
 		FileWriter outFile = new FileWriter("output.txt");
 
 		for (int timeOfSimulation = 0; timeOfSimulation <= time; timeOfSimulation += timeStep) {
@@ -25,6 +23,8 @@ public class RunSimulation {
 				outFile.write(s.toString() + "\r\n \r\n");
 			}
 		}
+
+		// net.printAllNeurons();
 		outFile.close();
 	}
 }
