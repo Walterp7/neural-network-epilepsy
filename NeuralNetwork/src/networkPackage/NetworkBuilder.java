@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import neuronPackage.FrequencyInputer;
 import neuronPackage.GaussianInputer;
 import neuronPackage.Inputer;
 import neuronPackage.Neuron;
@@ -95,17 +96,29 @@ public class NetworkBuilder {
 		while ((newLine = in.readLine()) != null) {
 			parsedLine = newLine.trim().split("\\s+");
 			Inputer newInput = null;
-			if (parsedLine[0].equals("Gaussian")) {
-				int mean = Integer.parseInt(parsedLine[1]);
-				int deviation = Integer.parseInt(parsedLine[2]);
+			int wordIndex = 0;
+			if (parsedLine[wordIndex].equals("Gaussian")) {
+				wordIndex++;
+				int mean = Integer.parseInt(parsedLine[wordIndex++]);
+				int deviation = Integer.parseInt(parsedLine[wordIndex++]);
 				newInput = new GaussianInputer(mean, deviation);
 			} else {
-				throw new IOException();
+
+				if (parsedLine[wordIndex].equals("Step")) {
+					wordIndex++;
+					int interTime = Integer.parseInt(parsedLine[wordIndex++]);
+					int signalTime = Integer.parseInt(parsedLine[wordIndex++]);
+					double value = Double.parseDouble(parsedLine[wordIndex++]);
+					newInput = new FrequencyInputer(interTime, signalTime,
+							value);
+				} else {
+					throw new IOException();
+				}
 			}
 
 			List<Type> typesToConnect = new ArrayList<Type>();
 
-			if (!(parsedLine[3].equals("*"))) {
+			if (!(parsedLine[wordIndex++].equals("*"))) {
 				typesToConnect.add(stringToType(parsedLine[3]));
 			} else {
 				for (Type t : Type.values()) {
@@ -113,8 +126,8 @@ public class NetworkBuilder {
 				}
 			}
 
-			int colNum = Integer.parseInt(parsedLine[4]);
-			int poolNum = Integer.parseInt(parsedLine[5]);
+			int colNum = Integer.parseInt(parsedLine[wordIndex++]);
+			int poolNum = Integer.parseInt(parsedLine[wordIndex++]);
 			List<Integer> columns = new ArrayList<Integer>();
 			List<Integer> pools = new ArrayList<Integer>();
 			if (colNum >= 0) {
@@ -219,37 +232,8 @@ public class NetworkBuilder {
 				NeuronTypePool ibPool = new NeuronTypePool(Type.IB);
 				NeuronTypePool fsPool = new NeuronTypePool(Type.FS);
 				NeuronTypePool ltsPool = new NeuronTypePool(Type.LTS);
-				int counter = 0;
-				// if (proportions[layer][0] != 0) {
-				// Neuron newNeuron;
-				// newNeuron = new Neuron(neuronParameters.get(Type.RS),
-				// Type.RS);
-				// rsPool.addNeuron(newNeuron);
-				// counter++;
-				// }
-				// if (proportions[layer][1] != 0) {
-				// Neuron newNeuron;
-				// newNeuron = new Neuron(neuronParameters.get(Type.IB),
-				// Type.IB);
-				// ibPool.addNeuron(newNeuron);
-				// counter++;
-				// }
-				//
-				// if (proportions[layer][2] != 0) {
-				// Neuron newNeuron;
-				// newNeuron = new Neuron(neuronParameters.get(Type.FS),
-				// Type.FS);
-				// fsPool.addNeuron(newNeuron);
-				// counter++;
-				// }
-				// if (proportions[layer][3] != 0) {
-				// Neuron newNeuron;
-				// newNeuron = new Neuron(neuronParameters.get(Type.LTS),
-				// Type.LTS);
-				// ltsPool.addNeuron(newNeuron);
-				// counter++;
-				// }
-				for (int i = 0; i < totalNueronsInPool[layer] - counter; i++) {
+
+				for (int i = 0; i < totalNueronsInPool[layer]; i++) {
 					double r = 100 * generator.nextDouble();
 					double typeRandom = generator.nextDouble();
 
