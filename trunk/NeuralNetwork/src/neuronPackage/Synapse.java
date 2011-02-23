@@ -32,4 +32,8 @@ public class Synapse implements NetworkNode { // connects node with neuron
 		currentValue = 0;
 		return null;
 	}
+
+	public Neuron getPostSynapticNeuron() {
+		return postSynapticNeuron;
+	}
 }

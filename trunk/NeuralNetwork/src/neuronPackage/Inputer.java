@@ -26,4 +26,9 @@ public abstract class Inputer implements NetworkNode {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	public ArrayList<Neuron> getAllInputConnections() {
+
+		return inputConnections;
+	}
 }

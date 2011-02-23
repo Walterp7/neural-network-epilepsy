@@ -1,1 +1,1 @@
-Gaussian 0 2 RS 1 -1  
+Gaussian 0 2 * 1 -1  

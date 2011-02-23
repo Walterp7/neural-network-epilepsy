@@ -13,8 +13,8 @@ public class Neuron implements NetworkNode {
 	private final ArrayList<Synapse> neuronConnections = new ArrayList<Synapse>();
 
 	public Neuron(double[] parameters, Type type) {
-		v = 0;
-		u = 0;
+		v = -65;
+
 		currentInput = 0;
 		nextInput = 0;
 		this.type = type;
@@ -22,6 +22,7 @@ public class Neuron implements NetworkNode {
 		b = parameters[1];
 		c = parameters[2];
 		d = parameters[3];
+		u = b * v;
 	}
 
 	@Override
@@ -36,11 +37,14 @@ public class Neuron implements NetworkNode {
 		Status stat = null;
 		v = v + timeStep * 0.5
 				* (0.04 * v * v + 5 * v + 140 - u + currentInput);
-
+		v = v + timeStep * 0.5
+				* (0.04 * v * v + 5 * v + 140 - u + currentInput);
 		u = u + timeStep * a * (b * v - u);
 
 		v = v + currentInput;
 		if (isFiring()) {
+			// System.out.println(neuronId + " cInput: " + currentInput + "v: "
+			// + v);
 			stat = new Status(neuronId, timeofSimulation, v, type);
 			v = c;
 			u = u + d;
@@ -82,5 +86,9 @@ public class Neuron implements NetworkNode {
 	public void setId(int n) {
 
 		this.neuronId = n;
+	}
+
+	public int getId() {
+		return neuronId;
 	}
 }
