@@ -45,13 +45,17 @@ public class Neuron implements NetworkNode {
 		if (isFiring()) {
 			// System.out.println(neuronId + " cInput: " + currentInput + "v: "
 			// + v);
-			stat = new Status(neuronId, timeofSimulation, v, type);
+			stat = new Status(true, neuronId, timeofSimulation, v, type,
+					currentInput);
 			v = c;
 			u = u + d;
 
 			for (Synapse s : neuronConnections) {
 				s.addInput(1);
 			}
+		} else {
+			stat = new Status(false, neuronId, timeofSimulation, v, type,
+					currentInput);
 		}
 		return stat;
 	}
