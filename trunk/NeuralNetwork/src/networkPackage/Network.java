@@ -18,10 +18,10 @@ public class Network {
 		List<Status> stats = new ArrayList<Status>();
 
 		for (NetworkNode nod : allNodes) {
-			Status s = null;
-			s = nod.advance(time, timeofSimulation);
-			if (s != null) {
-				stats.add(s);
+			Status newStat = null;
+			newStat = nod.advance(time, timeofSimulation);
+			if (newStat != null) {
+				stats.add(newStat);
 			}
 		}
 		for (NetworkNode nod : allNodes) {

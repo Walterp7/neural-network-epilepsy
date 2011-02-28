@@ -1,17 +1,22 @@
 package neuronPackage;
 
 public class Status {
-	int neuronNumber;
-	double voltage;
-	Type type;
-	int time;
+	private int neuronNumber;
+	private final double voltage;
+	private final Type type;
+	private int time;
+	private final boolean hasFired;
+	private final double psp;
 
-	public Status(int number, int t, double voltage, Type type) {
+	public Status(boolean fired, int number, int t, double voltage, Type type,
+			double psp) {
 		super();
 		this.neuronNumber = number;
 		this.voltage = voltage;
 		this.type = type;
 		this.time = t;
+		this.hasFired = fired;
+		this.psp = psp;
 	}
 
 	public void setTime(int t) {
@@ -20,6 +25,22 @@ public class Status {
 
 	public void setNumber(int n) {
 		neuronNumber = n;
+	}
+
+	public boolean fired() {
+		return hasFired;
+	}
+
+	public double getVoltage() {
+		return voltage;
+	}
+
+	public double getPSP() {
+		return psp;
+	}
+
+	public Type getType() {
+		return type;
 	}
 
 	@Override
