@@ -25,7 +25,7 @@ public class RunSimulation {
 			double psp = 0;
 			for (Status s : stats) {
 				if (s.fired()) {
-					outSpikes.write(s.toString() + "\r\n \r\n");
+					outSpikes.write(s.toString() + "\r\n ");
 				}
 				if (s.getType() == Type.RS) {
 					voltage += s.getVoltage();
@@ -33,12 +33,12 @@ public class RunSimulation {
 				}
 
 			}
-			outAll.write(timeOfSimulation + " " + voltage + " " + psp
-					+ "\r\n \r\n");
+			outAll.write(timeOfSimulation + " " + voltage + " " + psp + "\r\n ");
 		}
 
 		// net.printAllNeurons();
 		outSpikes.close();
 		outAll.close();
+		System.out.println("done");
 	}
 }

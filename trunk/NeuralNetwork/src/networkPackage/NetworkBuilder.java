@@ -21,7 +21,7 @@ public class NetworkBuilder {
 	private int totalColumnNumber = 0;
 	private int poolNumber = 0;
 	private double weightMultiplier = 1;
-
+	private double inhMultiplier;
 	double[][] proportions;
 	int[] totalNueronsInPool = new int[4];
 
@@ -37,6 +37,7 @@ public class NetworkBuilder {
 		totalColumnNumber = Integer.parseInt(parsedLine[0]);
 		poolNumber = Integer.parseInt(parsedLine[1]);
 		weightMultiplier = Integer.parseInt(parsedLine[2]);
+		inhMultiplier = Double.parseDouble(parsedLine[3]);
 
 		proportions = new double[poolNumber][4];
 
@@ -66,7 +67,9 @@ public class NetworkBuilder {
 				double prob = Double.parseDouble(parsedLine[5]);
 				double newWeight = Double.parseDouble(parsedLine[6])
 						* weightMultiplier;
-
+				if ((type == Type.LTS) || (type == Type.FS)) {
+					newWeight = newWeight * inhMultiplier;
+				}
 				descr.setDescription(colnum, layerNum, targetLayer, type,
 						targetType, newWeight, prob);
 
@@ -118,12 +121,13 @@ public class NetworkBuilder {
 
 			List<Type> typesToConnect = new ArrayList<Type>();
 
-			if (!(parsedLine[wordIndex++].equals("*"))) {
-				typesToConnect.add(stringToType(parsedLine[3]));
+			if (!(parsedLine[wordIndex].equals("*"))) {
+				typesToConnect.add(stringToType(parsedLine[wordIndex++]));
 			} else {
 				for (Type t : Type.values()) {
 					typesToConnect.add(t);
 				}
+				wordIndex++;
 			}
 
 			int colNum = Integer.parseInt(parsedLine[wordIndex++]);
