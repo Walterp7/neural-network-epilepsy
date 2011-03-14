@@ -39,6 +39,8 @@ public class RunSimulation {
 		// net.printAllNeurons();
 		outSpikes.close();
 		outAll.close();
+		// AnalyseNetwork analyser = new AnalyseNetwork();
+		// analyser.getDegrees(net);
 		System.out.println("done");
 	}
 }
