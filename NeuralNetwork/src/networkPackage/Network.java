@@ -37,7 +37,7 @@ public class Network {
 	}
 
 	void addConnection(Neuron pre, Neuron post, double w) {
-		Synapse newSynapse = new Synapse(w, post);
+		Synapse newSynapse = new Synapse(w, pre, post);
 		allNodes.add(newSynapse);
 		pre.addSynapse(newSynapse);
 

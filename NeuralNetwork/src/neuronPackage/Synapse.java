@@ -5,12 +5,14 @@ public class Synapse implements NetworkNode { // connects node with neuron
 	double currentValue;
 	double nextValue;
 	Neuron postSynapticNeuron;
+	Neuron preSynapticNeuron;
 
-	public Synapse(double weight, Neuron postSynaptic) {
+	public Synapse(double weight, Neuron preSynaptic, Neuron postSynaptic) {
 		synapseWeight = weight;
 		currentValue = 0;
 		nextValue = 0;
 		postSynapticNeuron = postSynaptic;
+		preSynapticNeuron = preSynaptic;
 	}
 
 	@Override
