@@ -12,6 +12,8 @@ public class Neuron implements NetworkNode {
 	private int neuronId;
 	private final ArrayList<Synapse> neuronConnections = new ArrayList<Synapse>();
 
+	private final double[] coordinates = new double[3];
+
 	public Neuron(double[] parameters, Type type) {
 		v = -65;
 
@@ -29,6 +31,16 @@ public class Neuron implements NetworkNode {
 	public void addInput(double val) {
 		nextInput = nextInput + val;
 
+	}
+
+	public void setCoordinates(double[] coor) {
+		for (int i = 0; i < 3; i++) {
+			coordinates[i] = coor[i];
+		}
+	}
+
+	public double[] getCoordinates() {
+		return coordinates;
 	}
 
 	@Override
