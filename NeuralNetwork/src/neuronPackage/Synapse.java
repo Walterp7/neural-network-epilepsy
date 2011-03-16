@@ -4,6 +4,7 @@ public class Synapse implements NetworkNode { // connects node with neuron
 	double synapseWeight;
 	double currentValue;
 	double nextValue;
+	int timeDelay;
 	Neuron postSynapticNeuron;
 	Neuron preSynapticNeuron;
 
@@ -13,6 +14,7 @@ public class Synapse implements NetworkNode { // connects node with neuron
 		nextValue = 0;
 		postSynapticNeuron = postSynaptic;
 		preSynapticNeuron = preSynaptic;
+		timeDelay = 1;
 	}
 
 	@Override
@@ -37,5 +39,13 @@ public class Synapse implements NetworkNode { // connects node with neuron
 
 	public Neuron getPostSynapticNeuron() {
 		return postSynapticNeuron;
+	}
+
+	public void setTimeDelay(int value) {
+		timeDelay = value;
+	}
+
+	public int getTImeDelay() {
+		return timeDelay;
 	}
 }

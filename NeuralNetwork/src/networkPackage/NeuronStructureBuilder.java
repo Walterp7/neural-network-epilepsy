@@ -21,8 +21,8 @@ public class NeuronStructureBuilder {
 		neuronParameters.put(Type.LTS, ltsPar);
 	}
 
-	double[] getCoordinates(int col, int layer) {
-		double[] cords = new double[3];
+	int[] getCoordinates(int col, int layer) {
+		int[] cords = new int[3]; // microns
 		cords[0] = generator.nextInt(401) + col * 400;
 		cords[1] = generator.nextInt(401);
 		if (layer == 0) {
@@ -49,10 +49,14 @@ public class NeuronStructureBuilder {
 			for (int layer = 0; layer < poolNumber; layer++) {
 				NeuronPool pool = new NeuronPool();
 				col.addPool(pool);
-				NeuronTypePool rsPool = new NeuronTypePool(Type.RS);
-				NeuronTypePool ibPool = new NeuronTypePool(Type.IB);
-				NeuronTypePool fsPool = new NeuronTypePool(Type.FS);
-				NeuronTypePool ltsPool = new NeuronTypePool(Type.LTS);
+				NeuronTypePool rsPool = new NeuronTypePool(Type.RS, colnum,
+						layer);
+				NeuronTypePool ibPool = new NeuronTypePool(Type.IB, colnum,
+						layer);
+				NeuronTypePool fsPool = new NeuronTypePool(Type.FS, colnum,
+						layer);
+				NeuronTypePool ltsPool = new NeuronTypePool(Type.LTS, colnum,
+						layer);
 
 				for (int i = 0; i < totalNueronsInPool[layer]; i++) {
 					double r = 100 * generator.nextDouble();
