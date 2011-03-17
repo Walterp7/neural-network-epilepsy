@@ -12,7 +12,7 @@ public class PickInputer extends Inputer {
 	}
 
 	@Override
-	public Status advance(double timeStep, int timeofSimulation) {
+	public Status advance(double timeStep, double timeofSimulation) {
 		if ((timeofSimulation > startTime)
 				&& (startTime + signalTime > timeofSimulation)) {
 			for (Neuron n : inputConnections) {

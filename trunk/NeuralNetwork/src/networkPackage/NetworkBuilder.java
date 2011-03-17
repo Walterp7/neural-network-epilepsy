@@ -77,8 +77,8 @@ public class NetworkBuilder {
 
 	}
 
-	public Network setUpNetwork(String configFile, String inputFile)
-			throws IOException {
+	public Network setUpNetwork(String configFile, String inputFile,
+			double timestep) throws IOException {
 		loadConfig(configFile);
 		Network net = new Network();
 		InputBuilder inBuild = new InputBuilder();
@@ -86,7 +86,8 @@ public class NetworkBuilder {
 		NeuronStructureBuilder strBuild = new NeuronStructureBuilder();
 		strBuild.pushNeurons(net, proportions, totalNueronsInPool,
 				totalColumnNumber, poolNumber);
-		conBuild.setUpConnections(net, allProbabilities, totalColumnNumber);
+		conBuild.setUpConnections(net, allProbabilities, totalColumnNumber,
+				timestep);
 		inBuild.setInputs(inputFile, net);
 		net.setAllNodes();
 		return net;

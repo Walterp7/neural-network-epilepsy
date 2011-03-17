@@ -13,8 +13,8 @@ public class FrequencyInputer extends Inputer {
 	}
 
 	@Override
-	public Status advance(double timeStep, int timeofSimulation) {
-		int w = timeofSimulation % (interTime + signalTime);
+	public Status advance(double timeStep, double timeofSimulation) {
+		int w = ((int) timeofSimulation) % (interTime + signalTime);
 		if (w > interTime) {
 			w = 1;
 		} else {

@@ -4,12 +4,12 @@ public class Status {
 	private int neuronNumber;
 	private final double voltage;
 	private final Type type;
-	private int time;
+	private double time;
 	private final boolean hasFired;
 	private final double psp;
 
-	public Status(boolean fired, int number, int t, double voltage, Type type,
-			double psp) {
+	public Status(boolean fired, int number, double t, double voltage,
+			Type type, double psp) {
 		super();
 		this.neuronNumber = number;
 		this.voltage = voltage;

@@ -1,5 +1,8 @@
 package neuronPackage;
 
+import java.util.LinkedList;
+import java.util.List;
+
 public class Synapse implements NetworkNode { // connects node with neuron
 	double synapseWeight;
 	double currentValue;
@@ -8,10 +11,12 @@ public class Synapse implements NetworkNode { // connects node with neuron
 	Neuron postSynapticNeuron;
 	Neuron preSynapticNeuron;
 
+	List<Double> inputs = new LinkedList<Double>();
+
 	public Synapse(double weight, Neuron preSynaptic, Neuron postSynaptic) {
 		synapseWeight = weight;
-		currentValue = 0;
-		nextValue = 0;
+		// currentValue = 0;
+		// nextValue = 0;
 		postSynapticNeuron = postSynaptic;
 		preSynapticNeuron = preSynaptic;
 		timeDelay = 1;
@@ -19,7 +24,9 @@ public class Synapse implements NetworkNode { // connects node with neuron
 
 	@Override
 	public void addInput(double val) {
-		nextValue = synapseWeight * val;
+		// nextValue = synapseWeight * val;
+
+		inputs.add(val);
 	}
 
 	@Override
@@ -29,11 +36,11 @@ public class Synapse implements NetworkNode { // connects node with neuron
 	}
 
 	@Override
-	public Status advance(double timeStep, int time) {
-		currentValue = nextValue; // in the future PSP calculated
-		nextValue = 0;
-		postSynapticNeuron.addInput(currentValue);
-		currentValue = 0;
+	public Status advance(double timeStep, double time) {
+		// currentValue = nextValue; // in the future PSP calculated
+		// nextValue = 0;
+		postSynapticNeuron.addInput(synapseWeight * inputs.remove(0));
+
 		return null;
 	}
 
@@ -42,10 +49,17 @@ public class Synapse implements NetworkNode { // connects node with neuron
 	}
 
 	public void setTimeDelay(int value) {
+		if (value <= 0) {
+			value = 1;
+		}
 		timeDelay = value;
+		double zero = 0;
+		for (int i = 0; i < value; i++) {
+			inputs.add(zero);
+		}
 	}
 
-	public int getTImeDelay() {
+	public int getTimeDelay() {
 		return timeDelay;
 	}
 }

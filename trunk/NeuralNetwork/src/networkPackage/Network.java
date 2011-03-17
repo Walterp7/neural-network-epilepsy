@@ -14,7 +14,7 @@ public class Network {
 	private final List<NetworkNode> allNodes = new ArrayList<NetworkNode>();
 	private final List<Inputer> allInputs = new ArrayList<Inputer>();
 
-	public List<Status> nextStep(int time, int timeofSimulation) {
+	public List<Status> nextStep(double time, double timeofSimulation) {
 		List<Status> stats = new ArrayList<Status>();
 
 		for (NetworkNode nod : allNodes) {
@@ -36,7 +36,7 @@ public class Network {
 		allNodes.add(newNode);
 	}
 
-	void addConnection(Neuron pre, Neuron post, double w, int timeDelay) {
+	public void addConnection(Neuron pre, Neuron post, double w, int timeDelay) {
 		Synapse newSynapse = new Synapse(w, pre, post);
 		newSynapse.setTimeDelay(timeDelay);
 		allNodes.add(newSynapse);
