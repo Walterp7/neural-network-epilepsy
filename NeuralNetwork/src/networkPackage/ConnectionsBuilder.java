@@ -9,19 +9,26 @@ import neuronPackage.Neuron;
 public class ConnectionsBuilder {
 	final private int velocity = 3; // m/s
 
-	int calculateDelay(int[] pre, int post[]) {
+	int calculateDelay(int[] pre, int post[], double timestep) {
 		int delay = 0;
 		int n = pre.length;
 		for (int i = 0; i < n; i++) {
-			delay = delay + (pre[i] - post[i]) * (pre[i] - post[i]);
+			delay = delay + (pre[i] - post[i]) * (pre[i] - post[i]); // microns
 		}
-		delay = (int) Math.sqrt(delay);
-		delay = delay / velocity;
-		return delay;
+
+		delay = (int) (Math.sqrt(delay) / (1000 * velocity * timestep));
+		if (delay > 0) {
+			System.out.println(delay);
+
+		} else {
+			delay++;
+		}
+		return delay; // ms
 	}
 
 	public void setUpConnections(Network net,
-			List<ConnectionDescriptor> allProbabilities, int totalColumnNumber) {
+			List<ConnectionDescriptor> allProbabilities, int totalColumnNumber,
+			double timestep) {
 		Random generator = new Random(19580427);
 
 		for (ConnectionDescriptor conDesc : allProbabilities) {
@@ -66,7 +73,8 @@ public class ConnectionsBuilder {
 											weight,
 											calculateDelay(
 													outNeuron.getCoordinates(),
-													inNeuron.getCoordinates()));
+													inNeuron.getCoordinates(),
+													timestep));
 								}
 
 							}

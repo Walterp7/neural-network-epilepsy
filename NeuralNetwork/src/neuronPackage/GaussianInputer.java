@@ -23,7 +23,7 @@ public class GaussianInputer extends Inputer {
 	}
 
 	@Override
-	public Status advance(double timeStep, int timeofSimulation) {
+	public Status advance(double timeStep, double timeofSimulation) {
 		for (Neuron n : inputConnections) {
 			n.addInput(mu + sigma * generator.nextGaussian());
 		}

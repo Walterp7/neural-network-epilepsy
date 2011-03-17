@@ -44,7 +44,7 @@ public class Neuron implements NetworkNode {
 	}
 
 	@Override
-	public Status advance(double timeStep, int timeofSimulation) {
+	public Status advance(double timeStep, double timeofSimulation) {
 
 		Status stat = null;
 		v = v + timeStep * 0.5
@@ -66,6 +66,9 @@ public class Neuron implements NetworkNode {
 				s.addInput(1);
 			}
 		} else {
+			for (Synapse s : neuronConnections) {
+				s.addInput(0);
+			}
 			stat = new Status(false, neuronId, timeofSimulation, v, type,
 					currentInput);
 		}

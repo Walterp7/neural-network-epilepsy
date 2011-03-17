@@ -23,7 +23,7 @@ pickInput =[zeros(1,start),value*ones(1, sTime), zeros(1, 1000 - sTime- start)];
  %step = 5*(heaviside(-155+T).*heaviside(165-T)+heaviside(-320+T).*heaviside(330-T)+heaviside(-485+T).*heaviside(495-T)+heaviside(-650+T).*heaviside(660-T)+heaviside(-815+T).*heaviside(825-T)+heaviside(-980+T).*heaviside(990-T) );
 tmp = 1:20;
 for i = tmp
-   step = step+5* heaviside(-(i-1)*50-40+T).*heaviside(i*50-T)
+   step = step+5* heaviside(-(i-1)*50-40+T).*heaviside(i*50-T);
 end
 
  plot(1:1000,step,'m');

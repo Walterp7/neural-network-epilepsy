@@ -12,14 +12,15 @@ import neuronPackage.Type;
 public class RunSimulation {
 	public static void main(String[] args) throws IOException {
 		int time = 1000;
-		int timeStep = 1;
+		double timeStep = 0.1;
 
 		NetworkBuilder mag = new NetworkBuilder();
-		Network net = mag.setUpNetwork("config_all.txt", "inputs.txt");
+		Network net = mag
+				.setUpNetwork("config_all.txt", "inputs.txt", timeStep);
 		FileWriter outSpikes = new FileWriter("outputSpikes.txt");
 		FileWriter outAll = new FileWriter("outputAllNeurons.txt");
-
-		for (int timeOfSimulation = 0; timeOfSimulation <= time; timeOfSimulation += timeStep) {
+		System.out.println("Simulation start");
+		for (double timeOfSimulation = 0; timeOfSimulation <= time; timeOfSimulation += timeStep) {
 			List<Status> stats = net.nextStep(timeStep, timeOfSimulation);
 			double voltage = 0;
 			double psp = 0;
