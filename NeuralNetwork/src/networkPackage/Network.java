@@ -36,11 +36,9 @@ public class Network {
 		allNodes.add(newNode);
 	}
 
-	public void addConnection(Neuron pre, Neuron post, double w, int timeDelay) {
-		Synapse newSynapse = new Synapse(w, pre, post);
-		newSynapse.setTimeDelay(timeDelay);
+	public void addConnection(Synapse newSynapse) {
+
 		allNodes.add(newSynapse);
-		pre.addSynapse(newSynapse);
 
 	}
 

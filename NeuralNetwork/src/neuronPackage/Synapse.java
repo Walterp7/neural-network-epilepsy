@@ -5,27 +5,33 @@ import java.util.List;
 
 public class Synapse implements NetworkNode { // connects node with neuron
 	double synapseWeight;
-	double currentValue;
-	double nextValue;
 	int timeDelay;
 	Neuron postSynapticNeuron;
 	Neuron preSynapticNeuron;
-
+	double t1, trec, tfac, U;
 	List<Double> inputs = new LinkedList<Double>();
+	int isDepressing;
+	double x, y, z, u;
 
-	public Synapse(double weight, Neuron preSynaptic, Neuron postSynaptic) {
+	public Synapse(double weight, Neuron preSynaptic, Neuron postSynaptic,
+			double[] params) {
 		synapseWeight = weight;
-		// currentValue = 0;
-		// nextValue = 0;
 		postSynapticNeuron = postSynaptic;
 		preSynapticNeuron = preSynaptic;
 		timeDelay = 1;
+		trec = params[0];
+		t1 = params[1];
+		tfac = params[2];
+		U = params[3];
+		isDepressing = (int) params[4];
+		x = 0;
+		z = 0;
+		y = 0.5;
+		u = U;
 	}
 
 	@Override
 	public void addInput(double val) {
-		// nextValue = synapseWeight * val;
-
 		inputs.add(val);
 	}
 
@@ -39,7 +45,15 @@ public class Synapse implements NetworkNode { // connects node with neuron
 	public Status advance(double timeStep, double time) {
 		// currentValue = nextValue; // in the future PSP calculated
 		// nextValue = 0;
-		postSynapticNeuron.addInput(synapseWeight * inputs.remove(0));
+		double delta = inputs.remove(0); // 1 if post spiked, else 0
+		double A = synapseWeight * delta;
+
+		u = u + timeStep * (1 - isDepressing)
+				* (u / tfac + delta * U * (1 - u));
+		y = y + timeStep * (-y / t1 + delta * u * x);
+		x = x + timeStep * (z / trec - delta * u * x);
+		z = z + timeStep * (y / t1 - z / trec);
+		postSynapticNeuron.addInput(y * A);
 
 		return null;
 	}
