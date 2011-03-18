@@ -61,20 +61,24 @@ public class ConnectionsBuilder {
 								.getTypePool(conDesc.getTargetType()));
 					}
 				}
+				SynapseFactory synFact = new SynapseFactory();
+
 				for (Neuron outNeuron : outPool.getNeurons()) {
 					for (NeuronTypePool inP : inPools) {
 						if (inP != null) {
 							for (Neuron inNeuron : inP.getNeurons()) {
 								double r = generator.nextDouble();
 								if (r < prob) {
-									net.addConnection(
+
+									net.addConnection(synFact.getSynapse(
 											outNeuron,
 											inNeuron,
 											weight,
 											calculateDelay(
 													outNeuron.getCoordinates(),
 													inNeuron.getCoordinates(),
-													timestep));
+													timestep)));
+
 								}
 
 							}
