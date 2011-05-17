@@ -18,7 +18,7 @@ public class ConnectionsBuilder {
 
 		delay = (int) (Math.sqrt(delay) / (1000 * velocity * timestep));
 		if (delay > 0) {
-			System.out.println(delay);
+			// System.out.println(delay);
 
 		} else {
 			delay++;

@@ -6,16 +6,16 @@ import neuronPackage.Type;
 
 public class SynapseFactory {
 
-	final private double[][] paramsSTP = { // trec, t1, tfac, U, isDepressing
-	{ 800, 3, -1, 0.5, 0 }, // ei
-			{ 800, 3, 0.00001, 0.5, 1 }, // ee
-			{ 100, 3, 1000, 0.04, 0 }, // ie
-			{ 100, 3, 1000, 0.04, 0 } // ii
+	final private double[][] paramsSTP = { // trec, t1, tfac, U
+	{ 800, 3, 0.00001, 0.5 }, // ei
+			{ 800, 3, 0.00001, 0.5 }, // ee
+			{ 100, 3, 1000, 0.04 }, // ie
+			{ 100, 3, 1000, 0.04 } // ii
 	};
 
 	public Synapse getSynapse(Neuron preSynaptic, Neuron postSynaptic,
 			double weight, int delay) {
-		double[] params = new double[5];
+		double[] params = new double[4];
 		Type preType = preSynaptic.getType();
 		Type postType = postSynaptic.getType();
 

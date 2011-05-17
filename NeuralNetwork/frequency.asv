@@ -1,0 +1,36 @@
+clear;
+load eeg6Hz-short;
+
+f = 10000;
+fc
+
+[b,a] = butter(5,3/500,'high');
+ E2 = filter(b,a,E(:,3));
+[b1,a1] = butter(5,50/500,'low');
+E3 = filter(b1,a1,E2);
+
+fftE36 = abs(fft(E3));
+
+subplot(4,2,3:4);
+plot(linspace(0,100,50),fftE36(1:50,1)); 
+xlabel('Hz');
+
+subplot(4,2,1:2);
+plot(linspace(0,1000,10000),E3);%E(:,3));
+ylim([-1 2]);
+xlabel('ms');
+
+clear;
+load eeg20Hz-short;
+[b,a] = butter(5,3/500,'high');
+ E2 = filter(b,a,E(:,3));
+[b1,a1] = butter(5,50/500,'low');
+E3 = filter(b1,a1,E2);
+
+fftE320 = abs(fft(E3,500));
+subplot(4,2,7:8);
+plot(linspace(0,500,250),fftE320(1:250,1)); 
+xlabel('Hz');
+subplot(4,2,5:6), plot(linspace(0,1000,10000),E3); %,E(:,3));
+ylim([-1 2]);
+xlabel('ms');

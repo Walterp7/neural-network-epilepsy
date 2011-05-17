@@ -17,7 +17,7 @@ public class NetworkBuilder {
 	private double weightMultiplier = 1;
 	private double inhMultiplier;
 	double[][] proportions;
-	int[] totalNueronsInPool = new int[4];
+	int[] totalNeuronsInPool = new int[4];
 
 	void loadConfig(String pathname) throws IOException {
 		BufferedReader in = new BufferedReader(new FileReader(pathname));
@@ -33,7 +33,7 @@ public class NetworkBuilder {
 		parsedLine = newLine.trim().split("\\s+");
 		totalColumnNumber = Integer.parseInt(parsedLine[0]);
 		poolNumber = Integer.parseInt(parsedLine[1]);
-		weightMultiplier = Integer.parseInt(parsedLine[2]);
+		weightMultiplier = Double.parseDouble(parsedLine[2]);
 		inhMultiplier = Double.parseDouble(parsedLine[3]);
 
 		proportions = new double[poolNumber][4];
@@ -41,7 +41,7 @@ public class NetworkBuilder {
 		for (int i = 0; i < poolNumber; i++) {
 			newLine = in.readLine();
 			parsedLine = newLine.trim().split("\\s+");
-			totalNueronsInPool[i] = Integer.parseInt(parsedLine[0]);
+			totalNeuronsInPool[i] = Integer.parseInt(parsedLine[0]);
 			newLine = in.readLine();
 			parsedLine = newLine.trim().split("\\s+");
 			for (int j = 0; j < 4; j++) {
@@ -84,7 +84,7 @@ public class NetworkBuilder {
 		InputBuilder inBuild = new InputBuilder();
 		ConnectionsBuilder conBuild = new ConnectionsBuilder();
 		NeuronStructureBuilder strBuild = new NeuronStructureBuilder();
-		strBuild.pushNeurons(net, proportions, totalNueronsInPool,
+		strBuild.pushNeurons(net, proportions, totalNeuronsInPool,
 				totalColumnNumber, poolNumber);
 		conBuild.setUpConnections(net, allProbabilities, totalColumnNumber,
 				timestep);

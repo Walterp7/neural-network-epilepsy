@@ -24,7 +24,7 @@ public class NeuronTypePool {
 
 	void addNeuron(Neuron newNeuron) {
 		if (newNeuron.getType() != type) {
-			// thrwo exception
+			// throw exception
 		}
 		neurons.add(newNeuron);
 	}

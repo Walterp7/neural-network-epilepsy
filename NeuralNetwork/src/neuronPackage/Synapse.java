@@ -8,10 +8,12 @@ public class Synapse implements NetworkNode { // connects node with neuron
 	int timeDelay;
 	Neuron postSynapticNeuron;
 	Neuron preSynapticNeuron;
-	double t1, trec, tfac, U;
+	double ti, trec, tfac, U;
 	List<Double> inputs = new LinkedList<Double>();
-	int isDepressing;
-	double x, y, z, u;
+	// int isDepressing;
+	double x, y, u;
+	double lastSpike;
+	double xls, yls, uls;
 
 	public Synapse(double weight, Neuron preSynaptic, Neuron postSynaptic,
 			double[] params) {
@@ -20,14 +22,17 @@ public class Synapse implements NetworkNode { // connects node with neuron
 		preSynapticNeuron = preSynaptic;
 		timeDelay = 1;
 		trec = params[0];
-		t1 = params[1];
+		ti = params[1];
 		tfac = params[2];
 		U = params[3];
-		isDepressing = (int) params[4];
-		x = 0;
-		z = 0;
-		y = 0.5;
-		u = U;
+		// isDepressing = (int) params[4];
+		lastSpike = 0;
+		x = 1;
+		y = 0;
+		u = 0;
+		xls = 1;
+		yls = 0;
+		uls = 0;
 	}
 
 	@Override
@@ -45,16 +50,35 @@ public class Synapse implements NetworkNode { // connects node with neuron
 	public Status advance(double timeStep, double time) {
 		// currentValue = nextValue; // in the future PSP calculated
 		// nextValue = 0;
-		double delta = inputs.remove(0); // 1 if post spiked, else 0
-		double A = synapseWeight * delta;
+		boolean isSTP = true;
+		if (isSTP) {
+			double delta = inputs.remove(0); // 1 if post spiked, else 0
+			double A = synapseWeight * delta;
+			if (delta > 0) {
+				double dt = time - lastSpike;
+				u = uls * Math.exp(-dt / tfac);
+				x = xls * Math.exp(-dt / trec) + yls * ti * (Math.exp(-dt / trec) - Math.exp(-dt / ti)) / (ti - trec)
+						+ 1 - Math.exp(-dt / trec);
+				y = yls * Math.exp(-dt / ti);
 
-		u = u + timeStep * (1 - isDepressing)
-				* (u / tfac + delta * U * (1 - u));
-		y = y + timeStep * (-y / t1 + delta * u * x);
-		x = x + timeStep * (z / trec - delta * u * x);
-		z = z + timeStep * (y / t1 - z / trec);
-		postSynapticNeuron.addInput(y * A);
+				u = u + U * (1 - u);
+				x = x - x * (u + U * (1 - u));
+				y = y + x * (u + U * (1 - u));
 
+				postSynapticNeuron.addInput(y * A);
+			} else {
+				postSynapticNeuron.addInput(A);
+			}
+			//
+			// u = u + timeStep * (1 - isDepressing)
+			// * (u / tfac + delta * U * (1 - u));
+			// y = y + timeStep * (-y / t1 + delta * u * x);
+			// x = x + timeStep * (z / trec - delta * u * x);
+			// z = z + timeStep * (y / t1 - z / trec);
+
+		} else {
+			postSynapticNeuron.addInput(synapseWeight * inputs.remove(0));
+		}
 		return null;
 	}
 
