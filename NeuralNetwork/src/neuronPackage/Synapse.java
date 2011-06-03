@@ -3,12 +3,15 @@ package neuronPackage;
 import java.util.LinkedList;
 import java.util.List;
 
+import networkPackage.StpParameters;
+
 public class Synapse implements NetworkNode { // connects node with neuron
 	double synapseWeight;
 	int timeDelay;
 	Neuron postSynapticNeuron;
 	Neuron preSynapticNeuron;
-	double ti, trec, tfac, U;
+	// double ti, trec, tfac, U;
+	StpParameters stpParam;
 	List<Double> inputs = new LinkedList<Double>();
 	// int isDepressing;
 	double x, y, u;
@@ -16,15 +19,12 @@ public class Synapse implements NetworkNode { // connects node with neuron
 	double xls, yls, uls;
 
 	public Synapse(double weight, Neuron preSynaptic, Neuron postSynaptic,
-			double[] params) {
+			StpParameters params) {
 		synapseWeight = weight;
 		postSynapticNeuron = postSynaptic;
 		preSynapticNeuron = preSynaptic;
 		timeDelay = 1;
-		trec = params[0];
-		ti = params[1];
-		tfac = params[2];
-		U = params[3];
+		stpParam = params;
 		// isDepressing = (int) params[4];
 		lastSpike = 0;
 		x = 1;
@@ -56,6 +56,10 @@ public class Synapse implements NetworkNode { // connects node with neuron
 			double A = synapseWeight * delta;
 			if (delta > 0) {
 				double dt = time - lastSpike;
+				double tfac = stpParam.getTfac();
+				double ti = stpParam.getTi();
+				double trec = stpParam.getTrec();
+				double U = stpParam.getU();
 				u = uls * Math.exp(-dt / tfac);
 				x = xls * Math.exp(-dt / trec) + yls * ti * (Math.exp(-dt / trec) - Math.exp(-dt / ti)) / (ti - trec)
 						+ 1 - Math.exp(-dt / trec);

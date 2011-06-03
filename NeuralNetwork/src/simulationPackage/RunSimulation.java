@@ -14,13 +14,17 @@ import neuronPackage.Type;
 
 public class RunSimulation {
 	public static void main(String[] args) throws IOException, InterruptedException {
-		final int time = 1000;
+		final int time = 500;// 1000;
 		final double timeStep = 0.1;
 
 		// String[] dirs = { "settings/synch6", "settings/synch20",
 		// "settings/noise", "settings/blockade50" };
-		// String[] dirs = { "settings/blockade50", "settings/focal" };
-		String[] dirs = { "settings/blockade50", "settings/control" };
+		// String[] dirs = { "settings/blockade50", "settings/focal",
+		// "settings/synch6" };
+		// String[] dirs = { "settings/blockade50", "settings/control",
+		// "settings/synch6" };
+		String[] dirs = { "settings/blockade50", "settings/control",
+				"settings/strTest" };
 		// String[] dirs = { "settings/synch6", "settings/synch20" };
 		ExecutorService exec = Executors.newFixedThreadPool(dirs.length);
 		for (final String dir : dirs) {
