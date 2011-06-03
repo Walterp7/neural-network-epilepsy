@@ -26,8 +26,8 @@ public class InputBuilder {
 			if (!(newLine.charAt(0) == '%')) {
 				if (parsedLine[wordIndex].equals("Gaussian")) {
 					wordIndex++;
-					int mean = Integer.parseInt(parsedLine[wordIndex++]);
-					int deviation = Integer.parseInt(parsedLine[wordIndex++]);
+					double mean = Double.parseDouble(parsedLine[wordIndex++]);
+					double deviation = Double.parseDouble(parsedLine[wordIndex++]);
 					newInput = new GaussianInputer(mean, deviation);
 				} else {
 

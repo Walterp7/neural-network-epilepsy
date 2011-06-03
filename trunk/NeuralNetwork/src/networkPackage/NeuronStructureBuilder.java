@@ -49,14 +49,10 @@ public class NeuronStructureBuilder {
 			for (int layer = 0; layer < poolNumber; layer++) {
 				NeuronPool pool = new NeuronPool();
 				col.addPool(pool);
-				NeuronTypePool rsPool = new NeuronTypePool(Type.RS, colnum,
-						layer);
-				NeuronTypePool ibPool = new NeuronTypePool(Type.IB, colnum,
-						layer);
-				NeuronTypePool fsPool = new NeuronTypePool(Type.FS, colnum,
-						layer);
-				NeuronTypePool ltsPool = new NeuronTypePool(Type.LTS, colnum,
-						layer);
+				NeuronTypePool rsPool = new NeuronTypePool(Type.RS);
+				NeuronTypePool ibPool = new NeuronTypePool(Type.IB);
+				NeuronTypePool fsPool = new NeuronTypePool(Type.FS);
+				NeuronTypePool ltsPool = new NeuronTypePool(Type.LTS);
 
 				for (int i = 0; i < totalNueronsInPool[layer]; i++) {
 					double r = 100 * generator.nextDouble();

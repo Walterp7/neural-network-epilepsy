@@ -47,10 +47,9 @@ public class Neuron implements NetworkNode {
 	public Status advance(double timeStep, double timeofSimulation) {
 
 		Status stat = null;
-		v = v + timeStep * 0.5
-				* (0.04 * v * v + 5 * v + 140 - u + currentInput);
-		v = v + timeStep * 0.5
-				* (0.04 * v * v + 5 * v + 140 - u + currentInput);
+		v = v + timeStep * (0.04 * v * v + 5 * v + 140 - u + currentInput);
+		// v = v + timeStep * 0.5
+		// * (0.04 * v * v + 5 * v + 140 - u + currentInput);
 		u = u + timeStep * a * (b * v - u);
 
 		v = v + currentInput;

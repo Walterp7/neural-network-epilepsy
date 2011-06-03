@@ -8,13 +8,10 @@ import neuronPackage.Type;
 public class NeuronTypePool {
 	ArrayList<Neuron> neurons = new ArrayList<Neuron>();
 	Type type;
-	private final int colNum;
-	private final int layNum;
 
-	public NeuronTypePool(Type t, int cNum, int lNum) {
+	public NeuronTypePool(Type t) {
 		type = t;
-		colNum = cNum;
-		layNum = lNum;
+
 	}
 
 	public boolean isEmpty() {
