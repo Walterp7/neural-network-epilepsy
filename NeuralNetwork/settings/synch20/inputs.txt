@@ -1,0 +1,13 @@
+%input config file
+% Gaussian 0 3 * -1 -1
+% Step interTime SignalTime value * -1 -1
+% 6hz 155 10 5
+% 20Hz 40 10 5
+Step 48 2 20 RS 1 1
+Step 48 2 20 FS 1 1
+Gaussian 0 1 * -1 -1
+%Pick 10 20 20 RS 1 1
+%Pick 10 20 20 FS 1 1
+%Step 400 20 20 FS 1 1
+%Step 400 20 20 RS 1 1
+%

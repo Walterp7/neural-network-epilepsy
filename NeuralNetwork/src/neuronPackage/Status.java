@@ -39,6 +39,14 @@ public class Status {
 		return psp;
 	}
 
+	public double getTime() {
+		return time;
+	}
+
+	public int getNumber() {
+		return neuronNumber;
+	}
+
 	public Type getType() {
 		return type;
 	}
