@@ -7,7 +7,7 @@ import java.util.Random;
 import neuronPackage.Neuron;
 
 public class ConnectionsBuilder {
-	final private int velocity = 3; // m/s
+	final private double velocity = 0.4; // m/s
 
 	int calculateDelay(int[] pre, int post[], double timestep) {
 		int delay = 0;
@@ -16,14 +16,20 @@ public class ConnectionsBuilder {
 			delay = delay + (pre[i] - post[i]) * (pre[i] - post[i]); // microns
 		}
 
-		delay = (int) (Math.sqrt(delay) / (1000 * velocity * timestep));
+		delay = (int) (Math.sqrt(delay) / (1000 * velocity * timestep)); // ms
+																			// ->
+																			// how
+																			// many
+																			// time
+																			// steps
 		if (delay > 0) {
 			// System.out.println(delay);
 
 		} else {
+			// System.out.println(delay);
 			delay++;
 		}
-		return delay; // ms
+		return delay; // ms -> how many timesteps
 	}
 
 	public void setUpConnections(Network net,
