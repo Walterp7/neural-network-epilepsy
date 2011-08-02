@@ -12,6 +12,7 @@ class ConnectionDescriptor {
 
 	void setDescription(int targetcol, int poolNum, int targetPool, Type t,
 			Type tart, double w, double p) {
+
 		targetCol = targetcol;
 		poolNumber = poolNum;
 		targetPoolNumber = targetPool;
