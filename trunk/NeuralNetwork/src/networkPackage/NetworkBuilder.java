@@ -6,109 +6,63 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-import neuronPackage.Type;
+import networkGUI.ColDescr;
+import networkGUI.ConfigurationUnit;
 
 public class NetworkBuilder {
 
-	private final List<ConnectionDescriptor> allProbabilities = new ArrayList<ConnectionDescriptor>();
-
 	private int totalColumnNumber = 0;
-	private int poolNumber = 0;
+	List<Integer> layersInColumn = new ArrayList<Integer>();
 	private double weightMultiplier = 1;
 	private double inhMultiplier;
-	double[][] proportions;
-	int[] totalNeuronsInPool = new int[4];
 
-	void loadConfig(String pathname) throws IOException {
-		BufferedReader in = new BufferedReader(new FileReader(pathname));
+	void loadBasicConfig(String simConfigPath, ConfigurationUnit config) throws IOException {
+
+		totalColumnNumber = config.getColListSize();
+		for (ColDescr colDescr : config.getAllColConfDescr()) {
+			layersInColumn.add(colDescr.getLayersInCol());
+		}
+
+		BufferedReader inSimConf = new BufferedReader(new FileReader(simConfigPath));
 
 		String newLine;
 		String[] parsedLine;
 
-		newLine = in.readLine();
+		newLine = inSimConf.readLine();
 
 		while ((newLine.charAt(0) == '%')) {
-			newLine = in.readLine();
+			newLine = inSimConf.readLine();
 		}
 		parsedLine = newLine.trim().split("\\s+");
-		totalColumnNumber = Integer.parseInt(parsedLine[0]);
-		poolNumber = Integer.parseInt(parsedLine[1]);
-		weightMultiplier = Double.parseDouble(parsedLine[2]);
-		inhMultiplier = Double.parseDouble(parsedLine[3]);
+		weightMultiplier = Double.parseDouble(parsedLine[0]);
+		inhMultiplier = Double.parseDouble(parsedLine[1]);
 
-		proportions = new double[poolNumber][4];
-
-		for (int i = 0; i < poolNumber; i++) {
-			newLine = in.readLine();
-			parsedLine = newLine.trim().split("\\s+");
-			totalNeuronsInPool[i] = Integer.parseInt(parsedLine[0]);
-			newLine = in.readLine();
-			parsedLine = newLine.trim().split("\\s+");
-			for (int j = 0; j < 4; j++) {
-				proportions[i][j] = Double.parseDouble(parsedLine[j]);
-			}
-
-		}
-
-		while ((newLine = in.readLine()) != null) {
-			if ((!newLine.trim().equals("")) && (!(newLine.charAt(0) == '%'))) {
-				parsedLine = newLine.trim().split("\\s+");
-
-				ConnectionDescriptor descr = new ConnectionDescriptor();
-
-				int layerNum = Integer.parseInt(parsedLine[0]);
-				Type type = stringToType(parsedLine[1]);
-				int colnum = Integer.parseInt(parsedLine[2]);
-				int targetLayer = Integer.parseInt(parsedLine[3]);
-				Type targetType = stringToType(parsedLine[4]);
-				double prob = Double.parseDouble(parsedLine[5]);
-				double newWeight = Double.parseDouble(parsedLine[6])
-						* weightMultiplier;
-				if ((type == Type.LTS) || (type == Type.FS)) {
-					newWeight = newWeight * inhMultiplier;
-				}
-				descr.setDescription(colnum, layerNum, targetLayer, type,
-						targetType, newWeight, prob);
-
-				allProbabilities.add(descr);
-			}
-		}
-		in.close();
+		inSimConf.close();
 
 	}
 
-	public Network setUpNetwork(String configFile, String inputFile,
-			double timestep) throws IOException {
-		loadConfig(configFile);
+	public Network setUpNetwork(String simConfigFile, ConfigurationUnit config, double timestep) throws IOException { // simConfg
+		// general info,colConfList - connections
+		loadBasicConfig(simConfigFile, config);
 		Network net = new Network();
+
+		List<ColumnBuilder> builderList = new ArrayList<ColumnBuilder>();
+		// for each column
+		for (int colNumber = 0; colNumber < totalColumnNumber; colNumber++) {
+			ColumnBuilder newColBuilder = new ColumnBuilder();
+			newColBuilder.initialize(config.getColConf(colNumber), layersInColumn.get(colNumber), colNumber,
+					weightMultiplier, inhMultiplier);
+			newColBuilder.pushNeurons(net);
+			builderList.add(newColBuilder);
+		}
+		// now neurons are added, we need to connect them
+		for (ColumnBuilder colBuilder : builderList) {
+			colBuilder.connectNetwork(net, timestep);
+		}
 		InputBuilder inBuild = new InputBuilder();
-		ConnectionsBuilder conBuild = new ConnectionsBuilder();
-		NeuronStructureBuilder strBuild = new NeuronStructureBuilder();
-		strBuild.pushNeurons(net, proportions, totalNeuronsInPool,
-				totalColumnNumber, poolNumber);
-		conBuild.setUpConnections(net, allProbabilities, totalColumnNumber,
-				timestep);
-		inBuild.setInputs(inputFile, net);
+		inBuild.setInputs(simConfigFile, net);
 		net.setAllNodes();
 		return net;
-	}
-
-	Type stringToType(String s) throws IOException {
-
-		if (s.equals("RS")) {
-			return Type.RS;
-		}
-		if (s.equals("IB")) {
-			return Type.IB;
-		}
-		if (s.equals("FS")) {
-			return Type.FS;
-		}
-		if (s.equals("LTS")) {
-			return Type.LTS;
-		} else {
-			throw new IOException();
-		}
 	}
 
 }

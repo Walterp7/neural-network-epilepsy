@@ -19,6 +19,13 @@ public class InputBuilder {
 		String newLine;
 		String[] parsedLine;
 
+		newLine = in.readLine();
+		while ((newLine.charAt(0) == '%')) {
+			newLine = in.readLine();
+		}
+
+		newLine = in.readLine(); // one line is for general config
+
 		while ((newLine = in.readLine()) != null) {
 			parsedLine = newLine.trim().split("\\s+");
 			Inputer newInput = null;

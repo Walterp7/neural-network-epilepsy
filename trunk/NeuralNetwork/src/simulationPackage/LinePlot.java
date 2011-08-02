@@ -2,24 +2,25 @@ package simulationPackage;
 
 import java.awt.RenderingHints;
 
+import javax.swing.JFrame;
+
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
 import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeriesCollection;
-import org.jfree.ui.ApplicationFrame;
 
-public class LinePlot extends ApplicationFrame {
+public class LinePlot extends JFrame {
 
 	private static final long serialVersionUID = 1L; // /???
 
 	public LinePlot(String title) {
 		super(title);
 
+		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 	}
 
 	void drawLinePlot(XYSeriesCollection dataset, String title) {
-
 		JFreeChart chart = ChartFactory.createXYLineChart(
 				title, // chart title
 				"time [ms]", // x axis label
