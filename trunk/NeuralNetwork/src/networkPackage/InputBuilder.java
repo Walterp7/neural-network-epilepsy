@@ -36,6 +36,7 @@ public class InputBuilder {
 					double mean = Double.parseDouble(parsedLine[wordIndex++]);
 					double deviation = Double.parseDouble(parsedLine[wordIndex++]);
 					newInput = new GaussianInputer(mean, deviation);
+
 				} else {
 
 					if (parsedLine[wordIndex].equals("Step")) {

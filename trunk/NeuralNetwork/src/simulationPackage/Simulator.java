@@ -93,7 +93,8 @@ public class Simulator {
 							seriesPSP.add(timeOfSimulation, psp / 3000);
 
 							if ((int) (timeOfSimulation / timeStep) % tenPercent == 0) {
-								System.out.println(simName + ' ' + timeOfSimulation);
+								// System.out.println(simName + ' ' +
+								// timeOfSimulation);
 
 								listener.reportProgress(timeOfSimulation / totalTime);
 							}

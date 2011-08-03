@@ -13,10 +13,11 @@ public class SynapseFactory {
 	// { 100, 3, 1000, 0.04 } // ii
 	// };
 
-	final private StpParameters eeParam = new StpParameters(800, 3, 0.00001, 0.5);
-	final private StpParameters eiParam = new StpParameters(800, 3, 0.00001, 0.5);
-	final private StpParameters iiParam = new StpParameters(100, 3, 1000, 0.04);
-	final private StpParameters ieParam = new StpParameters(100, 3, 1000, 0.04);
+	// double trec, double ti, double tfac, double u, double maxy
+	final private StpParameters fs2rsParam = new StpParameters(250, 3, 0.00001, 0.26, 2);
+	final private StpParameters rs2fsParam = new StpParameters(250, 3, 0.00001, 0.26, 2);
+	final private StpParameters rs2ltsParam = new StpParameters(20, 3, 300, 0.01, 0.0769);
+	final private StpParameters lts2rsParam = new StpParameters(70, 2, 60, 0.09, 0.7302);
 
 	public Synapse getSynapse(Neuron preSynaptic, Neuron postSynaptic,
 			double weight, int delay) {
@@ -25,20 +26,20 @@ public class SynapseFactory {
 		Type postType = postSynaptic.getType();
 		Synapse newSynapse;
 		if (preType == Type.RS || preType == Type.IB) {
-			if (postType == Type.RS || postType == Type.IB) {
+			if (postType == Type.LTS) {
 				newSynapse = new Synapse(weight, preSynaptic, postSynaptic,
-						eeParam);
+						rs2ltsParam);
 			} else {
 				newSynapse = new Synapse(weight, preSynaptic, postSynaptic,
-						eiParam);
+						rs2fsParam);
 			}
 		} else {
-			if (postType == Type.RS || postType == Type.IB) {
+			if (preType == Type.LTS) {
 				newSynapse = new Synapse(weight, preSynaptic, postSynaptic,
-						ieParam);
+						lts2rsParam);
 			} else {
 				newSynapse = new Synapse(weight, preSynaptic, postSynaptic,
-						iiParam);
+						fs2rsParam);
 			}
 		}
 
