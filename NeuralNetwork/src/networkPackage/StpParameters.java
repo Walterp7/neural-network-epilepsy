@@ -1,14 +1,15 @@
 package networkPackage;
 
 public class StpParameters {
-	double trec, ti, tfac, U;
+	double trec, ti, tfac, U, maxY;
 
-	public StpParameters(double trec, double ti, double tfac, double u) {
+	public StpParameters(double trec, double ti, double tfac, double u, double maxy) {
 		super();
 		this.trec = trec;
 		this.ti = ti;
 		this.tfac = tfac;
 		U = u;
+		maxY = maxy;
 	}
 
 	public double getTrec() {
@@ -25,6 +26,10 @@ public class StpParameters {
 
 	public double getU() {
 		return U;
+	}
+
+	public double getMaxY() {
+		return maxY;
 	}
 
 }

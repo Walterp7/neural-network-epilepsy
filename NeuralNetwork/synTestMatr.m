@@ -49,7 +49,7 @@ for i = 1:totalSteps
         
     end;
 end;
-normParam = min(resultLTS2RS(1,1:50));
+normParam = min(resultLTS2RS(1,1:50))
 resultLTS2RS = resultLTS2RS/abs(normParam);
 
 % figure('Name','Facilitation');
@@ -116,7 +116,7 @@ for i = 1:totalSteps
         
     end;
 end;
-normParam = max(resultRS2LTS(1,1:50));
+normParam = max(resultRS2LTS(1,1:50))
 resultRS2LTS = resultRS2LTS/normParam;
 
 
@@ -183,7 +183,7 @@ for i = 1:totalSteps
     end;
 end;
 
-normParam = max(resultRS2FS(1,1:100));
+normParam = max(resultRS2FS(1,1:100))
 resultRS2FS = resultRS2FS/normParam;
 
 resultFS2RS = zeros(1, totalSteps);
@@ -194,7 +194,7 @@ for i = 1:totalSteps
     end;
 end;
 
-normParam = min(resultFS2RS(1,1:100));
+normParam = min(resultFS2RS(1,1:100))
 resultFS2RS = resultFS2RS/abs(normParam);
 
 

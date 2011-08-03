@@ -67,7 +67,7 @@ public class MainFrame extends JFrame {
 		final String defaultColConf = "settings/default_col_config.txt";
 		final String defaultSimConf = "settings/control/simConfig.txt";
 
-		setTitle("Test");
+		setTitle("Neural Network Simulator");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		setBounds(100, 100, 450, 319);
 		contentPane = new JPanel();

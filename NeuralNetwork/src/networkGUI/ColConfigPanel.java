@@ -80,7 +80,7 @@ public class ColConfigPanel extends JPanel {
 		btnOpen.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				final JFileChooser fc = new JFileChooser();
+				final JFileChooser fc = new JFileChooser("F:/workspaces/neuronWorkspace/NeuralNetwork/settings");
 				int returnVal = fc.showOpenDialog(null);
 
 				if (returnVal == JFileChooser.APPROVE_OPTION) {

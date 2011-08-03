@@ -47,6 +47,8 @@ public class ColumnBuilder {
 
 		proportions = new double[numOfLayers][4];
 
+		// System.out.println("layers " + numOfLayers);
+
 		String newLine;
 		String[] parsedLine;
 		newLine = in.readLine();
@@ -79,8 +81,8 @@ public class ColumnBuilder {
 				int targetLayer = Integer.parseInt(parsedLine[3]);
 				Type targetType = stringToType(parsedLine[4]);
 				double prob = Double.parseDouble(parsedLine[5]);
-				double newWeight = Double.parseDouble(parsedLine[6])
-						* weightMultiplier;
+				double newWeight = Double.parseDouble(parsedLine[6]) * weightMultiplier;
+
 				if ((type == Type.LTS) || (type == Type.FS)) {
 					newWeight = newWeight * inhMultiplier;
 				}

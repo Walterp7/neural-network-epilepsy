@@ -16,9 +16,6 @@ public class SimulationEndDialog extends JDialog {
 
 	private final JPanel contentPanel = new JPanel();
 
-	/**
-	 * Create the dialog.
-	 */
 	public SimulationEndDialog() {
 		setBounds(100, 100, 200, 107);
 		getContentPane().setLayout(new BorderLayout());
