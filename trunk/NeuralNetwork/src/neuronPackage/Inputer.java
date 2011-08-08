@@ -16,12 +16,6 @@ public abstract class Inputer implements NetworkNode {
 	}
 
 	@Override
-	public void addInput(double val) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
 	public Status advance(double timeStep, double timeofSimulation) {
 		// TODO Auto-generated method stub
 		return null;

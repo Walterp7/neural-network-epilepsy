@@ -20,15 +20,10 @@ public class GaussianInputer extends Inputer {
 	}
 
 	@Override
-	public void addInput(double val) {
-
-	}
-
-	@Override
 	public Status advance(double timeStep, double timeofSimulation) {
 
 		for (Neuron n : inputConnections) {
-			n.addInput(mu + sigma * generator.nextGaussian());
+			n.addInput(mu + sigma * generator.nextGaussian(), timeStep, timeofSimulation);
 		}
 
 		return null;
@@ -36,6 +31,12 @@ public class GaussianInputer extends Inputer {
 
 	@Override
 	public void setCurrentInput() {
+
+	}
+
+	@Override
+	public void addInput(double val, double time, double timeStep) {
+		// TODO Auto-generated method stub
 
 	}
 

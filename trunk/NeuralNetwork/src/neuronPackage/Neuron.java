@@ -28,7 +28,7 @@ public class Neuron implements NetworkNode {
 	}
 
 	@Override
-	public void addInput(double val) {
+	public void addInput(double val, double time, double timeStep) {
 		nextInput = nextInput + val;
 
 	}
@@ -51,23 +51,22 @@ public class Neuron implements NetworkNode {
 		// v = v + timeStep * 0.5
 		// * (0.04 * v * v + 5 * v + 140 - u + currentInput);
 		u = u + timeStep * a * (b * v - u);
-
-		v = v + currentInput;
+		if (Double.isNaN(v)) {
+			System.out.println("BEBOK!!!!!!!!!!");
+		}
+		// v = v + currentInput;
 		if (isFiring()) {
-			// System.out.println(neuronId + " cInput: " + currentInput + "v: "
-			// + v);
+
 			stat = new Status(true, neuronId, timeofSimulation, v, type,
 					currentInput);
 			v = c;
 			u = u + d;
 
 			for (Synapse s : neuronConnections) {
-				s.addInput(1);
+				s.addInput(1, timeStep, timeofSimulation);
 			}
 		} else {
-			for (Synapse s : neuronConnections) {
-				s.addInput(0);
-			}
+
 			stat = new Status(false, neuronId, timeofSimulation, v, type,
 					currentInput);
 		}
@@ -77,12 +76,13 @@ public class Neuron implements NetworkNode {
 	@Override
 	public void setCurrentInput() {
 		currentInput = nextInput;
+		// System.out.println("currentInput " + currentInput);
 		nextInput = 0;
 	}
 
 	boolean isFiring() {
 		return v >= 30;
-		// return v>=20;
+
 	}
 
 	double getMembraneVoltage() {
@@ -109,4 +109,9 @@ public class Neuron implements NetworkNode {
 	public int getId() {
 		return neuronId;
 	}
+
+	public double getV() {
+		return v;
+	}
+
 }
