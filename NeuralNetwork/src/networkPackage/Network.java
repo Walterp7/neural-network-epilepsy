@@ -14,12 +14,12 @@ public class Network {
 	private final List<NetworkNode> allNodes = new ArrayList<NetworkNode>();
 	private final List<Inputer> allInputs = new ArrayList<Inputer>();
 
-	public List<Status> nextStep(double time, double timeofSimulation) {
+	public List<Status> nextStep(double timStep, double timeofSimulation) {
 		List<Status> stats = new ArrayList<Status>();
 
 		for (NetworkNode nod : allNodes) {
 			Status newStat = null;
-			newStat = nod.advance(time, timeofSimulation);
+			newStat = nod.advance(timStep, timeofSimulation);
 			if (newStat != null) {
 				stats.add(newStat);
 			}

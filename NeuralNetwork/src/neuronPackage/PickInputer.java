@@ -16,9 +16,15 @@ public class PickInputer extends Inputer {
 		if ((timeofSimulation > startTime)
 				&& (startTime + signalTime > timeofSimulation)) {
 			for (Neuron n : inputConnections) {
-				n.addInput(value);
+				n.addInput(value, timeStep, timeofSimulation);
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void addInput(double val, double time, double timeStep) {
+		// TODO Auto-generated method stub
+
 	}
 }

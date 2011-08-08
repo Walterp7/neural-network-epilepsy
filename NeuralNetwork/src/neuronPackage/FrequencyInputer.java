@@ -22,9 +22,15 @@ public class FrequencyInputer extends Inputer {
 		}
 		for (Neuron n : inputConnections) {
 
-			n.addInput(w * value);
+			n.addInput(w * value, timeStep, timeofSimulation);
 		}
 		return null;
+	}
+
+	@Override
+	public void addInput(double val, double time, double timeStep) {
+		// TODO Auto-generated method stub
+
 	}
 
 }
