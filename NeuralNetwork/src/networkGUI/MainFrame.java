@@ -52,6 +52,7 @@ public class MainFrame extends JFrame {
 
 					MainFrame frame = new MainFrame();
 					frame.setVisible(true);
+
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -102,8 +103,8 @@ public class MainFrame extends JFrame {
 
 					for (int i = 0; i < n; i++) {
 
-						config.addSim2List(defaultSimConf);
-						config.addSimName("default" + (i + 1));
+						config.addSim2List(defaultSimConf, "default " + (i + 1));
+						// config.addSimName("default" + (i + 1));
 					}
 
 					config.setNumSim(n);

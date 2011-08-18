@@ -17,9 +17,6 @@ public class ColConfigPanel extends JPanel {
 	private final JTextField txtNumberLayers;
 	private final JTextField txtFile;
 
-	/**
-	 * Create the panel.
-	 */
 	public ColConfigPanel(int number, int layerNumber, String defaultFile) {
 		GridBagLayout gridBagLayout = new GridBagLayout();
 		gridBagLayout.columnWidths = new int[] { 60, 28, 19, 20, 30, 84, 57, 0,

@@ -25,4 +25,13 @@ public class NeuronColumn {
 
 		return pools.size();
 	}
+
+	public int getNumberOfNeurons() {
+
+		int sum = 0;
+		for (NeuronPool p : pools) {
+			sum = sum + p.getNumberOfNeurons();
+		}
+		return sum;
+	}
 }

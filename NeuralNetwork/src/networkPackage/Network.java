@@ -95,6 +95,18 @@ public class Network {
 
 	}
 
+	public int getNumberOfColumns() {
+
+		return allColumns.size();
+	}
+
+	public ArrayList<Integer> getNumberOfNeuronsInColumn() {
+		ArrayList<Integer> list = new ArrayList<Integer>();
+		for (NeuronColumn con : allColumns) {
+			list.add(con.getNumberOfNeurons());
+		}
+		return list;
+	}
 	// public void printAllNeurons() {
 	// for (NetworkNode n : allNodes) {
 	// if (n instanceof Neuron) {

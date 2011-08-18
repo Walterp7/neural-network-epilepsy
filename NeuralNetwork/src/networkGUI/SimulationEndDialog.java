@@ -17,14 +17,14 @@ public class SimulationEndDialog extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 
 	public SimulationEndDialog() {
-		setBounds(100, 100, 200, 107);
+		setBounds(100, 100, 343, 89);
 		getContentPane().setLayout(new BorderLayout());
 		contentPanel.setLayout(new FlowLayout());
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		{
 			JLabel lblSimulationEnded = new JLabel(
-					"Simulation ended successfully");
+					"Simulation ended successfully. Files saved.");
 			contentPanel.add(lblSimulationEnded);
 		}
 		JButton okButton = new JButton("OK");
