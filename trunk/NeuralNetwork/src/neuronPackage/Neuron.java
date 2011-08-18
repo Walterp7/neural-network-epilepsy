@@ -51,9 +51,7 @@ public class Neuron implements NetworkNode {
 		// v = v + timeStep * 0.5
 		// * (0.04 * v * v + 5 * v + 140 - u + currentInput);
 		u = u + timeStep * a * (b * v - u);
-		if (Double.isNaN(v)) {
-			System.out.println("BEBOK!!!!!!!!!!");
-		}
+
 		// v = v + currentInput;
 		if (isFiring()) {
 

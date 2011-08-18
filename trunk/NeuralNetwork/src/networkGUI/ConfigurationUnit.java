@@ -12,8 +12,12 @@ public class ConfigurationUnit {
 
 	List<ColDescr> colConfList = new ArrayList<ColDescr>();
 
-	List<String> simConfList = new ArrayList<String>();
-	List<String> simulNames = new ArrayList<String>();
+	List<String[]> simConfList = new ArrayList<String[]>(); // pairs, first one
+															// is the file,
+															// second is the
+															// simulation name
+
+	// List<String> simulNames = new ArrayList<String>();
 
 	public int getTotalTime() {
 		return totalTime;
@@ -58,8 +62,8 @@ public class ConfigurationUnit {
 	}
 
 	public void clearSimLists() {
-		colConfList.clear();
-		simulNames.clear();
+		simConfList.clear();
+		// simulNames.clear();
 	}
 
 	public void addCol2List(String str, int num) {
@@ -67,13 +71,17 @@ public class ConfigurationUnit {
 		colConfList.add(newDescr);
 	}
 
-	public void addSim2List(String str) {
-		simConfList.add(str);
+	public void addSim2List(String strSim, String strName) {
+		String[] newSimConf = new String[2];
+		newSimConf[0] = strSim;
+		newSimConf[1] = strName;
+		simConfList.add(newSimConf);
+		// simulNames.add(strName);
 	}
 
-	public void addSimName(String name) {
-		simulNames.add(name);
-	}
+	// public void addSimName(String name) {
+	// simulNames.add(name);
+	// }
 
 	public boolean isSimConfigured() {
 		return !simConfList.isEmpty();
@@ -115,11 +123,11 @@ public class ConfigurationUnit {
 	}
 
 	public String getSimConf(int i) {
-		return simConfList.get(i);
+		return simConfList.get(i)[0];
 	}
 
 	public String getSimName(int index) {
-		return simulNames.get(index);
+		return simConfList.get(index)[1];
 	}
 
 	public int getLayNum(int i) {
@@ -134,7 +142,7 @@ public class ConfigurationUnit {
 		return colConfList;
 	}
 
-	public List<String> getAllSimulations() {
+	public List<String[]> getAllSimulations() {
 		return simConfList;
 	}
 }

@@ -8,9 +8,9 @@ timeEPSP = 0.1:0.1:endTime;
 delta = zeros(1, totalSteps);
 %delta(1:500:4500)=1;
 %delta(totalSteps*9/10:500:totalSteps) = 1;
-%delta(1:500:20000)=1;
-delta(3:250:2002)=1;
-delta(16000:1000:24000) = 1;
+%delta(1:250:20000)=1;
+ delta(3:1:20020)=1;
+% delta(16000:1000:24000) = 1;
 %delta(totalSteps*7/8:500:totalSteps) = 1;
 %----------------------facilitation-LTS2RS---------------------------------
 
@@ -144,13 +144,13 @@ subplot(4,2,5:8);
 plot(timeEPSP, resultLTS2RS);
 title('IPSP,  LTS to RS');
 xlabel('time [ms]');
-ylim([-2.3, 0.1]);
+%ylim([-2.3, 0.1]);
 hold on;
 subplot(4,2,1:4);
 plot(timeEPSP, resultRS2LTS);
 title('EPSP, RS to LTS');
 xlabel('time [ms]');
-ylim([-0.1,9]);
+%ylim([-0.1,9]);
 %-------------------------depression-RS2FS-------------------------------
 
 
@@ -228,6 +228,68 @@ plot(timeEPSP, resultRS2FS);
 title('EPSP, RS to FS');
 xlabel('time [ms]');
 ylim([-0.1,1]);
+hold on;
+subplot(4,2,5:8);
+plot(timeEPSP, resultFS2RS);
+title('IPSP, FS to RS');
+xlabel('time [ms]');
+ylim([-1, 0.1]);
+
+
+%-------------------------NOTHING --RS2RS-------------------------------
+
+
+sd = zeros(3, totalSteps);
+
+ti =3.0;
+trec = 1.0;
+tfac = 0.0000001;
+UU = 0.5;
+sd(:,1)=[0;1; 0];
+lastSpike = 1;
+for i=2:totalSteps
+    if(delta(i) == 1)
+        dt = abs(lastSpike - i)*timestep;
+   
+        P = Pmatr( dt, tfac, trec, ti);
+        sd(:,i) = P* [sd(:,lastSpike);1];
+        s0=[UU*(1- sd(1,i)); -sd(2,i)*(sd(1,i)+UU*(1-sd(1,i)));sd(2,i)*(sd(1,i)+UU*(1-sd(1,i))) ];
+        sd(:,i) = sd(:,i)+s0;
+        lastSpike = i;
+    end;
+   
+end
+
+resultRS2FS = zeros(1, totalSteps);
+for i = 1:totalSteps
+    if (delta(1,i)>0)
+        resultRS2FS = resultRS2FS + sd(3,i)*epsp(timeEPSP - i*0.1);
+        
+    end;
+end;
+
+normParam = max(resultRS2FS(1,1:50))
+resultRS2FS = resultRS2FS/normParam;
+
+resultFS2RS = zeros(1, totalSteps);
+for i = 1:totalSteps
+    if (delta(1,i)>0)
+        resultFS2RS = resultFS2RS + sd(3,i)*epsp(timeEPSP - i*0.1);
+        
+    end;
+end;
+
+normParam = max(resultFS2RS(1,1:100))
+resultFS2RS = resultFS2RS/abs(normParam);
+
+
+figure('Name','Depression');
+
+subplot(4,2,1:4);
+plot(timeEPSP, resultRS2FS);
+title('EPSP, NOTHING');
+xlabel('time [ms]');
+ylim([-0.1,2]);
 hold on;
 subplot(4,2,5:8);
 plot(timeEPSP, resultFS2RS);

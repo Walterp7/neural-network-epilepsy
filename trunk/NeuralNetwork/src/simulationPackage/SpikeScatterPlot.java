@@ -22,19 +22,11 @@ public class SpikeScatterPlot extends JFrame {
 
 	void drawSpikeScatterPlot(XYSeriesCollection dataset, String title) {
 
-		// final NumberAxis domainAxis = new NumberAxis("time [ms]");
-		// domainAxis.setAutoRangeIncludesZero(true);
-		// final NumberAxis rangeAxis = new NumberAxis("neuron number");
-		// rangeAxis.setAutoRangeIncludesZero(true);
-
-		// final FastScatterPlot plot = new FastScatterPlot(dataset, domainAxis,
-		// rangeAxis);
-		// final JFreeChart chart = new JFreeChart("Fast Scatter Plot", plot);
 		JFreeChart chart = ChartFactory.createScatterPlot(
 				title, // chart title
 				"time [ms]", // x axis label
 				"neurons", // y axis label
-				dataset, // data ***-----PROBLEM------***
+				dataset, // data
 				PlotOrientation.VERTICAL,
 				true, // include legend
 				true, // tooltips
@@ -55,5 +47,6 @@ public class SpikeScatterPlot extends JFrame {
 		setContentPane(panel);
 		this.pack();
 		this.setVisible(true);
+
 	}
 }

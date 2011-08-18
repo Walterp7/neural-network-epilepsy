@@ -1,0 +1,21 @@
+select COUNT(distinct encounter_nbr) from dbo.ENCOUNTER_FACTS_VCU;
+
+select count(1) from (select distinct *  from dbo.MEDICATION_FACTS_0004_VCU) temp_med04;
+select count(1) from (select distinct *  from dbo.MEDICATION_FACTS_0507_VCU) temp_med57;
+select count(1) from (select distinct *  from dbo.MEDICATION_FACTS_0809_VCU) temp_med89;
+select count(1) from (select distinct *  from dbo.MEDICATION_FACTS_VCU) temp_med;
+select count(1) from (select distinct *  from dbo.PROCEDURE_FACTS_VCU) temp_proc;
+
+74036644
+
+
+37282612
+
+38097085
+
+33829213
+
+109208910
+
+
+9312170

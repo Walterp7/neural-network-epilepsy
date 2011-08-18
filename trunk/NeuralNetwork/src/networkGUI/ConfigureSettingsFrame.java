@@ -41,10 +41,11 @@ public class ConfigureSettingsFrame extends JFrame {
 			public void actionPerformed(ActionEvent e) {
 				config.clearSimLists();
 				for (SetConfigPanel pan : panelList) {
-					config.addSim2List(pan.getPath());
-					config.addSimName(pan.getSimName());
+					config.addSim2List(pan.getPath(), pan.getSimName());
+					// config.addSimName(pan.getSimName());
 
 				}
+
 				dispose();
 			}
 		});

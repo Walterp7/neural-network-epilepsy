@@ -33,4 +33,15 @@ public class NeuronPool {
 	public void setTypePool(HashMap<Type, NeuronTypePool> neuronTypes) {
 		this.typePools = neuronTypes;
 	}
+
+	public int getNumberOfNeurons() {
+		ArrayList<NeuronTypePool> allPools = getTypePools();
+
+		int sum = 0;
+		for (NeuronTypePool p : allPools) {
+			sum = sum + p.getNeurons().size();
+		}
+
+		return sum;
+	}
 }
