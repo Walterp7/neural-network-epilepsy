@@ -14,7 +14,8 @@ public class NetworkBuilder {
 	private int totalColumnNumber = 0;
 	List<Integer> layersInColumn = new ArrayList<Integer>();
 	private double weightMultiplier = 1;
-	private double inhMultiplier;
+	private double fsInhMultiplier;
+	private double ltsInhMultiplier;
 
 	void loadBasicConfig(String simConfigPath, ConfigurationUnit config) throws IOException {
 
@@ -35,8 +36,8 @@ public class NetworkBuilder {
 		}
 		parsedLine = newLine.trim().split("\\s+");
 		weightMultiplier = Double.parseDouble(parsedLine[0]);
-		inhMultiplier = Double.parseDouble(parsedLine[1]);
-
+		fsInhMultiplier = Double.parseDouble(parsedLine[1]);
+		ltsInhMultiplier = Double.parseDouble(parsedLine[2]);
 		inSimConf.close();
 
 	}
@@ -51,7 +52,7 @@ public class NetworkBuilder {
 		for (int colNumber = 0; colNumber < totalColumnNumber; colNumber++) {
 			ColumnBuilder newColBuilder = new ColumnBuilder();
 			newColBuilder.initialize(config.getColConf(colNumber), layersInColumn.get(colNumber), colNumber,
-					weightMultiplier, inhMultiplier);
+					weightMultiplier, fsInhMultiplier, ltsInhMultiplier);
 			newColBuilder.pushNeurons(net);
 			builderList.add(newColBuilder);
 		}
