@@ -19,9 +19,11 @@ public class SynapseFactory {
 	final private StpParameters rs2fsParam = new StpParameters(250, 3, 0.00001, 0.26, 0.26);
 	final private StpParameters rs2ltsParam = new StpParameters(20, 3, 300, 0.01, 0.01);
 	final private StpParameters lts2rsParam = new StpParameters(70, 2, 60, 0.09, 0.0949);
-	final private StpParameters rs2rsParam = new StpParameters(1, 3, 0.000001, 0.5, 0.5);
-	final private StpParameters lts2fsParam = new StpParameters(1, 3, 0.000001, 0.5, 0.5);
-	final private StpParameters lts2ltsParam = new StpParameters(1, 3, 0.00001, 0.5, 0.5);
+	final private StpParameters rs2rsParam = new StpParameters(150, 3, 0.000001, 0.5, 0.5);
+	// final private StpParameters rs2rsParam = new StpParameters(1, 3,
+	// 0.000001, 0.5, 0.5);
+	final private StpParameters lts2fsParam = new StpParameters(100, 3, 0.000001, 0.5, 0.5);
+	final private StpParameters lts2ltsParam = new StpParameters(500, 3, 1000, 0.09, 0.0949);
 	final private StpParameters fs2ltsParam = new StpParameters(1, 3, 0.000001, 0.5, 0.5);
 	final private StpParameters fs2fsParam = new StpParameters(1, 3, 0.000001, 0.5, 0.5);
 	PSPparameters pspParams = new PSPparameters();

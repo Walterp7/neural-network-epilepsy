@@ -19,13 +19,13 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeriesCollection;
 
-public class PlotFrame extends JFrame {
+public class SpikePlotFrame extends JFrame { //plots scatter plot and the 
 
 	private final JPanel contentPane;
 	List<JFreeChart> charts = new ArrayList<JFreeChart>();
 	String frameTitle;
 
-	public PlotFrame() {
+	public SpikePlotFrame() {
 		setTitle("Network Activity");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 806, 670);
@@ -60,13 +60,6 @@ public class PlotFrame extends JFrame {
 		this.setName(title);
 		frameTitle = title;
 		int numberOfColumns = neuronsInColum.size();
-
-		// for (int i = 0; i < numberOfColumns; i++) {
-		// PlotPanel newPlotPan = new PlotPanel(i + 1);
-		// newPlotPan.plot(dataset1);
-		// contentPane.add(newPlotPan);
-		// }
-		// first plot with title
 
 		JFreeChart chart1 = ChartFactory.createScatterPlot(
 				title, // chart title
