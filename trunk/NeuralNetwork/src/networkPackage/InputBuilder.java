@@ -14,7 +14,9 @@ import neuronPackage.PickInputer;
 import neuronPackage.Type;
 
 public class InputBuilder {
-	void setInputs(String pathname, Network net) throws IOException {
+
+	void setInputs(String pathname, Network net, InputDescriptor inDescriptor, double totalTime)
+			throws IOException {
 		BufferedReader in = new BufferedReader(new FileReader(pathname));
 		String newLine;
 		String[] parsedLine;
@@ -38,7 +40,7 @@ public class InputBuilder {
 					newInput = new GaussianInputer(mean, deviation);
 
 				} else {
-
+					inDescriptor.addInputer(newLine, totalTime);
 					if (parsedLine[wordIndex].equals("Step")) {
 						wordIndex++;
 						int interTime = Integer
@@ -79,39 +81,70 @@ public class InputBuilder {
 
 				int colNum = Integer.parseInt(parsedLine[wordIndex++]);
 				int poolNum = Integer.parseInt(parsedLine[wordIndex++]);
-				List<Integer> columns = new ArrayList<Integer>();
-				List<Integer> pools = new ArrayList<Integer>();
-				if (colNum >= 0) {
-					columns.add(colNum);
-				} else {
-					for (int i = 0; i < net.numberOfColumns(); i++) {
-						columns.add(i);
-					}
-				}
 
-				if (poolNum >= 0) {
-					pools.add(poolNum);
-				} else {
-					int size = net.numberOfPools();
-					for (int i = 0; i < size; i++) {
-						pools.add(i);
-					}
-				}
+				if (colNum >= 0) { // input to a specific column
+					if (poolNum >= 0) { // input to a specific layer
 
-				for (Type type : typesToConnect) {
-					for (Integer col : columns) {
-						for (Integer pool : pools) {
-							if (net.getColumn(col).getPool(pool)
-									.getTypePool(type) != null) {
-								ArrayList<Neuron> listNeuron = net
-										.getColumn(col).getPool(pool)
-										.getTypePool(type).getNeurons();
+						for (Type type : typesToConnect) {
+							if (net.getColumn(colNum).getPool(poolNum).getTypePool(type) != null) {
+								ArrayList<Neuron> listNeuron = net.getColumn(colNum).getPool(poolNum).getTypePool(type)
+										.getNeurons();
 
 								for (Neuron neur : listNeuron) {
 									newInput.addConnection(neur);
 								}
 							}
 						}
+
+					} else { // specific column but all layers
+						int size = net.numberOfPools();
+						for (NeuronPool layer : net.getColumn(colNum).getPools()) {
+							for (Type type : typesToConnect) {
+								if (layer.getTypePool(type) != null) {
+									ArrayList<Neuron> listNeuron = layer.getTypePool(type)
+											.getNeurons();
+
+									for (Neuron neur : listNeuron) {
+										newInput.addConnection(neur);
+									}
+								}
+							}
+						}
+					}
+
+				} else { // all columns
+
+					if (poolNum >= 0) { // all columns but specific layer
+						for (NeuronColumn col : net.getAllColumns()) {
+							for (Type type : typesToConnect) {
+								if (col.getPool(poolNum).getTypePool(type) != null) {
+									ArrayList<Neuron> listNeuron = col.getPool(poolNum).getTypePool(type)
+											.getNeurons();
+
+									for (Neuron neur : listNeuron) {
+										newInput.addConnection(neur);
+									}
+								}
+							}
+						}
+
+					} else { // all columns all layers
+						for (NeuronColumn col : net.getAllColumns()) {
+							for (NeuronPool pool : col.getPools()) {
+								for (Type type : typesToConnect) {
+									if (pool.getTypePool(type) != null) {
+										ArrayList<Neuron> listNeuron = pool.getTypePool(type)
+												.getNeurons();
+
+										for (Neuron neur : listNeuron) {
+											newInput.addConnection(neur);
+										}
+									}
+								}
+							}
+
+						}
+
 					}
 
 				}

@@ -48,11 +48,9 @@ public class Neuron implements NetworkNode {
 
 		Status stat = null;
 		v = v + timeStep * (0.04 * v * v + 5 * v + 140 - u + currentInput);
-		// v = v + timeStep * 0.5
-		// * (0.04 * v * v + 5 * v + 140 - u + currentInput);
+
 		u = u + timeStep * a * (b * v - u);
 
-		// v = v + currentInput;
 		if (isFiring()) {
 
 			stat = new Status(true, neuronId, timeofSimulation, v, type,
@@ -74,7 +72,7 @@ public class Neuron implements NetworkNode {
 	@Override
 	public void setCurrentInput() {
 		currentInput = nextInput;
-		// System.out.println("currentInput " + currentInput);
+
 		nextInput = 0;
 	}
 

@@ -42,7 +42,8 @@ public class NetworkBuilder {
 
 	}
 
-	public Network setUpNetwork(String simConfigFile, ConfigurationUnit config, double timestep) throws IOException { // simConfg
+	public Network setUpNetwork(String simConfigFile, ConfigurationUnit config, double timestep, double totalTime,
+			InputDescriptor inDescriptor) throws IOException { // simConfg
 		// general info,colConfList - connections
 		loadBasicConfig(simConfigFile, config);
 		Network net = new Network();
@@ -61,7 +62,7 @@ public class NetworkBuilder {
 			colBuilder.connectNetwork(net, timestep);
 		}
 		InputBuilder inBuild = new InputBuilder();
-		inBuild.setInputs(simConfigFile, net);
+		inBuild.setInputs(simConfigFile, net, inDescriptor, totalTime);
 		net.setAllNodes();
 		return net;
 	}

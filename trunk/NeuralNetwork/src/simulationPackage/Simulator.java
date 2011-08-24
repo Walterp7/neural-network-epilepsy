@@ -8,7 +8,9 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import networkGUI.ConfigurationUnit;
-import networkGUI.PlotFrame;
+import networkGUI.InputPlotFrame;
+import networkGUI.SpikePlotFrame;
+import networkPackage.InputDescriptor;
 import networkPackage.Network;
 import networkPackage.NetworkBuilder;
 import neuronPackage.Status;
@@ -44,12 +46,13 @@ public class Simulator {
 					String simName = simDir[1];
 
 					System.out.println(simName + " starting");
-
+					InputDescriptor inDescriptor = new InputDescriptor();
 					NetworkBuilder mag = new NetworkBuilder();
 					Network net;
 
 					try {
-						net = mag.setUpNetwork(simDir[0], configFromGUI, timeStep);
+						net = mag.setUpNetwork(simDir[0], configFromGUI, timeStep, totalTime, inDescriptor);
+
 						ArrayList<Integer> numOfNeuronsInColumn = net.getNumberOfNeuronsInColumn();
 
 						int numOfCols = numOfNeuronsInColumn.size();
@@ -67,11 +70,6 @@ public class Simulator {
 							newDataSeries[3] = new XYSeries("IB neurons");
 							dataSeries.add(newDataSeries);
 						}
-
-						// XYSeries seriesRS = new XYSeries("RS neurons");
-						// XYSeries seriesFS = new XYSeries("FS neurons");
-						// XYSeries seriesLTS = new XYSeries("LTS neurons");
-						// XYSeries seriesIB = new XYSeries("IB neurons");
 
 						XYSeries seriesPSP = new XYSeries("Simulated EEG");
 
@@ -154,12 +152,15 @@ public class Simulator {
 						// DrawNetwork drawer = new DrawNetwork();
 
 						// drawer.drawAll(datasetSpikes, datasetEEG, simName);
-						PlotFrame plotFrame = new PlotFrame();
+						SpikePlotFrame plotFrame = new SpikePlotFrame();
 						plotFrame.plotNetwork(numOfNeuronsInColumn, allDatasetSpikes, simName);
 
 						LinePlot eegPlot = new LinePlot("Spike Pattern: " + simName);
 						eegPlot.drawLinePlot(datasetEEG, "Simulated EEG (" + simName + ")");
-
+						InputPlotFrame inputFrame = new InputPlotFrame();
+						if (!inDescriptor.isEmpty()) {
+							inputFrame.plotInputs(inDescriptor);
+						}
 						listener.reportProgress(10);
 						System.out.println(simName + " done");
 					} catch (IOException e) {
