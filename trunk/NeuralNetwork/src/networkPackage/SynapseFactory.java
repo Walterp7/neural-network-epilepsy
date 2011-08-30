@@ -1,84 +1,62 @@
 package networkPackage;
 
+import java.util.HashMap;
+
 import neuronPackage.Neuron;
 import neuronPackage.PSPparameters;
 import neuronPackage.Synapse;
-import neuronPackage.Type;
 
 public class SynapseFactory {
-	//
-	// final private double[][] paramsSTP = { // trec, t1, tfac, U
-	// { 800, 3, 0.00001, 0.5 }, // ei
-	// { 800, 3, 0.00001, 0.5 }, // ee
-	// { 100, 3, 1000, 0.04 }, // ie
-	// { 100, 3, 1000, 0.04 } // ii
-	// };
 
-	// double trec, double ti, double tfac, double u, double maxy
-	final private StpParameters fs2rsParam = new StpParameters(250, 3, 0.00001, 0.26, 0.2743);
-	final private StpParameters rs2fsParam = new StpParameters(250, 3, 0.00001, 0.26, 0.26);
-	final private StpParameters rs2ltsParam = new StpParameters(20, 3, 300, 0.01, 0.01);
-	final private StpParameters lts2rsParam = new StpParameters(70, 2, 60, 0.09, 0.0949);
-	final private StpParameters rs2rsParam = new StpParameters(150, 3, 0.000001, 0.5, 0.5);
-	// final private StpParameters rs2rsParam = new StpParameters(1, 3,
-	// 0.000001, 0.5, 0.5);
-	final private StpParameters lts2fsParam = new StpParameters(100, 3, 0.000001, 0.5, 0.5);
-	final private StpParameters lts2ltsParam = new StpParameters(500, 3, 1000, 0.09, 0.0949);
-	final private StpParameters fs2ltsParam = new StpParameters(1, 3, 0.000001, 0.5, 0.5);
-	final private StpParameters fs2fsParam = new StpParameters(1, 3, 0.000001, 0.5, 0.5);
+	HashMap<String, StpParameters> stdpParams = new HashMap<String, StpParameters>();
+
+	public SynapseFactory() {
+		// parameters: double trec, double ti, double tfac, double u, double
+		// maxy
+		stdpParams.put("RSII2RSII", new StpParameters(3, 100, 0.00001, 0.3, 0.3));
+		stdpParams.put("RSII2RSV", new StpParameters(3, 100, 0.000001, 0, 0.4));
+		stdpParams.put("RSV2RSV", new StpParameters(3, 350, 0.000001, 0.5, 0.5));
+		stdpParams.put("RSV2RSII", new StpParameters(3, 100, 0, 0.000001, 0.4));
+		stdpParams.put("RSVI2RSVI", new StpParameters(3, 150, 0.000001, 0.15, 0.15));
+
+		stdpParams.put("RSII2FSII", new StpParameters(3, 110, 0.000001, 0.2, 0.2));
+		stdpParams.put("RSIV2FSIV", new StpParameters(3, 250, 0.000001, 0.26, 0.26));
+		stdpParams.put("RSVI2FSVI", new StpParameters(2, 70, 100, 0.09, 0.09));
+
+		stdpParams.put("RSII2LTSII", new StpParameters(3, 150, 200, 0.02, 0.02));
+		stdpParams.put("RSIV2LTSIV", new StpParameters(3, 20, 300, 0.01, 0.01));
+
+		stdpParams.put("FSII2RSII", new StpParameters(3, 100, 0.000001, 0.5, 0.5));
+		stdpParams.put("FSIV2RSIV", new StpParameters(3, 250, 0.000001, 0.26, 0.26));
+		stdpParams.put("FSV2RSV", new StpParameters(3, 60, 0.000001, 0.6, 0.6));
+
+		stdpParams.put("FSII2FSII", new StpParameters(3, 100, 0.000001, 0.5, 0.5));
+		stdpParams.put("FSV2FSV", new StpParameters(3, 80, 0.000001, 0.5, 0.5));
+
+		stdpParams.put("FSII2LTSII", new StpParameters(3, 100, 0.000001, 0.4, 0.4));
+
+		stdpParams.put("LTSII2RSII", new StpParameters(3, 250, 0.000001, 0.3, 0.3));
+		stdpParams.put("LTSIV2RSIV", new StpParameters(2, 70, 60, 0.09, 0.0949));
+
+		stdpParams.put("LTSII2FSII", new StpParameters(3, 100, 0.000001, 0.5, 0.5));
+
+		stdpParams.put("LTSII2LTSII", new StpParameters(3, 600, 1000, 0.09, 0.09));
+
+	}
+
 	PSPparameters pspParams = new PSPparameters();
 
 	public Synapse getSynapse(Neuron preSynaptic, Neuron postSynaptic,
 			double weight, int delay) {
 
-		Type preType = preSynaptic.getType();
-		Type postType = postSynaptic.getType();
 		Synapse newSynapse;
-		if (preType == Type.RS || preType == Type.IB) {
-			if (postType == Type.LTS) {
-				newSynapse = new Synapse(weight, preSynaptic, postSynaptic,
-						rs2ltsParam, pspParams);
-			} else {
-				if (preType == Type.RS || preType == Type.IB) {
-					newSynapse = new Synapse(weight, preSynaptic, postSynaptic,
-							rs2rsParam, pspParams);
-				}
-				else { // FS
-					newSynapse = new Synapse(weight, preSynaptic, postSynaptic,
-							rs2fsParam, pspParams);
-				}
-			}
-		} else {
-			if (preType == Type.LTS) {
-				if (postType == Type.LTS) {
-					newSynapse = new Synapse(weight, preSynaptic, postSynaptic,
-							lts2ltsParam, pspParams);
-				} else {
-					if (preType == Type.RS || preType == Type.IB) {
-						newSynapse = new Synapse(weight, preSynaptic, postSynaptic,
-								lts2rsParam, pspParams);
-					}
-					else { // FS
-						newSynapse = new Synapse(weight, preSynaptic, postSynaptic,
-								lts2fsParam, pspParams);
-					}
-				}
-			} else { // pre = fs
-				if (postType == Type.LTS) {
-					newSynapse = new Synapse(weight, preSynaptic, postSynaptic,
-							fs2ltsParam, pspParams);
-				} else {
-					if (preType == Type.RS || preType == Type.IB) {
-						newSynapse = new Synapse(weight, preSynaptic, postSynaptic,
-								fs2rsParam, pspParams);
-					}
-					else { // FS
-						newSynapse = new Synapse(weight, preSynaptic, postSynaptic,
-								fs2fsParam, pspParams);
-					}
-				}
-			}
+		StpParameters stp = stdpParams.get(preSynaptic.typeLayer2String()
+				+ postSynaptic.typeLayer2String());
+		if (stp == null) {
+			stp = new StpParameters(1, 3, 0.0000001, 0.5, 0.5); // nothing
+
 		}
+		newSynapse = new Synapse(weight, preSynaptic, postSynaptic, stp, pspParams);
 
 		newSynapse.setTimeDelay(delay);
 		preSynaptic.addSynapse(newSynapse);
