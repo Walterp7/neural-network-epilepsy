@@ -3,11 +3,13 @@ package networkGUI;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
@@ -42,13 +44,29 @@ public class InputPlotFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				try {
-					for (JFreeChart chart : charts) {
-						ChartUtilities.saveChartAsPNG(
-								new java.io.File("inputsCol" + charts.indexOf(chart) + ".png"), chart, 600, 300);
+
+					final JFileChooser fc = new JFileChooser("F:/workspaces/neuronWorkspace/NeuralNetwork/data");
+					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+					int returnVal = fc.showOpenDialog(null);
+
+					if (returnVal == JFileChooser.APPROVE_OPTION) {
+						File file = fc.getSelectedFile();
+						// This is where a real application would open the file.
+						if (!file.exists()) {
+							new File(file.getAbsolutePath()).mkdir();
+						}
+
+						for (JFreeChart chart : charts) {
+							ChartUtilities.saveChartAsPNG(
+									new java.io.File(file.getAbsolutePath() + "/" + "inputsCol" + charts.indexOf(chart)
+											+ ".png"), chart, 800, 300);
+						}
+
+						SimulationEndDialog newDialog = new SimulationEndDialog();
+						newDialog.setVisible(true);
+
 					}
 
-					SimulationEndDialog newDialog = new SimulationEndDialog();
-					newDialog.setVisible(true);
 				} catch (java.io.IOException exc) {
 					System.err.println("Error writing image to file");
 				}

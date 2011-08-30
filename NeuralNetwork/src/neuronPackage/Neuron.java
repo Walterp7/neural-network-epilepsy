@@ -10,11 +10,12 @@ public class Neuron implements NetworkNode {
 	private final Type type;
 	private final double a, b, c, d;
 	private int neuronId;
+	private final int layer; // starts with 0
 	private final ArrayList<Synapse> neuronConnections = new ArrayList<Synapse>();
 
 	private final int[] coordinates = new int[3];
 
-	public Neuron(double[] parameters, Type type) {
+	public Neuron(double[] parameters, Type type, int l) {
 		v = -65;
 
 		currentInput = 0;
@@ -25,12 +26,17 @@ public class Neuron implements NetworkNode {
 		c = parameters[2];
 		d = parameters[3];
 		u = b * v;
+		layer = l;
 	}
 
 	@Override
 	public void addInput(double val, double time, double timeStep) {
 		nextInput = nextInput + val;
 
+	}
+
+	public int getLayer() {
+		return layer;
 	}
 
 	public void setCoordinates(int[] coor) {
@@ -110,4 +116,24 @@ public class Neuron implements NetworkNode {
 		return v;
 	}
 
+	public String typeLayer2String() {
+		String str = type.toString();
+		if (layer == 0) {
+			str = str + "II"; // II-III layer
+		} else {
+			if (layer == 1) {
+				str = str + "IV"; // II-III layer
+			} else {
+				if (layer == 2) {
+					str = str + "V"; // II-III layer
+				} else {
+					if (layer == 3) {
+						str = str + "VI"; // II-III layer
+					}
+				}
+			}
+		}
+
+		return str;
+	}
 }

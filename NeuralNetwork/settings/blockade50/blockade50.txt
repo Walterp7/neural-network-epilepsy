@@ -1,6 +1,6 @@
 %config file
 %all connection multiplier  inhibitory connection multiplier
-1 0.5
+1 0.5 0.5
 %input configuration
 % Gaussian 0 3 * -1 -1
 % Step interTime SignalTime value * -1 -1
