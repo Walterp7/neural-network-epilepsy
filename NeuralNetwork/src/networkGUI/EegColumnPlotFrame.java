@@ -21,13 +21,13 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeriesCollection;
 
-public class SpikePlotFrame extends JFrame { // plots scatter plot and the
+public class EegColumnPlotFrame extends JFrame {
 
 	private final JPanel contentPane;
 	List<JFreeChart> charts = new ArrayList<JFreeChart>();
 	String frameTitle;
 
-	public SpikePlotFrame() {
+	public EegColumnPlotFrame() {
 		setTitle("Network Activity");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 806, 670);
@@ -54,7 +54,7 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 
 						for (JFreeChart chart : charts) {
 							ChartUtilities.saveChartAsPNG(
-									new java.io.File(file.getAbsolutePath() + "/" + frameTitle + "_col"
+									new java.io.File(file.getAbsolutePath() + "/" + "eeg_col"
 											+ charts.indexOf(chart) + ".png"),
 									chart, 1000, 600);
 						}
@@ -73,36 +73,12 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 
 	}
 
-	public void plotNetwork(int numberOfColumns, XYSeriesCollection[] data,
-			String title) {
+	public void plotNetwork(int numberOfColumns, XYSeriesCollection[] data, String title) {
 		this.setName(title);
 		frameTitle = title;
 
-		JFreeChart chart1 = ChartFactory.createScatterPlot(
-				title, // chart title
-				"", // x axis label
-				"Column 1", // y axis label
-				data[0], // data
-				PlotOrientation.VERTICAL,
-				false, // include legend
-				true, // tooltips
-				false // urls
-				);
-
-		// force aliasing of the rendered content..
-		chart1.getRenderingHints().put
-				(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		charts.add(chart1);
-		final ChartPanel panel1 = new ChartPanel(chart1, true);
-		panel1.setPreferredSize(new java.awt.Dimension(600, 800));
-		panel1.setMinimumDrawHeight(10);
-		panel1.setMaximumDrawHeight(2000);
-		panel1.setMinimumDrawWidth(20);
-		panel1.setMaximumDrawWidth(2000);
-		contentPane.add(panel1);
-
-		for (int i = 2; i < numberOfColumns; i++) {
-			JFreeChart chart = ChartFactory.createScatterPlot(
+		for (int i = 1; i < numberOfColumns + 1; i++) {
+			JFreeChart chart = ChartFactory.createXYLineChart(
 					"", // chart title
 					"", // x axis label
 					"Column " + i, // y axis label
@@ -125,30 +101,6 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 			panel.setMaximumDrawWidth(2000);
 			contentPane.add(panel);
 		}
-
-		// the last one with legend
-		JFreeChart chartLast = ChartFactory.createScatterPlot(
-				"", // chart title
-				"time [ms]", // x axis label
-				"Column " + numberOfColumns, // y axis label
-				data[numberOfColumns - 1], // data
-				PlotOrientation.VERTICAL,
-				false, // include legend
-				true, // tooltips
-				false // urls
-				);
-
-		// force aliasing of the rendered content..
-		chartLast.getRenderingHints().put
-				(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		charts.add(chartLast);
-		final ChartPanel panel = new ChartPanel(chartLast, true);
-		panel.setPreferredSize(new java.awt.Dimension(600, 800));
-		panel.setMinimumDrawHeight(10);
-		panel.setMaximumDrawHeight(2000);
-		panel.setMinimumDrawWidth(20);
-		panel.setMaximumDrawWidth(2000);
-		contentPane.add(panel);
 
 		this.pack();
 		this.setVisible(true);

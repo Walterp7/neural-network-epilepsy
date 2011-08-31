@@ -118,6 +118,7 @@ public class Neuron implements NetworkNode {
 
 	public String typeLayer2String() {
 		String str = type.toString();
+		System.out.println(type.toString());
 		if (layer == 0) {
 			str = str + "II"; // II-III layer
 		} else {

@@ -8,6 +8,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 import networkGUI.ConfigurationUnit;
+import networkGUI.EegColumnPlotFrame;
 import networkGUI.InputPlotFrame;
 import networkGUI.SpikePlotFrame;
 import networkPackage.InputDescriptor;
@@ -61,6 +62,7 @@ public class Simulator {
 						System.out.println();
 
 						List<XYSeries[]> dataSeries = new ArrayList<XYSeries[]>();
+						XYSeries[] eegSeries = new XYSeries[numOfCols];
 
 						for (int i = 0; i < numOfCols; i++) {
 							XYSeries[] newDataSeries = new XYSeries[4];
@@ -69,6 +71,7 @@ public class Simulator {
 							newDataSeries[2] = new XYSeries("LTS neurons");
 							newDataSeries[3] = new XYSeries("IB neurons");
 							dataSeries.add(newDataSeries);
+							eegSeries[i] = new XYSeries("Simulated EEG");
 						}
 
 						XYSeries seriesPSP = new XYSeries("Simulated EEG");
@@ -77,39 +80,35 @@ public class Simulator {
 							List<Status> stats = net.nextStep(timeStep, timeOfSimulation);
 							// double voltage = 0;
 							double psp = 0;
+							double[] pspPerColumn = new double[numOfCols];
 							for (Status s : stats) {
+								int counter = 0;
+
+								int neuronId = s.getNumber();
+
+								while (neuronId >= 0) {
+									neuronId = neuronId - numOfNeuronsInColumn.get(counter);
+									counter++;
+
+								}
+
+								int neuronColNum = counter - 1;
 								if (s.fired()) {
-									int counter = 0;
-
-									int neuronId = s.getNumber();
-
-									while (neuronId >= 0) {
-										neuronId = neuronId - numOfNeuronsInColumn.get(counter);
-										counter++;
-
-									}
-
-									int colNum = counter - 1;
 
 									if (s.getType() == Type.RS) {
-										dataSeries.get(colNum)[0].add(s.getTime(), s.getNumber());
+										dataSeries.get(neuronColNum)[0].add(s.getTime(), s.getNumber());
 
-										// seriesRS.add(s.getTime(),
-										// s.getNumber());
 									} else {
 										if (s.getType() == Type.FS) {
-											dataSeries.get(colNum)[1].add(s.getTime(), s.getNumber());
-											// seriesFS.add(s.getTime(),
-											// s.getNumber());
+											dataSeries.get(neuronColNum)[1].add(s.getTime(), s.getNumber());
+
 										} else {
 											if (s.getType() == Type.LTS) {
-												dataSeries.get(colNum)[2].add(s.getTime(), s.getNumber());
-												// seriesLTS.add(s.getTime(),
-												// s.getNumber());
+												dataSeries.get(neuronColNum)[2].add(s.getTime(), s.getNumber());
+
 											} else {
-												dataSeries.get(colNum)[3].add(s.getTime(), s.getNumber());
-												// seriesIB.add(s.getTime(),
-												// s.getNumber());
+												dataSeries.get(neuronColNum)[3].add(s.getTime(), s.getNumber());
+
 											}
 										}
 									}
@@ -118,11 +117,15 @@ public class Simulator {
 								if (s.getType() == Type.RS || s.getType() == Type.IB) {
 									// voltage += s.getVoltage();
 									psp += s.getPSP();
+									pspPerColumn[neuronColNum] += s.getPSP();
 								}
 
 							}
 
 							seriesPSP.add(timeOfSimulation, psp / 3000);
+							for (int i = 0; i < numOfCols; i++) {
+								eegSeries[i].add(timeOfSimulation, pspPerColumn[i] / 3000);
+							}
 
 							if ((int) (timeOfSimulation / timeStep) % tenPercent == 0) {
 								// System.out.println(simName + ' ' +
@@ -134,29 +137,38 @@ public class Simulator {
 
 						XYSeriesCollection[] allDatasetSpikes = new XYSeriesCollection[numOfCols];
 
-						int i = 0;
+						int count = 0;
 						for (XYSeries[] data : dataSeries) {
 							final XYSeriesCollection datasetSpikes = new XYSeriesCollection();
 							datasetSpikes.addSeries(data[3]); // lts
 							datasetSpikes.addSeries(data[0]); // fs
 							datasetSpikes.addSeries(data[1]); // rs
 							datasetSpikes.addSeries(data[2]); // ib
-							allDatasetSpikes[i] = datasetSpikes;
-							i++;
+							allDatasetSpikes[count] = datasetSpikes;
+							count++;
 						}
 
 						final XYSeriesCollection datasetEEG = new XYSeriesCollection();
 						datasetEEG.addSeries(seriesPSP);
+
+						XYSeriesCollection[] datasetEEGperColumn = new XYSeriesCollection[numOfCols];
+						for (int i = 0; i < numOfCols; i++) {
+							datasetEEGperColumn[i] = new XYSeriesCollection();
+							datasetEEGperColumn[i].addSeries(eegSeries[i]);
+						}
+
 						// AnalyseNetwork analyser = new AnalyseNetwork();
 						// analyser.getDegrees(net);
-						// DrawNetwork drawer = new DrawNetwork();
 
-						// drawer.drawAll(datasetSpikes, datasetEEG, simName);
 						SpikePlotFrame plotFrame = new SpikePlotFrame();
-						plotFrame.plotNetwork(numOfNeuronsInColumn, allDatasetSpikes, simName);
+						plotFrame.plotNetwork(numOfCols, allDatasetSpikes, simName);
+
+						EegColumnPlotFrame eegFrame = new EegColumnPlotFrame();
+						eegFrame.plotNetwork(numOfCols, datasetEEGperColumn, "EEG per column");
 
 						LinePlot eegPlot = new LinePlot("Spike Pattern: " + simName);
 						eegPlot.drawLinePlot(datasetEEG, "Simulated EEG (" + simName + ")");
+
 						InputPlotFrame inputFrame = new InputPlotFrame();
 						if (!inDescriptor.isEmpty()) {
 							inputFrame.plotInputs(inDescriptor);

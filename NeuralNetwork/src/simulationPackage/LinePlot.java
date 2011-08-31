@@ -69,7 +69,7 @@ public class LinePlot extends JFrame {
 				title, // chart title
 				"time [ms]", // x axis label
 				"[mV]", // y axis label
-				dataset, // data ***-----PROBLEM------***
+				dataset, // data
 				PlotOrientation.VERTICAL,
 				true, // include legend
 				true, // tooltips
