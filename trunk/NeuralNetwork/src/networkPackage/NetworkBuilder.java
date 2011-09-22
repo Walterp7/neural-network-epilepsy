@@ -19,7 +19,6 @@ public class NetworkBuilder {
 
 	void loadBasicConfig(String simConfigPath, ConfigurationUnit config) throws IOException {
 
-		totalColumnNumber = config.getColListSize();
 		for (ColDescr colDescr : config.getAllColConfDescr()) {
 			layersInColumn.add(colDescr.getLayersInCol());
 		}
@@ -47,13 +46,14 @@ public class NetworkBuilder {
 		// general info,colConfList - connections
 		loadBasicConfig(simConfigFile, config);
 		Network net = new Network();
-
+		totalColumnNumber = config.getColListSize();
 		List<ColumnBuilder> builderList = new ArrayList<ColumnBuilder>();
 		// for each column
 		for (int colNumber = 0; colNumber < totalColumnNumber; colNumber++) {
 			ColumnBuilder newColBuilder = new ColumnBuilder();
 			newColBuilder.initialize(config.getColConf(colNumber), layersInColumn.get(colNumber), colNumber,
 					weightMultiplier, fsInhMultiplier, ltsInhMultiplier);
+
 			newColBuilder.pushNeurons(net);
 			builderList.add(newColBuilder);
 		}

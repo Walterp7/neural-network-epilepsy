@@ -30,6 +30,7 @@ public class InputBuilder {
 
 		while ((newLine = in.readLine()) != null) {
 			parsedLine = newLine.trim().split("\\s+");
+
 			Inputer newInput = null;
 			int wordIndex = 0;
 			if (!(newLine.charAt(0) == '%')) {
@@ -49,8 +50,8 @@ public class InputBuilder {
 								.parseInt(parsedLine[wordIndex++]);
 						double value = Double
 								.parseDouble(parsedLine[wordIndex++]);
-						newInput = new FrequencyInputer(interTime, signalTime,
-								value);
+						System.out.println("inter " + interTime + " signal " + signalTime + " value " + value);
+						newInput = new FrequencyInputer(interTime, value);
 					} else {
 						if (parsedLine[wordIndex].equals("Pick")) {
 							wordIndex++;
@@ -91,7 +92,7 @@ public class InputBuilder {
 										.getNeurons();
 
 								for (Neuron neur : listNeuron) {
-									newInput.addConnection(neur);
+									newInput.addConnection(neur, net);
 								}
 							}
 						}
@@ -105,7 +106,7 @@ public class InputBuilder {
 											.getNeurons();
 
 									for (Neuron neur : listNeuron) {
-										newInput.addConnection(neur);
+										newInput.addConnection(neur, net);
 									}
 								}
 							}
@@ -122,7 +123,7 @@ public class InputBuilder {
 											.getNeurons();
 
 									for (Neuron neur : listNeuron) {
-										newInput.addConnection(neur);
+										newInput.addConnection(neur, net);
 									}
 								}
 							}
@@ -137,7 +138,7 @@ public class InputBuilder {
 												.getNeurons();
 
 										for (Neuron neur : listNeuron) {
-											newInput.addConnection(neur);
+											newInput.addConnection(neur, net);
 										}
 									}
 								}

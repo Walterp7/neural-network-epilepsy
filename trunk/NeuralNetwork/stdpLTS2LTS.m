@@ -1,4 +1,4 @@
-endTime=1000;
+endTime=400;
 timestep = 0.1;
 totalSteps = endTime / timestep;
 %EPSP = epsp(0.1:0.1:endTime);
@@ -8,7 +8,7 @@ delta = zeros(1, totalSteps);
 %delta(1:500:4500)=1;
 %delta(totalSteps*9/10:500:totalSteps) = 1;
 %delta(1:500:20000)=1;
- delta(3:1500:8020)=1;
+ delta(3:1:3000)=1;
 % delta(16000:1:24000) = 1;
 %delta(totalSteps*7/8:500:totalSteps) = 1;
 
@@ -36,8 +36,8 @@ for i=2:totalSteps
     end;
    
 end
-
-
+figure;
+plot(timeEPSP, sf(3,:));
 resultLTS2LTS = zeros(1, totalSteps);
 for i = 1:totalSteps
     if (delta(1,i)>0)

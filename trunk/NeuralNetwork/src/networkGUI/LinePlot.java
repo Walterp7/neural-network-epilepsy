@@ -1,4 +1,4 @@
-package simulationPackage;
+package networkGUI;
 
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
@@ -9,8 +9,6 @@ import javax.swing.JButton;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
-
-import networkGUI.SimulationEndDialog;
 
 import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
@@ -25,8 +23,9 @@ public class LinePlot extends JFrame {
 	JFreeChart chart;
 	private final JPanel contentPane;
 
-	public LinePlot(String title) {
+	public LinePlot(final String title) {
 		super(title);
+
 		contentPane = new JPanel();
 		setContentPane(contentPane);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -49,7 +48,8 @@ public class LinePlot extends JFrame {
 						}
 
 						ChartUtilities.saveChartAsPNG(
-								new java.io.File(file.getAbsolutePath() + "/" + "eeg" + ".png"), chart, 800, 300);
+								new java.io.File(file.getAbsolutePath() + "/" + title.replace(" ", "") + ".png"),
+								chart, 2000, 300);
 
 						SimulationEndDialog newDialog = new SimulationEndDialog();
 						newDialog.setVisible(true);
@@ -64,7 +64,7 @@ public class LinePlot extends JFrame {
 		contentPane.add(btnSave);
 	}
 
-	void drawLinePlot(XYSeriesCollection dataset, String title) {
+	public void drawLinePlot(XYSeriesCollection dataset, String title) {
 		chart = ChartFactory.createXYLineChart(
 				title, // chart title
 				"time [ms]", // x axis label

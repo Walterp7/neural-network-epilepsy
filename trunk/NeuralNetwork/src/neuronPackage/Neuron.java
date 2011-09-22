@@ -12,13 +12,16 @@ public class Neuron implements NetworkNode {
 	private int neuronId;
 	private final int layer; // starts with 0
 	private final ArrayList<Synapse> neuronConnections = new ArrayList<Synapse>();
+	boolean wasPositiveInput = false;
+	private final int colNum;
 
 	private final int[] coordinates = new int[3];
 
-	public Neuron(double[] parameters, Type type, int l) {
+	public Neuron(double[] parameters, Type type, int col, int l) {
 		v = -65;
 
 		currentInput = 0;
+
 		nextInput = 0;
 		this.type = type;
 		a = parameters[0];
@@ -27,6 +30,7 @@ public class Neuron implements NetworkNode {
 		d = parameters[3];
 		u = b * v;
 		layer = l;
+		colNum = col;
 	}
 
 	@Override
@@ -52,39 +56,55 @@ public class Neuron implements NetworkNode {
 	@Override
 	public Status advance(double timeStep, double timeofSimulation) {
 
+		boolean isFiring = (v >= 30);
+
 		Status stat = null;
-		v = v + timeStep * (0.04 * v * v + 5 * v + 140 - u + currentInput);
-
-		u = u + timeStep * a * (b * v - u);
-
-		if (isFiring()) {
-
-			stat = new Status(true, neuronId, timeofSimulation, v, type,
-					currentInput);
+		if (isFiring) {
 			v = c;
 			u = u + d;
+		}
+		v = v + timeStep * (0.04 * v * v + 5 * v + 140 - u + currentInput);
+		u = u + timeStep * a * (b * v - u);
 
+		if (isFiring) {
 			for (Synapse s : neuronConnections) {
 				s.addInput(1, timeStep, timeofSimulation);
 			}
-		} else {
-
-			stat = new Status(false, neuronId, timeofSimulation, v, type,
-					currentInput);
 		}
+		if (v > 30) {
+			v = 30;
+		}
+		stat = new Status(isFiring, neuronId, timeofSimulation, v, type, currentInput, colNum, layer);
+
+		// v = v + timeStep * (0.04 * v * v + 5 * v + 140 - u + currentInput);
+		//
+		// u = u + timeStep * a * (b * v - u);
+		//
+		// if (v >= 30) { // is firing
+		//
+		// stat = new Status(true, neuronId, timeofSimulation, v, type,
+		// currentInput);
+		// v = c;
+		// u = u + d;
+		//
+		// for (Synapse s : neuronConnections) {
+		// s.addInput(1, timeStep, timeofSimulation);
+		// }
+		// } else {
+		//
+		// stat = new Status(false, neuronId, timeofSimulation, v, type,
+		// currentInput);
+		// }
 		return stat;
 	}
 
 	@Override
 	public void setCurrentInput() {
 		currentInput = nextInput;
-
+		if (currentInput > 0) {
+			wasPositiveInput = true;
+		}
 		nextInput = 0;
-	}
-
-	boolean isFiring() {
-		return v >= 30;
-
 	}
 
 	double getMembraneVoltage() {
@@ -118,18 +138,21 @@ public class Neuron implements NetworkNode {
 
 	public String typeLayer2String() {
 		String str = type.toString();
-		System.out.println(type.toString());
+
+		if (str.equals("IB")) {
+			str = "RS";
+		}
 		if (layer == 0) {
 			str = str + "II"; // II-III layer
 		} else {
 			if (layer == 1) {
-				str = str + "IV"; // II-III layer
+				str = str + "IV"; // IV layer
 			} else {
 				if (layer == 2) {
-					str = str + "V"; // II-III layer
+					str = str + "V"; // V layer
 				} else {
 					if (layer == 3) {
-						str = str + "VI"; // II-III layer
+						str = str + "VI"; // VI layer
 					}
 				}
 			}

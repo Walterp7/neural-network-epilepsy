@@ -5,7 +5,7 @@ totalSteps = endTime / timestep;
 %EPSP = epsp(0.1:0.1:endTime);
 timeEPSP = 0.1:0.1:endTime;
 
-delta = zeros(1, totalSteps);
+delta = ones(1, totalSteps);
 %delta(1:500:4500)=1;
 %delta(totalSteps*9/10:500:totalSteps) = 1;
 %delta(1:500:20000)=1;

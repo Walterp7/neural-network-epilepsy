@@ -10,6 +10,7 @@ import java.util.concurrent.TimeUnit;
 import networkGUI.ConfigurationUnit;
 import networkGUI.EegColumnPlotFrame;
 import networkGUI.InputPlotFrame;
+import networkGUI.LinePlot;
 import networkGUI.SpikePlotFrame;
 import networkPackage.InputDescriptor;
 import networkPackage.Network;
@@ -75,12 +76,19 @@ public class Simulator {
 						}
 
 						XYSeries seriesPSP = new XYSeries("Simulated EEG");
+						XYSeries seriesLFP = new XYSeries("Local Field Potential - column 2");
+						XYSeries seriesLFP2 = new XYSeries("Local Field Potential - column 3");
 
 						for (double timeOfSimulation = 0; timeOfSimulation <= totalTime; timeOfSimulation += timeStep) {
 							List<Status> stats = net.nextStep(timeStep, timeOfSimulation);
 							// double voltage = 0;
 							double psp = 0;
+							double voltage = 0; // for local field potential
+							double voltage2 = 0; // for local field potential in
+													// adjacent column
 							double[] pspPerColumn = new double[numOfCols];
+							// int testVoltageCounter = 0;
+
 							for (Status s : stats) {
 								int counter = 0;
 
@@ -115,14 +123,26 @@ public class Simulator {
 
 								}
 								if (s.getType() == Type.RS || s.getType() == Type.IB) {
-									// voltage += s.getVoltage();
+									if ((s.getColumn() == 1) && ((s.getLayer() == 0) || (s.getLayer() == 3))) {
+										voltage += s.getVoltage();
+										// testVoltageCounter++;
+
+									}
+									if ((s.getColumn() == 0) && ((s.getLayer() == 0) || (s.getLayer() == 3))) {
+										voltage2 += s.getVoltage();
+
+									}
 									psp += s.getPSP();
 									pspPerColumn[neuronColNum] += s.getPSP();
 								}
 
 							}
-
+							// System.out.println("neuronow do voltage" +
+							// testVoltageCounter);
 							seriesPSP.add(timeOfSimulation, psp / 3000);
+							seriesLFP.add(timeOfSimulation, voltage / 400);
+							seriesLFP2.add(timeOfSimulation, voltage2 / 400);
+
 							for (int i = 0; i < numOfCols; i++) {
 								eegSeries[i].add(timeOfSimulation, pspPerColumn[i] / 3000);
 							}
@@ -151,6 +171,12 @@ public class Simulator {
 						final XYSeriesCollection datasetEEG = new XYSeriesCollection();
 						datasetEEG.addSeries(seriesPSP);
 
+						final XYSeriesCollection datasetLFP = new XYSeriesCollection();
+						datasetLFP.addSeries(seriesLFP);
+
+						final XYSeriesCollection datasetLFP2 = new XYSeriesCollection();
+						datasetLFP2.addSeries(seriesLFP2);
+
 						XYSeriesCollection[] datasetEEGperColumn = new XYSeriesCollection[numOfCols];
 						for (int i = 0; i < numOfCols; i++) {
 							datasetEEGperColumn[i] = new XYSeriesCollection();
@@ -166,8 +192,14 @@ public class Simulator {
 						EegColumnPlotFrame eegFrame = new EegColumnPlotFrame();
 						eegFrame.plotNetwork(numOfCols, datasetEEGperColumn, "EEG per column");
 
-						LinePlot eegPlot = new LinePlot("Spike Pattern: " + simName);
+						LinePlot eegPlot = new LinePlot("Simulated EEG " + simName);
 						eegPlot.drawLinePlot(datasetEEG, "Simulated EEG (" + simName + ")");
+
+						LinePlot lfpPlot = new LinePlot("Local Field Potential - col 2 " + simName);
+						lfpPlot.drawLinePlot(datasetLFP, "Local Field Potential (" + simName + ")");
+
+						LinePlot lfp2Plot = new LinePlot("Local Field Potential - col 3 " + simName);
+						lfp2Plot.drawLinePlot(datasetLFP2, "Local Field Potential - column 3 (" + simName + ")");
 
 						InputPlotFrame inputFrame = new InputPlotFrame();
 						if (!inDescriptor.isEmpty()) {

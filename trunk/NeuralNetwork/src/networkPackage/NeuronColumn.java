@@ -3,7 +3,13 @@ package networkPackage;
 import java.util.ArrayList;
 
 public class NeuronColumn {
+	public int colID;
 	private ArrayList<NeuronPool> pools = new ArrayList<NeuronPool>();
+
+	public NeuronColumn(int num) {
+		// TODO Auto-generated constructor stub
+		colID = num;
+	}
 
 	void addPool(NeuronPool newPool) {
 		pools.add(newPool);

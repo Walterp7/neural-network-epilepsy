@@ -1,9 +1,9 @@
-package networkPackage;
+package neuronPackage;
 
 public class StpParameters {
 	double trec, ti, tfac, U, maxY;
 
-	public StpParameters(double trec, double ti, double tfac, double u, double maxy) {
+	public StpParameters(double ti, double trec, double tfac, double u, double maxy) {
 		super();
 		this.trec = trec;
 		this.ti = ti;
