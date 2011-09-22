@@ -56,7 +56,7 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 							ChartUtilities.saveChartAsPNG(
 									new java.io.File(file.getAbsolutePath() + "/" + frameTitle + "_col"
 											+ charts.indexOf(chart) + ".png"),
-									chart, 1000, 600);
+									chart, 2000, 300);
 						}
 
 						SimulationEndDialog newDialog = new SimulationEndDialog();

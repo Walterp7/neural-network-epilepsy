@@ -1,5 +1,5 @@
 
-endTime=2500;
+endTime=110;
 timestep = 0.1;
 totalSteps = endTime / timestep;
 %EPSP = epsp(0.1:0.1:endTime);
@@ -9,7 +9,7 @@ delta = zeros(1, totalSteps);
 %delta(1:500:4500)=1;
 %delta(totalSteps*9/10:500:totalSteps) = 1;
 %delta(1:500:20000)=1;
- delta(3:500:4020)=1;
+ delta(3:500:1000)=1;
 % delta(16000:1:24000) = 1;
 %delta(totalSteps*7/8:500:totalSteps) = 1;
 
@@ -121,7 +121,7 @@ resultFS2RS = resultFS2RS/abs(normParam);
 
 
 figure('Name', 'Facilitation');
-subplot(4,2,1:4);
+
 plot(timeEPSP, resultRS2FS);
 title('EPSP, VIRS to VIFS');
 xlabel('time [ms]');

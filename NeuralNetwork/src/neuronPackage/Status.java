@@ -7,9 +7,11 @@ public class Status {
 	private double time;
 	private final boolean hasFired;
 	private final double psp;
+	private int layer = -1;
+	private int column = -1;
 
 	public Status(boolean fired, int number, double t, double voltage,
-			Type type, double psp) {
+			Type type, double psp, int col, int lay) {
 		super();
 		this.neuronNumber = number;
 		this.voltage = voltage;
@@ -17,10 +19,24 @@ public class Status {
 		this.time = t;
 		this.hasFired = fired;
 		this.psp = psp;
+		if (col == -1) {
+			this.column = neuronNumber % 782; // TODO!!!!!!
+		} else {
+			this.column = col;
+		}
+		this.layer = lay;
 	}
 
 	public void setTime(int t) {
 		time = t;
+	}
+
+	public int getColumn() {
+		return column;
+	}
+
+	public int getLayer() {
+		return layer;
 	}
 
 	public void setNumber(int n) {

@@ -59,7 +59,7 @@ public class InputPlotFrame extends JFrame {
 						for (JFreeChart chart : charts) {
 							ChartUtilities.saveChartAsPNG(
 									new java.io.File(file.getAbsolutePath() + "/" + "inputsCol" + charts.indexOf(chart)
-											+ ".png"), chart, 800, 300);
+											+ ".png"), chart, 2000, 300);
 						}
 
 						SimulationEndDialog newDialog = new SimulationEndDialog();
@@ -84,8 +84,8 @@ public class InputPlotFrame extends JFrame {
 			data.addSeries(series);
 			JFreeChart chart = ChartFactory.createXYLineChart(
 					series.getDescription(), // chart title
-					"[mV]", // x axis label
-					"time [ms]", // y axis label
+					"time [ms]", // x axis label
+					"[mV]", // y axis label
 					data, // data
 					PlotOrientation.VERTICAL,
 					false, // include legend

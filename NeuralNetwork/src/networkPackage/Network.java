@@ -54,6 +54,9 @@ public class Network {
 		if ((index < 0) || (index >= allColumns.size())) {
 			return null;
 		}
+
+		System.out.println("index  " + index + " col ID " + allColumns.get(index).colID);
+
 		return allColumns.get(index);
 	}
 
@@ -73,6 +76,7 @@ public class Network {
 		System.out.println("total number of neurons " + neurNum);
 		for (NetworkNode inp : allInputs) {
 			allNodes.add(inp);
+
 		}
 	}
 
@@ -107,29 +111,5 @@ public class Network {
 		}
 		return list;
 	}
-	// public void printAllNeurons() {
-	// for (NetworkNode n : allNodes) {
-	// if (n instanceof Neuron) {
-	// System.out.print(((Neuron) n).getId() + " "
-	// + ((Neuron) n).getType().ordinal() + ": ");
-	// for (Synapse s : ((Neuron) n).getNeuronConnections()) {
-	// System.out.print(s.getPostSynapticNeuron().getId() + "("
-	// + s.getPostSynapticNeuron().getType().ordinal()
-	// + "), ");
-	// }
-	// System.out.println();
-	// }
-	//
-	// }
-	// System.out.println("INPUTS");
-	// int i = 0;
-	// for (Inputer in : allInputs) {
-	// System.out.println(i++);
-	// for (Neuron n : in.getAllInputConnections()) {
-	// System.out
-	// .print(n.getId() + " " + n.getType().ordinal() + ", ");
-	//
-	// }
-	// }
-	// }
+
 }

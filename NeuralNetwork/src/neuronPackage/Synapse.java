@@ -3,15 +3,13 @@ package neuronPackage;
 import java.util.ArrayList;
 import java.util.List;
 
-import networkPackage.StpParameters;
-
 public class Synapse implements NetworkNode { // connects node with neuron
 	double synapseWeight;
 	int timeDelay; // in number of timeSteps
 	Neuron postSynapticNeuron;
-	Neuron preSynapticNeuron;
+	// Neuron preSynapticNeuron;
 	// double ti, trec, tfac, U;
-	StpParameters stpParam;
+	StpParameters stpParam = null;
 	List<SynapseInputPair> inputs = new ArrayList<SynapseInputPair>();
 
 	PSPparameters pspParam;
@@ -19,13 +17,12 @@ public class Synapse implements NetworkNode { // connects node with neuron
 	double x, y, u;
 	double lastSpike;
 
-	public Synapse(double weight, Neuron preSynaptic, Neuron postSynaptic,
-			StpParameters params, PSPparameters pspParameters) {
+	public Synapse(double weight, Neuron postSynaptic,
+			StpParameters stpPar, PSPparameters pspParameters) {
 		synapseWeight = weight;
 		postSynapticNeuron = postSynaptic;
-		preSynapticNeuron = preSynaptic;
 		timeDelay = 1;
-		stpParam = params;
+		stpParam = stpPar;
 		lastSpike = 0;
 		x = 1;
 		y = 0;
@@ -36,22 +33,16 @@ public class Synapse implements NetworkNode { // connects node with neuron
 
 	private double psp(double dt) { // absolute value of a epsp or ipsp
 
-		if (synapseWeight > 0) {
-			return (Math.exp(-dt / pspParam.getEpspTr()) - Math.exp(-dt / pspParam.getEpspTd()))
-					/ pspParam.getEpspNormPar();
-		} else {
-			return (Math.exp(-dt / pspParam.getIpspTf()) - Math.exp(-dt /
-					pspParam.getIpspTs()))
-					/ pspParam.getIpspNormPar();
+		return (-Math.exp(-dt / pspParam.getFirstT()) + Math.exp(-dt / pspParam.getSecT()))
+				/ pspParam.getNormPar();
 
-		}
 	}
 
 	@Override
 	public void addInput(double val, double timeStep, double time) {
 		// assumption val=0 or val=1
 
-		if (val > 0) {
+		if ((val > 0) && stpParam != null) {
 			double dt = time - lastSpike;
 			double tfac = stpParam.getTfac();
 			double ti = stpParam.getTi();
@@ -66,21 +57,20 @@ public class Synapse implements NetworkNode { // connects node with neuron
 					+ 1 - Math.exp(-dt / trec));
 
 			x = xtmp * (1 - u);
-			y = (y * Math.exp(-dt / ti) + xtmp * u);// / maxY;
-			if (y > 100) {
-				System.out.println(" y ZA DUZE");
-				y = 10;
-				// System.out.println(" dt " + dt);
-				System.out.println(preSynapticNeuron.getType());
-				System.out.println(postSynapticNeuron.getType());
-			}
-			// if (y < -10) {
-			// y = -10;
-			// System.out.println("ABRAKADABRA");
-			// }
+			y = (y * Math.exp(-dt / ti) + xtmp * u);
 
+			inputs.add(new SynapseInputPair(-timeDelay * timeStep, synapseWeight * y * val / maxY));
 			lastSpike = time;
-			inputs.add(new SynapseInputPair(-timeDelay * timeStep, synapseWeight * y));
+			// System.out.println("addInput(1) " + synapseWeight * y * val);
+			// System.out.println("addInput(1) y " + y);
+
+		} else {
+			if (val > 0) {
+				// System.out.println("addInput(2) " + synapseWeight * val);
+
+				inputs.add(new SynapseInputPair(-timeDelay * timeStep, synapseWeight * val));
+			}
+
 		}
 
 	}
@@ -97,11 +87,7 @@ public class Synapse implements NetworkNode { // connects node with neuron
 		// put learning here
 
 		if (!inputs.isEmpty()) {
-			if (inputs.size() > 100) {
-				System.out.println("list size " + inputs.size() + " time delay" + timeDelay + " v "
-						+ postSynapticNeuron.getV());
-				System.out.println("synapse weigth " + synapseWeight + " y " + y);
-			}
+
 			double inputValue = 0;
 			List<SynapseInputPair> tempInputs = new ArrayList<SynapseInputPair>();
 			for (SynapseInputPair curInpt : inputs) {
@@ -109,14 +95,11 @@ public class Synapse implements NetworkNode { // connects node with neuron
 				double curTime = curInpt.getInputTime();
 				if (curTime >= 0) {
 					inputValue = inputValue + psp(curTime) * curInpt.getInputStrength();
-					if (inputs.size() > 100) {
-						System.out.println("                psp  " + psp(curTime) + "strength  "
-								+ curInpt.getInputStrength());
-					}
+
 					curInpt.advanceInputTime(timeStep);
 
 				} else {
-					// dodaj
+
 					curInpt.advanceInputTime(timeStep);
 
 				}
@@ -125,9 +108,10 @@ public class Synapse implements NetworkNode { // connects node with neuron
 				}
 
 			}
-			if (inputs.size() > 100) {
-				System.out.println("	new input " + inputValue + " new size " + tempInputs.size());
-			}
+			// if (inputs.size() > 110) {
+			// System.out.println("	s input " + inputValue + " s size " +
+			// tempInputs.size());
+			// }
 			inputs = tempInputs;
 
 			postSynapticNeuron.addInput(inputValue, timeStep, time);

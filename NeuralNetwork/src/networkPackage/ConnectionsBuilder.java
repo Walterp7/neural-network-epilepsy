@@ -15,20 +15,14 @@ public class ConnectionsBuilder {
 		for (int i = 0; i < n; i++) {
 			delay = delay + (pre[i] - post[i]) * (pre[i] - post[i]); // microns
 		}
+		// ms -> how many steps
+		delay = (int) (Math.sqrt(delay) / (1000 * velocity * timestep));
 
-		delay = (int) (Math.sqrt(delay) / (1000 * velocity * timestep)); // ms
-																			// ->
-																			// how
-																			// many
-																			// time
-																			// steps
-		if (delay > 0) {
-			// System.out.println(delay);
-
-		} else {
+		if (delay <= 0) {
 			// System.out.println(delay);
 			delay++;
 		}
+
 		return delay; // ms -> how many timesteps
 	}
 

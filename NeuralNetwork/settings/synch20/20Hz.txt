@@ -5,11 +5,11 @@
 % Gaussian 0 3 * -1 -1
 % Step interTime SignalTime value * -1 -1
 % 6hz 155 10 5
-% 20Hz 40 10 5
-Step 40 10 5 RS 1 1
-Step 40 10 5 FS 1 1
-Gaussian 0 10 * -1 -1
-%Pick 10 20 10 RS 1 1
+%% 20Hz 40 10 5
+Step 100 10 1 RS 1 1
+Step 100 10 2 FS 1 1
+Gaussian 0 1 * -1 -1
+%Pick 10 20 20 RS 1 1
 %Pick 10 20 10 FS 1 1
 %Step 10 5 10 FS 1 1
 %Step 10 5 10 RS 1 1

@@ -1,12 +1,12 @@
 package neuronPackage;
 
-import java.util.ArrayList;
+import networkPackage.Network;
 
 public abstract class Inputer implements NetworkNode {
-	protected final ArrayList<Neuron> inputConnections = new ArrayList<Neuron>();
 
-	public void addConnection(Neuron n) {
-		inputConnections.add(n);
+	public void addConnection(Neuron n, Network net) {
+		// inputConnections.add(n);
+
 	}
 
 	@Override
@@ -21,8 +21,4 @@ public abstract class Inputer implements NetworkNode {
 		return null;
 	}
 
-	public ArrayList<Neuron> getAllInputConnections() {
-
-		return inputConnections;
-	}
 }

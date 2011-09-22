@@ -1,5 +1,5 @@
 %endTime=1500;
-endTime=500;
+endTime=200;
 timestep = 0.1;
 totalSteps = endTime / timestep;
 %EPSP = epsp(0.1:0.1:endTime);
@@ -9,7 +9,10 @@ delta = zeros(1, totalSteps);
 %delta(1:500:4500)=1;
 %delta(totalSteps*9/10:500:totalSteps) = 1;
 %delta(1:500:20000)=1;
- delta(3:500:2020)=1;
+ delta(3:500:1050)=1;
+% delta(3)=1;
+% delta(253)=1
+% delta(503)=1;
 
 % delta(16000:1:24000) = 1;
 %delta(totalSteps*7/8:500:totalSteps) = 1;
@@ -151,7 +154,7 @@ figure('Name','Depression');
 plot(timeEPSP, resultRS2RS);
 title('EPSP, VIRS-->VIRS');
 xlabel('time [ms]');
-ylim([-0.1,1]);
+ylim([-0.1,1.3]);
 hold on;
 
 %-------------------------depression-VRS-->II/IIIRS-------------------------------

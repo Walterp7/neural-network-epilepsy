@@ -28,7 +28,7 @@ public class EegColumnPlotFrame extends JFrame {
 	String frameTitle;
 
 	public EegColumnPlotFrame() {
-		setTitle("Network Activity");
+		setTitle("EEG - Network Activity");
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setBounds(100, 100, 806, 670);
 		contentPane = new JPanel();
@@ -56,7 +56,7 @@ public class EegColumnPlotFrame extends JFrame {
 							ChartUtilities.saveChartAsPNG(
 									new java.io.File(file.getAbsolutePath() + "/" + "eeg_col"
 											+ charts.indexOf(chart) + ".png"),
-									chart, 1000, 600);
+									chart, 2000, 300);
 						}
 
 						SimulationEndDialog newDialog = new SimulationEndDialog();
