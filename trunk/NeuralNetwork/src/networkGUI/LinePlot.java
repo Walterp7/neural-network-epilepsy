@@ -1,5 +1,6 @@
 package networkGUI;
 
+import java.awt.Color;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,11 +11,18 @@ import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartTheme;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.urls.StandardXYURLGenerator;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 
 public class LinePlot extends JFrame {
@@ -22,6 +30,7 @@ public class LinePlot extends JFrame {
 	private static final long serialVersionUID = 1L; // /???
 	JFreeChart chart;
 	private final JPanel contentPane;
+	private static ChartTheme currentTheme = new SimChartTheme("JFree");
 
 	public LinePlot(final String title) {
 		super(title);
@@ -48,8 +57,9 @@ public class LinePlot extends JFrame {
 						}
 
 						ChartUtilities.saveChartAsPNG(
-								new java.io.File(file.getAbsolutePath() + "/" + title.replace(" ", "") + ".png"),
-								chart, 2000, 300);
+								new java.io.File(file.getAbsolutePath() + "/" + title.replace(" ", "").replace("%", "")
+										+ ".png"),
+								chart, 2000, 250);
 
 						SimulationEndDialog newDialog = new SimulationEndDialog();
 						newDialog.setVisible(true);
@@ -64,24 +74,58 @@ public class LinePlot extends JFrame {
 		contentPane.add(btnSave);
 	}
 
-	public void drawLinePlot(XYSeriesCollection dataset, String title) {
-		chart = ChartFactory.createXYLineChart(
+	protected static JFreeChart createXYLineChart(String title,
+			String xAxisLabel,
+			String yAxisLabel,
+			XYDataset dataset,
+			PlotOrientation orientation,
+			boolean legend,
+			boolean tooltips,
+			boolean urls) {
+
+		if (orientation == null) {
+			throw new IllegalArgumentException("Null 'orientation' argument.");
+		}
+		NumberAxis xAxis = new NumberAxis(xAxisLabel);
+		xAxis.setAutoRangeIncludesZero(false);
+		NumberAxis yAxis = new NumberAxis(yAxisLabel);
+		yAxis.setAutoRangeIncludesZero(false);
+		XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
+		renderer.setSeriesPaint(0, Color.black);
+		XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
+		plot.setOrientation(orientation);
+		if (tooltips) {
+			renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator());
+		}
+		if (urls) {
+			renderer.setURLGenerator(new StandardXYURLGenerator());
+		}
+
+		JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
+				plot, legend);
+		currentTheme.apply(chart);
+		return chart;
+
+	}
+
+	public void draw(XYSeriesCollection dataset, String title) {
+		chart = createXYLineChart(
 				title, // chart title
 				"time [ms]", // x axis label
 				"[mV]", // y axis label
 				dataset, // data
 				PlotOrientation.VERTICAL,
-				true, // include legend
+				false, // include legend
 				true, // tooltips
 				false // urls
-				);
+		);
 
 		// force aliasing of the rendered content..
 		chart.getRenderingHints().put
 				(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
 		final ChartPanel panel = new ChartPanel(chart, true);
-		panel.setPreferredSize(new java.awt.Dimension(1000, 500));
+		panel.setPreferredSize(new java.awt.Dimension(1000, 300));
 		panel.setMinimumDrawHeight(10);
 		panel.setMaximumDrawHeight(2000);
 		panel.setMinimumDrawWidth(20);

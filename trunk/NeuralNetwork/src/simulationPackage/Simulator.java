@@ -104,18 +104,26 @@ public class Simulator {
 								if (s.fired()) {
 
 									if (s.getType() == Type.RS) {
-										dataSeries.get(neuronColNum)[0].add(s.getTime(), s.getNumber());
+										dataSeries.get(neuronColNum)[0].add(s.getTime(),
+												764 - (s.getNumber() - neuronColNum
+												* 764)); // II-III layer on top
 
 									} else {
 										if (s.getType() == Type.FS) {
-											dataSeries.get(neuronColNum)[1].add(s.getTime(), s.getNumber());
+											dataSeries.get(neuronColNum)[1].add(s.getTime(),
+													764 - (s.getNumber() - neuronColNum
+													* 764));
 
 										} else {
 											if (s.getType() == Type.LTS) {
-												dataSeries.get(neuronColNum)[2].add(s.getTime(), s.getNumber());
+												dataSeries.get(neuronColNum)[2].add(s.getTime(),
+														764 - (s.getNumber() - neuronColNum
+														* 764));
 
 											} else {
-												dataSeries.get(neuronColNum)[3].add(s.getTime(), s.getNumber());
+												dataSeries.get(neuronColNum)[3].add(s.getTime(),
+														764 - (s.getNumber() - neuronColNum
+														* 764));
 
 											}
 										}
@@ -193,13 +201,13 @@ public class Simulator {
 						eegFrame.plotNetwork(numOfCols, datasetEEGperColumn, "EEG per column");
 
 						LinePlot eegPlot = new LinePlot("Simulated EEG " + simName);
-						eegPlot.drawLinePlot(datasetEEG, "Simulated EEG (" + simName + ")");
+						eegPlot.draw(datasetEEG, "(E) Simulated EEG (" + simName + ")");
 
 						LinePlot lfpPlot = new LinePlot("Local Field Potential - col 2 " + simName);
-						lfpPlot.drawLinePlot(datasetLFP, "Local Field Potential (" + simName + ")");
+						lfpPlot.draw(datasetLFP, " (C) Local Field Potential (STIMULATED COLUMN)");
 
 						LinePlot lfp2Plot = new LinePlot("Local Field Potential - col 3 " + simName);
-						lfp2Plot.drawLinePlot(datasetLFP2, "Local Field Potential - column 3 (" + simName + ")");
+						lfp2Plot.draw(datasetLFP2, "(D) Local Field Potential (ADJACENT COLUMN)");
 
 						InputPlotFrame inputFrame = new InputPlotFrame();
 						if (!inDescriptor.isEmpty()) {
