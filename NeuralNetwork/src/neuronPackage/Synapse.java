@@ -108,10 +108,10 @@ public class Synapse implements NetworkNode { // connects node with neuron
 				}
 
 			}
-			// if (inputs.size() > 110) {
-			// System.out.println("	s input " + inputValue + " s size " +
-			// tempInputs.size());
-			// }
+			if (inputs.size() > 410) {
+				System.out.println("	s input " + inputValue + " s size " +
+						tempInputs.size());
+			}
 			inputs = tempInputs;
 
 			postSynapticNeuron.addInput(inputValue, timeStep, time);

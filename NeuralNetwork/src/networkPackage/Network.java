@@ -55,8 +55,6 @@ public class Network {
 			return null;
 		}
 
-		System.out.println("index  " + index + " col ID " + allColumns.get(index).colID);
-
 		return allColumns.get(index);
 	}
 

@@ -21,14 +21,20 @@ public class SynapseFactory {
 	public SynapseFactory() {
 		// parameters: double trec, double ti, double tfac, double u, double
 		// maxy
-		stdpParams.put("RSII2RSII", new StpParameters(3, 100, 0.00001, 0.3, 0.3));
-		stdpParams.put("RSII2RSV", new StpParameters(3, 100, 0.000001, 0.4, 0.4));
-		stdpParams.put("RSV2RSV", new StpParameters(3, 350, 0.000001, 0.5, 0.5));
-		stdpParams.put("RSV2RSII", new StpParameters(3, 100, 0.000001, 0.4, 0.4));
-		stdpParams.put("RSVI2RSVI", new StpParameters(3, 150, 0.000001, 0.15, 0.15));
+		// stdpParams.put("RSII2RSII", new StpParameters(3, 100, 0.00001, 0.3,
+		// 0.3));
+		stdpParams.put("RSII2RSV", new StpParameters(3, 100, 0.000001, 0.4,
+				0.4));
+		stdpParams.put("RSV2RSV", new StpParameters(3, 350, 0.000001, 0.5,
+				0.5));
+		stdpParams.put("RSV2RSII", new StpParameters(3, 100, 0.000001, 0.4,
+				0.4));
+		stdpParams.put("RSVI2RSVI", new StpParameters(3, 150, 0.000001, 0.15,
+				0.15));
 
 		stdpParams.put("RSII2FSII", new StpParameters(3, 110, 0.000001, 0.2, 0.2));
-		stdpParams.put("RSIV2FSIV", new StpParameters(3, 250, 0.000001, 0.26, 0.26));
+		stdpParams.put("RSIV2FSIV", new StpParameters(3, 250, 0.000001, 0.26,
+				0.26));
 		stdpParams.put("RSVI2FSVI", new StpParameters(2, 70, 100, 0.09, 0.09));
 
 		stdpParams.put("RSII2LTSII", new StpParameters(3, 150, 200, 0.02, 0.02));

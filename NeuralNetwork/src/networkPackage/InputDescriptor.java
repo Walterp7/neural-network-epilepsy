@@ -50,9 +50,9 @@ public class InputDescriptor {
 				points[1][1] = value;
 				points[0][1] = startTime;
 				points[1][2] = value;
-				points[0][2] = (startTime + signalTime);
+				points[0][2] = startTime + signalTime;
 				points[1][3] = 0;
-				points[0][3] = (startTime + signalTime);
+				points[0][3] = startTime + signalTime;
 
 				index = 4;
 				size = 4;

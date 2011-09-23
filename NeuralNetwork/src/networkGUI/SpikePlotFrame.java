@@ -14,11 +14,20 @@ import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
-import org.jfree.chart.ChartFactory;
 import org.jfree.chart.ChartPanel;
+import org.jfree.chart.ChartTheme;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
+import org.jfree.chart.axis.NumberAxis;
+import org.jfree.chart.labels.StandardXYToolTipGenerator;
+import org.jfree.chart.labels.XYToolTipGenerator;
 import org.jfree.chart.plot.PlotOrientation;
+import org.jfree.chart.plot.XYPlot;
+import org.jfree.chart.renderer.xy.XYItemRenderer;
+import org.jfree.chart.renderer.xy.XYLineAndShapeRenderer;
+import org.jfree.chart.urls.StandardXYURLGenerator;
+import org.jfree.chart.urls.XYURLGenerator;
+import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 
 public class SpikePlotFrame extends JFrame { // plots scatter plot and the
@@ -26,6 +35,7 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 	private final JPanel contentPane;
 	List<JFreeChart> charts = new ArrayList<JFreeChart>();
 	String frameTitle;
+	private static ChartTheme currentTheme = new SimChartTheme("JFree");
 
 	public SpikePlotFrame() {
 		setTitle("Network Activity");
@@ -54,7 +64,8 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 
 						for (JFreeChart chart : charts) {
 							ChartUtilities.saveChartAsPNG(
-									new java.io.File(file.getAbsolutePath() + "/" + frameTitle + "_col"
+									new java.io.File(file.getAbsolutePath() + "/"
+											+ frameTitle.replace(" ", "").replace("%", "") + "_col"
 											+ charts.indexOf(chart) + ".png"),
 									chart, 2000, 300);
 						}
@@ -73,13 +84,57 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 
 	}
 
+	public JFreeChart createSpikePlot(String title, String xAxisLabel,
+			String yAxisLabel, XYDataset dataset, PlotOrientation orientation,
+			boolean legend, boolean tooltips, boolean urls) {
+
+		if (orientation == null) {
+			throw new IllegalArgumentException("Null 'orientation' argument.");
+		}
+		NumberAxis xAxis = new NumberAxis(xAxisLabel); // zakres dodac!
+		xAxis.setAutoRangeIncludesZero(true);
+		// String[] labels = { "VI", "V", "IV", "II/III" };
+		String[] labels = new String[764];
+		for (int i = 0; i < 764; i++) {
+			labels[i] = "x";
+		}
+		labels[50] = "II/III";
+		labels[200] = "V";
+		labels[500] = "VI";
+		LabelAxis yAxis = new LabelAxis(yAxisLabel, labels);
+
+		XYPlot plot = new XYPlot(dataset, xAxis, yAxis, null);
+
+		XYToolTipGenerator toolTipGenerator = null;
+		if (tooltips) {
+			toolTipGenerator = new StandardXYToolTipGenerator();
+		}
+
+		XYURLGenerator urlGenerator = null;
+		if (urls) {
+			urlGenerator = new StandardXYURLGenerator();
+		}
+		XYItemRenderer renderer = new XYLineAndShapeRenderer(false, true);
+		renderer.setBaseToolTipGenerator(toolTipGenerator);
+		renderer.setURLGenerator(urlGenerator);
+
+		plot.setRenderer(renderer);
+		plot.setOrientation(orientation);
+
+		JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
+				plot, legend);
+		currentTheme.apply(chart);
+		return chart;
+
+	}
+
 	public void plotNetwork(int numberOfColumns, XYSeriesCollection[] data,
 			String title) {
 		this.setName(title);
 		frameTitle = title;
 
-		JFreeChart chart1 = ChartFactory.createScatterPlot(
-				title, // chart title
+		JFreeChart chart1 = createSpikePlot(
+				"(B) Spike pattern " + title, // chart title
 				"", // x axis label
 				"Column 1", // y axis label
 				data[0], // data
@@ -87,7 +142,7 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 				false, // include legend
 				true, // tooltips
 				false // urls
-				);
+		);
 
 		// force aliasing of the rendered content..
 		chart1.getRenderingHints().put
@@ -102,7 +157,7 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 		contentPane.add(panel1);
 
 		for (int i = 2; i < numberOfColumns; i++) {
-			JFreeChart chart = ChartFactory.createScatterPlot(
+			JFreeChart chart = createSpikePlot(
 					"", // chart title
 					"", // x axis label
 					"Column " + i, // y axis label
@@ -111,7 +166,7 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 					false, // include legend
 					true, // tooltips
 					false // urls
-					);
+			);
 
 			// force aliasing of the rendered content..
 			chart.getRenderingHints().put
@@ -127,7 +182,7 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 		}
 
 		// the last one with legend
-		JFreeChart chartLast = ChartFactory.createScatterPlot(
+		JFreeChart chartLast = createSpikePlot(
 				"", // chart title
 				"time [ms]", // x axis label
 				"Column " + numberOfColumns, // y axis label
@@ -136,7 +191,7 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 				false, // include legend
 				true, // tooltips
 				false // urls
-				);
+		);
 
 		// force aliasing of the rendered content..
 		chartLast.getRenderingHints().put
