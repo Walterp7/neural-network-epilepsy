@@ -23,8 +23,8 @@ public class SynapseFactory {
 		// maxy
 		// stdpParams.put("RSII2RSII", new StpParameters(3, 100, 0.00001, 0.3,
 		// 0.3));
-		stdpParams.put("RSII2RSV", new StpParameters(3, 100, 0.000001, 0.4,
-				0.4));
+		// stdpParams.put("RSII2RSV", new StpParameters(3, 100, 0.000001, 0.4,
+		// 0.4));
 		stdpParams.put("RSV2RSV", new StpParameters(3, 350, 0.000001, 0.5,
 				0.5));
 		stdpParams.put("RSV2RSII", new StpParameters(3, 100, 0.000001, 0.4,

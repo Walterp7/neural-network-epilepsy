@@ -14,7 +14,6 @@ import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.util.Arrays;
 
-import org.jfree.chart.ChartColor;
 import org.jfree.chart.plot.DefaultDrawingSupplier;
 import org.jfree.chart.plot.DrawingSupplier;
 import org.jfree.io.SerialUtilities;
@@ -28,23 +27,15 @@ public class SimDrawingSupplier implements DrawingSupplier, Cloneable,
 	private static final long serialVersionUID = -7339847061039422538L;
 
 	/** The default fill paint sequence. */
+	public static final Paint[] LINE_PAINT_SEQUENCE = new Paint[] {
+			Color.black
+	};
+
 	public static final Paint[] DEFAULT_PAINT_SEQUENCE = new Paint[] {
 			Color.red, // lts
 			Color.blue, // fs
 			new Color(0, 139, 0), // rs
 			new Color(0, 255, 10), // ib
-
-			new Color(0xFF, 0x55, 0xFF),
-			new Color(0x55, 0xFF, 0xFF),
-			Color.pink,
-			Color.gray,
-			ChartColor.DARK_RED,
-			ChartColor.DARK_BLUE,
-			ChartColor.DARK_GREEN,
-			ChartColor.DARK_YELLOW,
-			ChartColor.DARK_MAGENTA,
-			ChartColor.DARK_CYAN,
-
 	};
 
 	/** The default outline paint sequence. */
@@ -108,14 +99,20 @@ public class SimDrawingSupplier implements DrawingSupplier, Cloneable,
 	 * Creates a new supplier, with default sequences for fill paint, outline
 	 * paint, stroke and shapes.
 	 */
-	public SimDrawingSupplier() {
 
-		this(DEFAULT_PAINT_SEQUENCE, DEFAULT_FILL_PAINT_SEQUENCE,
-				DEFAULT_OUTLINE_PAINT_SEQUENCE,
-				DEFAULT_STROKE_SEQUENCE,
-				DEFAULT_OUTLINE_STROKE_SEQUENCE,
-				DEFAULT_SHAPE_SEQUENCE);
+	public SimDrawingSupplier(String n) {
+		this.fillPaintSequence = DEFAULT_FILL_PAINT_SEQUENCE;
+		this.outlinePaintSequence = DEFAULT_OUTLINE_PAINT_SEQUENCE;
+		this.strokeSequence = DEFAULT_STROKE_SEQUENCE;
+		this.outlineStrokeSequence = DEFAULT_OUTLINE_STROKE_SEQUENCE;
+		this.shapeSequence = DEFAULT_SHAPE_SEQUENCE;
+		if (n.equals("line")) {
+			this.paintSequence = LINE_PAINT_SEQUENCE;
+		} else {
 
+			this.paintSequence = DEFAULT_PAINT_SEQUENCE;
+
+		}
 	}
 
 	/**

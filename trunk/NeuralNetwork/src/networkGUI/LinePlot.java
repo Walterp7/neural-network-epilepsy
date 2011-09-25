@@ -30,7 +30,7 @@ public class LinePlot extends JFrame {
 	private static final long serialVersionUID = 1L; // /???
 	JFreeChart chart;
 	private final JPanel contentPane;
-	private static ChartTheme currentTheme = new SimChartTheme("JFree");
+	private static ChartTheme currentTheme = new SimChartTheme("line");
 
 	public LinePlot(final String title) {
 		super(title);
@@ -74,6 +74,10 @@ public class LinePlot extends JFrame {
 		contentPane.add(btnSave);
 	}
 
+	public double getMax() {
+		return 0;
+	}
+
 	protected static JFreeChart createXYLineChart(String title,
 			String xAxisLabel,
 			String yAxisLabel,
@@ -81,7 +85,7 @@ public class LinePlot extends JFrame {
 			PlotOrientation orientation,
 			boolean legend,
 			boolean tooltips,
-			boolean urls) {
+			boolean urls, boolean customRange, double lower, double upper) {
 
 		if (orientation == null) {
 			throw new IllegalArgumentException("Null 'orientation' argument.");
@@ -94,6 +98,9 @@ public class LinePlot extends JFrame {
 		renderer.setSeriesPaint(0, Color.black);
 		XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
 		plot.setOrientation(orientation);
+		if (customRange) {
+			yAxis.setRange(lower, upper);
+		}
 		if (tooltips) {
 			renderer.setBaseToolTipGenerator(new StandardXYToolTipGenerator());
 		}
@@ -108,7 +115,11 @@ public class LinePlot extends JFrame {
 
 	}
 
-	public void draw(XYSeriesCollection dataset, String title) {
+	// public double getMaxRange() {
+	// return chart.getPlot().
+	// }
+
+	public void draw(XYSeriesCollection dataset, String title, boolean customRange, double lower, double upper) {
 		chart = createXYLineChart(
 				title, // chart title
 				"time [ms]", // x axis label
@@ -117,8 +128,11 @@ public class LinePlot extends JFrame {
 				PlotOrientation.VERTICAL,
 				false, // include legend
 				true, // tooltips
-				false // urls
-		);
+				false, // urls
+				customRange,
+				lower,
+				upper
+				);
 
 		// force aliasing of the rendered content..
 		chart.getRenderingHints().put

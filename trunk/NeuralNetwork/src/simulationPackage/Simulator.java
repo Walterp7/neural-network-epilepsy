@@ -182,6 +182,9 @@ public class Simulator {
 						final XYSeriesCollection datasetLFP = new XYSeriesCollection();
 						datasetLFP.addSeries(seriesLFP);
 
+						double maxLFPplot = Math.max(seriesLFP2.getMaxY(), seriesLFP.getMaxY());
+						double minLFPplot = Math.min(seriesLFP2.getMinY(), seriesLFP.getMinY());
+
 						final XYSeriesCollection datasetLFP2 = new XYSeriesCollection();
 						datasetLFP2.addSeries(seriesLFP2);
 
@@ -195,19 +198,21 @@ public class Simulator {
 						// analyser.getDegrees(net);
 
 						SpikePlotFrame plotFrame = new SpikePlotFrame();
-						plotFrame.plotNetwork(numOfCols, allDatasetSpikes, simName);
+						plotFrame.plotNetwork(numOfCols, allDatasetSpikes, simName, totalTime);
 
 						EegColumnPlotFrame eegFrame = new EegColumnPlotFrame();
 						eegFrame.plotNetwork(numOfCols, datasetEEGperColumn, "EEG per column");
 
 						LinePlot eegPlot = new LinePlot("Simulated EEG " + simName);
-						eegPlot.draw(datasetEEG, "(E) Simulated EEG (" + simName + ")");
+						eegPlot.draw(datasetEEG, "(E) Simulated EEG (" + simName + ")", false, 0, 0);
 
 						LinePlot lfpPlot = new LinePlot("Local Field Potential - col 2 " + simName);
-						lfpPlot.draw(datasetLFP, " (C) Local Field Potential (STIMULATED COLUMN)");
+						lfpPlot.draw(datasetLFP, " (C) Local Field Potential (STIMULATED COLUMN)", true, minLFPplot,
+								maxLFPplot);
 
 						LinePlot lfp2Plot = new LinePlot("Local Field Potential - col 3 " + simName);
-						lfp2Plot.draw(datasetLFP2, "(D) Local Field Potential (ADJACENT COLUMN)");
+						lfp2Plot.draw(datasetLFP2, "(D) Local Field Potential (ADJACENT COLUMN)", true, minLFPplot,
+								maxLFPplot);
 
 						InputPlotFrame inputFrame = new InputPlotFrame();
 						if (!inDescriptor.isEmpty()) {

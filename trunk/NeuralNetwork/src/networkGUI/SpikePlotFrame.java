@@ -86,22 +86,23 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 
 	public JFreeChart createSpikePlot(String title, String xAxisLabel,
 			String yAxisLabel, XYDataset dataset, PlotOrientation orientation,
-			boolean legend, boolean tooltips, boolean urls) {
+			boolean legend, boolean tooltips, boolean urls, int totalTime) {
 
 		if (orientation == null) {
 			throw new IllegalArgumentException("Null 'orientation' argument.");
 		}
 		NumberAxis xAxis = new NumberAxis(xAxisLabel); // zakres dodac!
 		xAxis.setAutoRangeIncludesZero(true);
+		xAxis.setRange(0, totalTime);
 		// String[] labels = { "VI", "V", "IV", "II/III" };
 		String[] labels = new String[764];
 		for (int i = 0; i < 764; i++) {
 			labels[i] = "x";
 		}
-		labels[50] = "II/III";
-		labels[200] = "V";
-		labels[500] = "VI";
-		LabelAxis yAxis = new LabelAxis(yAxisLabel, labels);
+
+		final String[] labs = { "VI", "V", "IV", "II/III" };
+		final int[] pos = { 150, 358, 487, 652 };
+		LabelAxis yAxis = new LabelAxis(yAxisLabel, labels, labs, pos);
 
 		XYPlot plot = new XYPlot(dataset, xAxis, yAxis, null);
 
@@ -129,7 +130,7 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 	}
 
 	public void plotNetwork(int numberOfColumns, XYSeriesCollection[] data,
-			String title) {
+			String title, int totalTime) {
 		this.setName(title);
 		frameTitle = title;
 
@@ -141,8 +142,9 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 				PlotOrientation.VERTICAL,
 				false, // include legend
 				true, // tooltips
-				false // urls
-		);
+				false, // urls
+				totalTime
+				);
 
 		// force aliasing of the rendered content..
 		chart1.getRenderingHints().put
@@ -165,8 +167,9 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 					PlotOrientation.VERTICAL,
 					false, // include legend
 					true, // tooltips
-					false // urls
-			);
+					false, // urls
+					totalTime
+					);
 
 			// force aliasing of the rendered content..
 			chart.getRenderingHints().put
@@ -190,9 +193,9 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 				PlotOrientation.VERTICAL,
 				false, // include legend
 				true, // tooltips
-				false // urls
-		);
-
+				false, // urls
+				totalTime
+				);
 		// force aliasing of the rendered content..
 		chartLast.getRenderingHints().put
 				(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);

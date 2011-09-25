@@ -37,7 +37,7 @@ public class InputPlotFrame extends JFrame {
 	private final JPanel contentPane;
 
 	List<JFreeChart> charts = new ArrayList<JFreeChart>();
-	private static ChartTheme currentTheme = new SimChartTheme("JFree");
+	private static ChartTheme currentTheme = new SimChartTheme("line");
 
 	public InputPlotFrame() {
 		setTitle("Inputs");
