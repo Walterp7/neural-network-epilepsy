@@ -1,6 +1,7 @@
 package neuronPackage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import networkPackage.Network;
 import networkPackage.SynapseFactory;
@@ -12,7 +13,14 @@ public class FrequencyInputer extends Inputer {
 	int signalTime;
 
 	public final ArrayList<Synapse> inputConnections = new ArrayList<Synapse>();
-	SynapseFactory synFact = new SynapseFactory();
+	public SynapseFactory synFact = null;
+
+	public FrequencyInputer(int interTime, double value, HashMap<String, StpParameters> stpParams) {
+		this.value = value;
+		this.interTime = interTime;
+		// this.signalTime = signalTime;
+		synFact = new SynapseFactory(stpParams);
+	}
 
 	@Override
 	public void addConnection(Neuron n, Network net) {
@@ -23,22 +31,14 @@ public class FrequencyInputer extends Inputer {
 		net.addConnection(s);
 	}
 
-	public FrequencyInputer(int interTime, double value) {
-		this.value = value;
-		this.interTime = interTime;
-		// this.signalTime = signalTime;
-	}
-
 	@Override
 	public Status advance(double timeStep, double timeofSimulation) {
-		int w = ((int) timeofSimulation) % (interTime);
+		int w = ((int) timeofSimulation + 1) % (interTime);
 
 		if (w < timeStep) {
 
 			for (Synapse n : inputConnections) {
-				// System.out.println("frequency " + inputConnections.size() +
-				// " " +
-				// value);
+
 				n.addInput(value, timeStep, timeofSimulation);
 			}
 		}

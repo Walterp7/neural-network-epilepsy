@@ -1,10 +1,12 @@
 package networkPackage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
 import neuronPackage.Neuron;
+import neuronPackage.StpParameters;
 
 public class ConnectionsBuilder {
 	final private double velocity = 0.4; // m/s
@@ -27,7 +29,8 @@ public class ConnectionsBuilder {
 	}
 
 	public void setUpConnections(Network net,
-			List<ConnectionDescriptor> allProbabilities, int currentColumnNum,
+			List<ConnectionDescriptor> allProbabilities, HashMap<String, StpParameters> stpParams,
+			int currentColumnNum,
 			double timestep) {
 		Random generator = new Random(19580427);
 
@@ -60,7 +63,7 @@ public class ConnectionsBuilder {
 							.getTypePool(conDesc.getTargetType()));
 				}
 			}
-			SynapseFactory synFact = new SynapseFactory();
+			SynapseFactory synFact = new SynapseFactory(stpParams);
 
 			for (Neuron outNeuron : outPool.getNeurons()) {
 				for (NeuronTypePool inP : inPools) {

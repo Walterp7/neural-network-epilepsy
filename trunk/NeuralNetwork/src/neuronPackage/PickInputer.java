@@ -1,6 +1,7 @@
 package neuronPackage;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import networkPackage.Network;
 import networkPackage.SynapseFactory;
@@ -10,7 +11,14 @@ public class PickInputer extends Inputer {
 	int startTime;
 	int signalTime;
 	protected final ArrayList<Synapse> inputConnections = new ArrayList<Synapse>();
-	SynapseFactory synFact = new SynapseFactory();
+	SynapseFactory synFact = null;
+
+	public PickInputer(int interTime, int signalTime, double value, HashMap<String, StpParameters> stpParams) {
+		this.value = value;
+		this.startTime = interTime;
+		this.signalTime = signalTime;
+		synFact = new SynapseFactory(stpParams);
+	}
 
 	@Override
 	public void addConnection(Neuron n, Network net) {
@@ -21,16 +29,10 @@ public class PickInputer extends Inputer {
 
 	}
 
-	public PickInputer(int interTime, int signalTime, double value) {
-		this.value = value;
-		this.startTime = interTime;
-		this.signalTime = signalTime;
-	}
-
 	@Override
 	public Status advance(double timeStep, double timeofSimulation) {
 		if ((timeofSimulation <= startTime) && (startTime < timeofSimulation + timeStep)) {
-			System.out.println("adding input");
+
 			for (Synapse n : inputConnections) {
 				n.addInput(value, timeStep, timeofSimulation);
 			}

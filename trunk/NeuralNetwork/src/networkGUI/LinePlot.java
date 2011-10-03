@@ -31,10 +31,12 @@ public class LinePlot extends JFrame {
 	JFreeChart chart;
 	private final JPanel contentPane;
 	private static ChartTheme currentTheme = new SimChartTheme("line");
+	final String fileName;
 
-	public LinePlot(final String title) {
-		super(title);
+	public LinePlot(final String frameTitle, final String fileName) {
+		super(frameTitle);
 
+		this.fileName = fileName;
 		contentPane = new JPanel();
 		setContentPane(contentPane);
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -57,8 +59,7 @@ public class LinePlot extends JFrame {
 						}
 
 						ChartUtilities.saveChartAsPNG(
-								new java.io.File(file.getAbsolutePath() + "/" + title.replace(" ", "").replace("%", "")
-										+ ".png"),
+								new java.io.File(file.getAbsolutePath() + "/" + fileName + ".png"),
 								chart, 2000, 250);
 
 						SimulationEndDialog newDialog = new SimulationEndDialog();

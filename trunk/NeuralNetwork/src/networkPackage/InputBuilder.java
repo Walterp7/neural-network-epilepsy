@@ -1,9 +1,8 @@
 package networkPackage;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import neuronPackage.FrequencyInputer;
@@ -11,25 +10,17 @@ import neuronPackage.GaussianInputer;
 import neuronPackage.Inputer;
 import neuronPackage.Neuron;
 import neuronPackage.PickInputer;
+import neuronPackage.StpParameters;
 import neuronPackage.Type;
 
 public class InputBuilder {
 
-	void setInputs(String pathname, Network net, InputDescriptor inDescriptor, double totalTime)
+	void setInputs(List<String> inputList, HashMap<String, StpParameters> stpParams, Network net,
+			InputDescriptor inDescriptor, double totalTime)
 			throws IOException {
-		BufferedReader in = new BufferedReader(new FileReader(pathname));
-		String newLine;
-		String[] parsedLine;
 
-		newLine = in.readLine();
-		while ((newLine.charAt(0) == '%')) {
-			newLine = in.readLine();
-		}
-
-		newLine = in.readLine(); // one line is for general config
-
-		while ((newLine = in.readLine()) != null) {
-			parsedLine = newLine.trim().split("\\s+");
+		for (String newLine : inputList) {
+			String[] parsedLine = newLine.trim().split("\\s+");
 
 			Inputer newInput = null;
 			int wordIndex = 0;
@@ -39,7 +30,7 @@ public class InputBuilder {
 					double mean = Double.parseDouble(parsedLine[wordIndex++]);
 					double deviation = Double.parseDouble(parsedLine[wordIndex++]);
 					newInput = new GaussianInputer(mean, deviation);
-
+					System.out.println("Gaussian");
 				} else {
 					inDescriptor.addInputer(newLine, totalTime);
 					if (parsedLine[wordIndex].equals("Step")) {
@@ -51,7 +42,7 @@ public class InputBuilder {
 						double value = Double
 								.parseDouble(parsedLine[wordIndex++]);
 						System.out.println("inter " + interTime + " signal " + signalTime + " value " + value);
-						newInput = new FrequencyInputer(interTime, value);
+						newInput = new FrequencyInputer(interTime, value, stpParams);
 					} else {
 						if (parsedLine[wordIndex].equals("Pick")) {
 							wordIndex++;
@@ -62,7 +53,7 @@ public class InputBuilder {
 							double value = Double
 									.parseDouble(parsedLine[wordIndex++]);
 							newInput = new PickInputer(startTime, signalTime,
-									value);
+									value, stpParams);
 						} else {
 							throw new IOException();
 						}
@@ -98,7 +89,7 @@ public class InputBuilder {
 						}
 
 					} else { // specific column but all layers
-						int size = net.numberOfPools();
+
 						for (NeuronPool layer : net.getColumn(colNum).getPools()) {
 							for (Type type : typesToConnect) {
 								if (layer.getTypePool(type) != null) {
@@ -152,7 +143,7 @@ public class InputBuilder {
 				net.addInput(newInput);
 			}
 		}
-		in.close();
+
 	}
 
 	Type stringToType(String s) throws IOException {
