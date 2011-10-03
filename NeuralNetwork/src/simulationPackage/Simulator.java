@@ -223,8 +223,7 @@ public class Simulator {
 						lfp2Plot.draw(datasetLFP2, "(D) Local Field Potential (ADJACENT COLUMN)", true, minLFPplot,
 								maxLFPplot);
 
-						LinePlot eeg_lfpPlot = new LinePlot("Local Field Potential - for all columns " + simName,
-								"lfpAllCols");
+						LinePlot eeg_lfpPlot = new LinePlot("Local Field Potential - for all columns " + simName, "lfpAllCols");
 						eeg_lfpPlot.draw(datasetEEG_LFP, "Local Field Potential - for all columns " + simName, false,
 								0,
 								0);

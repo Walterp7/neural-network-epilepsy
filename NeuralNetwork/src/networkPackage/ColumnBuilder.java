@@ -215,10 +215,10 @@ public class ColumnBuilder {
 			cords[2] = generator.nextInt(200) + 400;
 		}
 		if (layer == 2) {
-			cords[2] = generator.nextInt(700) + 600;
+			cords[2] = generator.nextInt(600) + 600;
 		}
 		if (layer == 3) {
-			cords[2] = generator.nextInt(700) + 1300;
+			cords[2] = generator.nextInt(600) + 1200;
 		}
 		return cords;
 	}
