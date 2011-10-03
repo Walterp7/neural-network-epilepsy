@@ -53,7 +53,7 @@ public class Simulator {
 					Network net;
 
 					try {
-						net = mag.setUpNetwork(simDir[0], configFromGUI, timeStep, totalTime, inDescriptor);
+						net = mag.createNetwork(simDir[0], configFromGUI, timeStep, totalTime, inDescriptor);
 
 						ArrayList<Integer> numOfNeuronsInColumn = net.getNumberOfNeuronsInColumn();
 
@@ -212,18 +212,19 @@ public class Simulator {
 						EegColumnPlotFrame eegFrame = new EegColumnPlotFrame();
 						eegFrame.plotNetwork(numOfCols, datasetEEGperColumn, "EEG per column");
 
-						LinePlot eegPlot = new LinePlot("Simulated EEG " + simName);
+						LinePlot eegPlot = new LinePlot("Simulated EEG " + simName, "simulatedEEG");
 						eegPlot.draw(datasetEEG, "(E) Simulated EEG (" + simName + ")", false, 0, 0);
 
-						LinePlot lfpPlot = new LinePlot("Local Field Potential - col 2 " + simName);
+						LinePlot lfpPlot = new LinePlot("Local Field Potential - col 2 " + simName, "lfp1");
 						lfpPlot.draw(datasetLFP, " (C) Local Field Potential (STIMULATED COLUMN)", true, minLFPplot,
 								maxLFPplot);
 
-						LinePlot lfp2Plot = new LinePlot("Local Field Potential - col 3 " + simName);
+						LinePlot lfp2Plot = new LinePlot("Local Field Potential - col 3 " + simName, "lfp2");
 						lfp2Plot.draw(datasetLFP2, "(D) Local Field Potential (ADJACENT COLUMN)", true, minLFPplot,
 								maxLFPplot);
 
-						LinePlot eeg_lfpPlot = new LinePlot("Local Field Potential - for all columns " + simName);
+						LinePlot eeg_lfpPlot = new LinePlot("Local Field Potential - for all columns " + simName,
+								"lfpAllCols");
 						eeg_lfpPlot.draw(datasetEEG_LFP, "Local Field Potential - for all columns " + simName, false,
 								0,
 								0);

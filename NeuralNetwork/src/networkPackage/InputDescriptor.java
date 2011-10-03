@@ -5,7 +5,7 @@ import java.util.HashMap;
 
 import org.jfree.data.xy.XYSeries;
 
-public class InputDescriptor {
+public class InputDescriptor { // FOR PLOTTING MOSTLY
 
 	HashMap<String, XYSeries> inputs = new HashMap<String, XYSeries>();
 

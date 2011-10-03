@@ -65,7 +65,7 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 						for (JFreeChart chart : charts) {
 							ChartUtilities.saveChartAsPNG(
 									new java.io.File(file.getAbsolutePath() + "/"
-											+ frameTitle.replace(" ", "").replace("%", "") + "_col"
+											+ "spikes_col"
 											+ charts.indexOf(chart) + ".png"),
 									chart, 2000, 300);
 						}

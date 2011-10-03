@@ -11,7 +11,7 @@ import neuronPackage.Type;
 public class testSim {
 
 	public static void main(String[] args) {
-		SynapseFactory fact = new SynapseFactory();
+		SynapseFactory fact = new SynapseFactory(null);
 
 		double[] rsPar = { 0.02, 0.2, -65, 8 };
 		double[] ibPar = { 0.02, 0.2, -55, 4 };

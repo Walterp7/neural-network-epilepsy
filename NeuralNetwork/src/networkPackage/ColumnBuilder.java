@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Random;
 
 import neuronPackage.Neuron;
+import neuronPackage.StpParameters;
 import neuronPackage.Type;
 
 public class ColumnBuilder {
@@ -179,9 +180,9 @@ public class ColumnBuilder {
 		}
 	}
 
-	void connectNetwork(Network net, double timeStep) {
+	void connectNetwork(Network net, HashMap<String, StpParameters> stpParams, double timeStep) {
 		ConnectionsBuilder connectionBuilder = new ConnectionsBuilder();
-		connectionBuilder.setUpConnections(net, allProbabilities, colID, timeStep);
+		connectionBuilder.setUpConnections(net, allProbabilities, stpParams, colID, timeStep);
 
 	}
 

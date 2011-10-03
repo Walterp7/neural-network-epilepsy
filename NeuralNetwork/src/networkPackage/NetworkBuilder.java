@@ -4,10 +4,12 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import networkGUI.ColDescr;
 import networkGUI.ConfigurationUnit;
+import neuronPackage.StpParameters;
 
 public class NetworkBuilder {
 
@@ -16,8 +18,10 @@ public class NetworkBuilder {
 	private double weightMultiplier = 1;
 	private double fsInhMultiplier;
 	private double ltsInhMultiplier;
+	List<String> inputs = new ArrayList<String>();
+	HashMap<String, StpParameters> stpParams = new HashMap<String, StpParameters>();
 
-	void loadBasicConfig(String simConfigPath, ConfigurationUnit config) throws IOException {
+	void loadSimulationConfig(String simConfigPath, ConfigurationUnit config) throws IOException {
 
 		for (ColDescr colDescr : config.getAllColConfDescr()) {
 			layersInColumn.add(colDescr.getLayersInCol());
@@ -37,14 +41,33 @@ public class NetworkBuilder {
 		weightMultiplier = Double.parseDouble(parsedLine[0]);
 		fsInhMultiplier = Double.parseDouble(parsedLine[1]);
 		ltsInhMultiplier = Double.parseDouble(parsedLine[2]);
-		inSimConf.close();
 
+		// lines with description of inputs
+		while ((!(newLine = inSimConf.readLine()).equals("STP configuration"))) {
+			if (!(newLine.charAt(0) == '%')) {
+				inputs.add(newLine);
+			}
+		}
+		// lines with description on STP
+		while ((newLine = inSimConf.readLine()) != null) {
+			if (!(newLine.charAt(0) == '%')) {
+				parsedLine = newLine.trim().split("\\s+");
+				double ti = Double.parseDouble(parsedLine[1]);
+				double trec = Double.parseDouble(parsedLine[2]);
+				double tfac = Double.parseDouble(parsedLine[3]);
+				double u = Double.parseDouble(parsedLine[4]);
+				double maxy = Double.parseDouble(parsedLine[5]);
+				System.out.println(parsedLine[0] + " " + ti + " " + trec + " " + tfac + " " + u + " " + maxy);
+				stpParams.put(parsedLine[0], new StpParameters(ti, trec, tfac, u, maxy));
+			}
+		}
+		inSimConf.close();
 	}
 
-	public Network setUpNetwork(String simConfigFile, ConfigurationUnit config, double timestep, double totalTime,
+	public Network createNetwork(String simConfigFile, ConfigurationUnit config, double timestep, double totalTime,
 			InputDescriptor inDescriptor) throws IOException { // simConfg
 		// general info,colConfList - connections
-		loadBasicConfig(simConfigFile, config);
+		loadSimulationConfig(simConfigFile, config);
 		Network net = new Network();
 		totalColumnNumber = config.getColListSize();
 		List<ColumnBuilder> builderList = new ArrayList<ColumnBuilder>();
@@ -59,10 +82,10 @@ public class NetworkBuilder {
 		}
 		// now neurons are added, we need to connect them
 		for (ColumnBuilder colBuilder : builderList) {
-			colBuilder.connectNetwork(net, timestep);
+			colBuilder.connectNetwork(net, stpParams, timestep);
 		}
 		InputBuilder inBuild = new InputBuilder();
-		inBuild.setInputs(simConfigFile, net, inDescriptor, totalTime);
+		inBuild.setInputs(inputs, stpParams, net, inDescriptor, totalTime);
 		net.setAllNodes();
 		return net;
 	}
