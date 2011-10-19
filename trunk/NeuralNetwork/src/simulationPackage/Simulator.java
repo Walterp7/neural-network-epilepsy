@@ -80,29 +80,38 @@ public class Simulator {
 						XYSeries seriesLFP2 = new XYSeries("Local Field Potential - column 3");
 						XYSeries seriesEEG_LPF = new XYSeries("LFP for all columns");
 
+						int neuronNumber = 380;
+						XYSeries seriesNeuronTest = new XYSeries("Neuron number " + neuronNumber);
+
 						for (double timeOfSimulation = 0; timeOfSimulation <= totalTime; timeOfSimulation += timeStep) {
 							List<Status> stats = net.nextStep(timeStep, timeOfSimulation);
-							// double voltage = 0;
+
 							double psp = 0;
 							double voltage = 0; // for local field potential
 							double voltage2 = 0; // for local field potential in
 													// adjacent column
 							double voltage_all = 0;
 							double[] pspPerColumn = new double[numOfCols];
-							// int testVoltageCounter = 0;
+							// int counter = 0;
 
 							for (Status s : stats) {
-								int counter = 0;
+								int columnCounter = 0;
 
 								int neuronId = s.getNumber();
 
 								while (neuronId >= 0) {
-									neuronId = neuronId - numOfNeuronsInColumn.get(counter);
-									counter++;
+									neuronId = neuronId - numOfNeuronsInColumn.get(columnCounter);
+									columnCounter++;
 
 								}
 
-								int neuronColNum = counter - 1;
+								int neuronColNum = columnCounter - 1;
+								if (s.getNumber() == neuronNumber) {
+									if (s.getTime() < 2 * timeStep) {
+										System.out.println(s.getType() + " layer " + s.getLayer());
+									}
+									seriesNeuronTest.add(s.getTime(), s.getVoltage());
+								}
 								if (s.fired()) {
 
 									if (s.getType() == Type.RS) {
@@ -133,13 +142,14 @@ public class Simulator {
 
 								}
 								if (s.getType() == Type.RS || s.getType() == Type.IB) {
-									if ((s.getLayer() == 0) || (s.getLayer() == 3)) {
+									if ((s.getLayer() == 0) || (s.getLayer() == 2)) {
 										if ((s.getColumn() == 1)) {
-											voltage += s.getVoltage();
+											voltage += s.getVoltage() / 273;
 											// testVoltageCounter++;
+											// counter++;
 										}
 										if (s.getColumn() == 0) {
-											voltage2 += s.getVoltage();
+											voltage2 += s.getVoltage() / 273;
 
 										}
 										voltage_all = s.getVoltage();
@@ -151,20 +161,19 @@ public class Simulator {
 								}
 
 							}
-							// System.out.println("neuronow do voltage" +
-							// testVoltageCounter);
+
 							seriesPSP.add(timeOfSimulation, psp / 3000);
-							seriesLFP.add(timeOfSimulation, voltage / 400);
-							seriesLFP2.add(timeOfSimulation, voltage2 / 400);
+							seriesLFP.add(timeOfSimulation, voltage);
+							seriesLFP2.add(timeOfSimulation, voltage2);
 							seriesEEG_LPF.add(timeOfSimulation, voltage_all / 2000);
+
+							// System.out.println(counter);
 
 							for (int i = 0; i < numOfCols; i++) {
 								eegSeries[i].add(timeOfSimulation, pspPerColumn[i] / 3000);
 							}
 
 							if ((int) (timeOfSimulation / timeStep) % tenPercent == 0) {
-								// System.out.println(simName + ' ' +
-								// timeOfSimulation);
 
 								listener.reportProgress(timeOfSimulation / totalTime);
 							}
@@ -183,19 +192,26 @@ public class Simulator {
 							count++;
 						}
 
+						XYSeries seriesReferenceLine = new XYSeries("reference line -75mV");
+						seriesReferenceLine.add(0, -75);
+						seriesReferenceLine.add(totalTime, -75);
+
 						final XYSeriesCollection datasetEEG_LFP = new XYSeriesCollection();
 						datasetEEG_LFP.addSeries(seriesEEG_LPF);
+						datasetEEG_LFP.addSeries(seriesReferenceLine);
+
 						final XYSeriesCollection datasetEEG = new XYSeriesCollection();
 						datasetEEG.addSeries(seriesPSP);
 
 						final XYSeriesCollection datasetLFP = new XYSeriesCollection();
 						datasetLFP.addSeries(seriesLFP);
-
+						datasetLFP.addSeries(seriesReferenceLine);
 						double maxLFPplot = Math.max(seriesLFP2.getMaxY(), seriesLFP.getMaxY());
 						double minLFPplot = Math.min(seriesLFP2.getMinY(), seriesLFP.getMinY());
 
 						final XYSeriesCollection datasetLFP2 = new XYSeriesCollection();
 						datasetLFP2.addSeries(seriesLFP2);
+						datasetLFP2.addSeries(seriesReferenceLine);
 
 						XYSeriesCollection[] datasetEEGperColumn = new XYSeriesCollection[numOfCols];
 						for (int i = 0; i < numOfCols; i++) {
@@ -203,8 +219,8 @@ public class Simulator {
 							datasetEEGperColumn[i].addSeries(eegSeries[i]);
 						}
 
-						// AnalyseNetwork analyser = new AnalyseNetwork();
-						// analyser.getDegrees(net);
+						final XYSeriesCollection datasetNeuronTest = new XYSeriesCollection();
+						datasetNeuronTest.addSeries(seriesNeuronTest);
 
 						SpikePlotFrame plotFrame = new SpikePlotFrame();
 						plotFrame.plotNetwork(numOfCols, allDatasetSpikes, simName, totalTime);
@@ -223,10 +239,13 @@ public class Simulator {
 						lfp2Plot.draw(datasetLFP2, "(D) Local Field Potential (ADJACENT COLUMN)", true, minLFPplot,
 								maxLFPplot);
 
-						LinePlot eeg_lfpPlot = new LinePlot("Local Field Potential - for all columns " + simName, "lfpAllCols");
+						LinePlot eeg_lfpPlot = new LinePlot("Local Field Potential - for all columns " + simName,
+								"lfpAllCols");
 						eeg_lfpPlot.draw(datasetEEG_LFP, "Local Field Potential - for all columns " + simName, false,
-								0,
-								0);
+								0, 0);
+
+						LinePlot neuronTestPlot = new LinePlot("test: neuron" + neuronNumber, "test" + neuronNumber);
+						neuronTestPlot.draw(datasetNeuronTest, "test: neuron" + neuronNumber, false, 0, 0);
 
 						InputPlotFrame inputFrame = new InputPlotFrame();
 						if (!inDescriptor.isEmpty()) {

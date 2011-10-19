@@ -12,7 +12,7 @@ public class Neuron implements NetworkNode {
 	private int neuronId;
 	private final int layer; // starts with 0
 	private final ArrayList<Synapse> neuronConnections = new ArrayList<Synapse>();
-	boolean wasPositiveInput = false;
+	// boolean wasPositiveInput = false;
 	private final int colNum;
 
 	private final int[] coordinates = new int[3];
@@ -74,6 +74,7 @@ public class Neuron implements NetworkNode {
 		if (v > 30) {
 			v = 30;
 		}
+
 		stat = new Status(isFiring, neuronId, timeofSimulation, v, type, currentInput, colNum, layer);
 
 		// v = v + timeStep * (0.04 * v * v + 5 * v + 140 - u + currentInput);
@@ -101,9 +102,7 @@ public class Neuron implements NetworkNode {
 	@Override
 	public void setCurrentInput() {
 		currentInput = nextInput;
-		if (currentInput > 0) {
-			wasPositiveInput = true;
-		}
+
 		nextInput = 0;
 	}
 
