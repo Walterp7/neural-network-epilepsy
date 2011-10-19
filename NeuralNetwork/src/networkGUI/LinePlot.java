@@ -99,6 +99,7 @@ public class LinePlot extends JFrame {
 		renderer.setSeriesPaint(0, Color.black);
 		XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
 		plot.setOrientation(orientation);
+		// plot.setSeriesRenderingOrder(SortOrder.DESCENDING);
 		if (customRange) {
 			yAxis.setRange(lower, upper);
 		}

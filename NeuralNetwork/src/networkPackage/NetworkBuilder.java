@@ -57,7 +57,8 @@ public class NetworkBuilder {
 				double tfac = Double.parseDouble(parsedLine[3]);
 				double u = Double.parseDouble(parsedLine[4]);
 				double maxy = Double.parseDouble(parsedLine[5]);
-				System.out.println(parsedLine[0] + " " + ti + " " + trec + " " + tfac + " " + u + " " + maxy);
+				// System.out.println(parsedLine[0] + " " + ti + " " + trec +
+				// " " + tfac + " " + u + " " + maxy);
 				stpParams.put(parsedLine[0], new StpParameters(ti, trec, tfac, u, maxy));
 			}
 		}
