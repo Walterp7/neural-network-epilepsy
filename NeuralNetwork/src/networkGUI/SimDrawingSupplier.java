@@ -28,8 +28,8 @@ public class SimDrawingSupplier implements DrawingSupplier, Cloneable,
 
 	/** The default fill paint sequence. */
 	public static final Paint[] LINE_PAINT_SEQUENCE = new Paint[] {
-			Color.LIGHT_GRAY,
-			Color.black
+			Color.black,
+			Color.LIGHT_GRAY
 
 	};
 

@@ -28,7 +28,7 @@ public class SynapseFactory {
 			double weight, int delay) {
 
 		StpParameters stp = stdpParams.get(preSynaptic.typeLayer2String()
-				+ "2" + postSynaptic.typeLayer2String());
+				+ postSynaptic.typeLayer2String());
 
 		Synapse newSynapse = new Synapse(weight, postSynaptic, stp, pspParams.get(preSynaptic.getType()));
 
