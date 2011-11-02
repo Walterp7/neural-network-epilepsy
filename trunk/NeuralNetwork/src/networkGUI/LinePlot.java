@@ -86,7 +86,7 @@ public class LinePlot extends JFrame {
 			PlotOrientation orientation,
 			boolean legend,
 			boolean tooltips,
-			boolean urls, boolean customRange, double lower, double upper) {
+			boolean urls, boolean customRange, double lower, double upper, boolean reverse) {
 
 		if (orientation == null) {
 			throw new IllegalArgumentException("Null 'orientation' argument.");
@@ -99,7 +99,8 @@ public class LinePlot extends JFrame {
 		renderer.setSeriesPaint(0, Color.black);
 		XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
 		plot.setOrientation(orientation);
-		// plot.setSeriesRenderingOrder(SortOrder.DESCENDING);
+
+		yAxis.setInverted(reverse);
 		if (customRange) {
 			yAxis.setRange(lower, upper);
 		}
@@ -113,6 +114,7 @@ public class LinePlot extends JFrame {
 		JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
 				plot, legend);
 		currentTheme.apply(chart);
+
 		return chart;
 
 	}
@@ -121,7 +123,8 @@ public class LinePlot extends JFrame {
 	// return chart.getPlot().
 	// }
 
-	public void draw(XYSeriesCollection dataset, String title, boolean customRange, double lower, double upper) {
+	public void draw(XYSeriesCollection dataset, String title, boolean customRange, double lower, double upper,
+			boolean reverseYAxis) {
 		chart = createXYLineChart(
 				title, // chart title
 				"time [ms]", // x axis label
@@ -133,7 +136,8 @@ public class LinePlot extends JFrame {
 				false, // urls
 				customRange,
 				lower,
-				upper
+				upper,
+				reverseYAxis
 				);
 
 		// force aliasing of the rendered content..
