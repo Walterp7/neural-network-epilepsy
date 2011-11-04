@@ -18,7 +18,7 @@ Pick 50 5 10 FS 1 1
 %
 STP configuration
 % parameters:  double ti, double trec, double tfac, double u, double maxy
-RSII2RSII 3 100 0.00001 0.3 0.3
+%RSII2RSII 3 100 0.00001 0.3 0.3
 RSII2RSV 3  100  0.000001  0.4  0.4 
 RSV2RSV 3  350  0.000001  0.5 0.5 
 RSV2RSII 3  100  0.000001  0.4 	0.4 
