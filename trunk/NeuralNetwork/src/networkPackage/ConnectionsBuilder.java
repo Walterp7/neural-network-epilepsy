@@ -41,25 +41,25 @@ public class ConnectionsBuilder {
 			double prob = conDesc.getProbability();
 			double weight = conDesc.getWeight();
 
-			NeuronTypePool outPool = currentColumn.getPool(conDesc.getPoolNumber())
+			NeuronTypePool outPool = currentColumn.getPool(conDesc.getPoolName())
 					.getTypePool(conDesc.getType());
 
 			ArrayList<NeuronTypePool> inPools = new ArrayList<NeuronTypePool>();
 
 			if (conDesc.getTargetCol() == 0) {
-				inPools.add(currentColumn.getPool(conDesc.getTargetPoolNumber())
+				inPools.add(currentColumn.getPool(conDesc.getTargetPoolName())
 						.getTypePool(conDesc.getTargetType()));
 			} else {
 				if (net.getColumn(currentColumnNum + conDesc.getTargetCol()) != null) {
 					inPools.add(net
 							.getColumn(currentColumnNum + conDesc.getTargetCol())
-							.getPool(conDesc.getTargetPoolNumber())
+							.getPool(conDesc.getTargetPoolName())
 							.getTypePool(conDesc.getTargetType()));
 				}
 				if (net.getColumn(currentColumnNum - conDesc.getTargetCol()) != null) {
 					inPools.add(net
 							.getColumn(currentColumnNum - conDesc.getTargetCol())
-							.getPool(conDesc.getTargetPoolNumber())
+							.getPool(conDesc.getTargetPoolName())
 							.getTypePool(conDesc.getTargetType()));
 				}
 			}

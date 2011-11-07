@@ -1,10 +1,17 @@
 package networkPackage;
 
-import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+
+import neuronPackage.Layer;
 
 public class NeuronColumn {
 	public int colID;
-	private ArrayList<NeuronPool> pools = new ArrayList<NeuronPool>();
+
+	// private final ArrayList<NeuronPool> poolsArray = new
+	// ArrayList<NeuronPool>();
+
+	HashMap<Layer, NeuronPool> pools = new HashMap<Layer, NeuronPool>();
 
 	public NeuronColumn(int num) {
 		// TODO Auto-generated constructor stub
@@ -12,19 +19,21 @@ public class NeuronColumn {
 	}
 
 	void addPool(NeuronPool newPool) {
-		pools.add(newPool);
+		pools.put(newPool.getLayerName(), newPool);
+		// poolsArray.add(newPool);
 	}
 
-	public ArrayList<NeuronPool> getPools() {
-		return pools;
+	public Collection<NeuronPool> getPools() {
+		// return poolsArray;
+		return pools.values();
 	}
 
-	public void setPools(ArrayList<NeuronPool> pools) {
-		this.pools = pools;
-	}
+	// public void setPools(ArrayList<NeuronPool> pools) {
+	// this.pools = pools;
+	// }
 
-	public NeuronPool getPool(int index) {
-		return pools.get(index);
+	public NeuronPool getPool(Layer name) {
+		return pools.get(name);
 	}
 
 	public int numberOfPools() {
@@ -35,7 +44,7 @@ public class NeuronColumn {
 	public int getNumberOfNeurons() {
 
 		int sum = 0;
-		for (NeuronPool p : pools) {
+		for (NeuronPool p : pools.values()) {
 			sum = sum + p.getNumberOfNeurons();
 		}
 		return sum;

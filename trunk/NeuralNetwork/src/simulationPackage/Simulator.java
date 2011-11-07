@@ -15,6 +15,7 @@ import networkGUI.SpikePlotFrame;
 import networkPackage.InputDescriptor;
 import networkPackage.Network;
 import networkPackage.NetworkBuilder;
+import neuronPackage.Layer;
 import neuronPackage.Status;
 import neuronPackage.Type;
 
@@ -142,7 +143,7 @@ public class Simulator {
 
 								}
 								if (s.getType() == Type.RS || s.getType() == Type.IB) {
-									if ((s.getLayer() == 0) || (s.getLayer() == 2)) {
+									if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V)) {
 										if ((s.getColumn() == 1)) {
 
 											voltage += s.getVoltage() / 273;
@@ -231,11 +232,11 @@ public class Simulator {
 						eegFrame.plotNetwork(numOfCols, datasetEEGperColumn, "EEG per column");
 
 						LinePlot eegPlot = new LinePlot("Simulated EEG " + simName, "simulatedEEG");
-						eegPlot.draw(datasetEEG, "(E) Simulated EEG ", false, 0, 0, false);
+						eegPlot.draw(datasetEEG, " Simulated EEG ", false, 0, 0, false);
 
 						LinePlot lfpPlot = new LinePlot("Local Field Potential - col 2 " + simName, "lfp1");
-						lfpPlot.draw(datasetLFP, " (C) Layer V Local Field Potential ", true,
-								-110, -25, true);
+						lfpPlot.draw(datasetLFP, " Local Field Potential (stimulated column) ", true, minLFPplot,
+								maxLFPplot, true);
 						// lfpPlot.draw(datasetLFP,
 						// " (C) Local Field Potential (Stimulated Column)",
 						// true, minLFPplot,
@@ -243,7 +244,7 @@ public class Simulator {
 
 						LinePlot lfp2Plot = new LinePlot("Local Field Potential - col 3 " + simName, "lfp2");
 						lfp2Plot.draw(datasetLFP2,
-								"(D) Layer V Local Field Potential Local Field Potential (Column 3)", true, minLFPplot,
+								"(D)  Local Field Potential (adjacent column)", true, minLFPplot,
 								maxLFPplot, true);
 						// lfp2Plot.draw(datasetLFP2,
 						// "(D) Local Field Potential (Adjacent Column)", true,

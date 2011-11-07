@@ -135,7 +135,7 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 		frameTitle = title;
 
 		JFreeChart chart1 = createSpikePlot(
-				"(B) Spike pattern - " + title, // chart title
+				"Spike pattern - " + title, // chart title
 				"", // x axis label
 				"Column 1", // y axis label
 				data[0], // data

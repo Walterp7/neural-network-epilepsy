@@ -1,20 +1,21 @@
 package networkPackage;
 
+import neuronPackage.Layer;
 import neuronPackage.Type;
 
 class ConnectionDescriptor {
 	private int targetCol;
-	private int poolNumber;
-	private int targetPoolNumber;
+	private Layer poolName;
+	private Layer targetPoolNumber;
 	private Type type, targetType;
 	private double weight;
 	private double probability;
 
-	void setDescription(int targetcol, int poolNum, int targetPool, Type t,
+	void setDescription(int targetcol, Layer pool, Layer targetPool, Type t,
 			Type tart, double w, double p) {
 
 		targetCol = targetcol;
-		poolNumber = poolNum;
+		poolName = pool;
 		targetPoolNumber = targetPool;
 		type = t;
 		targetType = tart;
@@ -30,11 +31,11 @@ class ConnectionDescriptor {
 		return targetCol;
 	}
 
-	int getPoolNumber() {
-		return poolNumber;
+	Layer getPoolName() {
+		return poolName;
 	}
 
-	int getTargetPoolNumber() {
+	Layer getTargetPoolName() {
 		return targetPoolNumber;
 	}
 

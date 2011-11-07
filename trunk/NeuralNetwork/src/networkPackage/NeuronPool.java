@@ -4,13 +4,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import neuronPackage.Layer;
 import neuronPackage.Type;
 
 public class NeuronPool {
 
 	Map<Type, NeuronTypePool> typePools = new HashMap<Type, NeuronTypePool>();
+	final Layer poolName;
 
 	// ArrayList<NeuronTypePool> typePool = new ArrayList<NeuronTypePool>();
+
+	NeuronPool(Layer name) {
+		poolName = name;
+	}
+
+	Layer getLayerName() {
+		return poolName;
+	}
 
 	void addTypePool(Type t, NeuronTypePool newType) {
 		typePools.put(t, newType);

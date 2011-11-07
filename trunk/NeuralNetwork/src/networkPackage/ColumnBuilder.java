@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 
+import neuronPackage.Layer;
 import neuronPackage.Neuron;
 import neuronPackage.StpParameters;
 import neuronPackage.Type;
@@ -19,6 +20,7 @@ public class ColumnBuilder {
 	HashMap<Type, double[]> neuronParameters = new HashMap<Type, double[]>();
 
 	double[][] proportions;
+	Layer[] layerNames;
 	int[] totalNeuronsInPool = new int[4];
 
 	int numberOfLayers;
@@ -46,7 +48,7 @@ public class ColumnBuilder {
 		BufferedReader in = new BufferedReader(new FileReader(pathname));
 
 		generator = new Random(19580427 + colNum);
-
+		layerNames = new Layer[numOfLayers];
 		proportions = new double[numOfLayers][4];
 
 		// System.out.println("layers " + numOfLayers);
@@ -60,6 +62,8 @@ public class ColumnBuilder {
 		}
 
 		for (int i = 0; i < numOfLayers; i++) {
+			newLine = in.readLine();
+			layerNames[i] = stringToLayer(newLine.trim());
 			newLine = in.readLine();
 			parsedLine = newLine.trim().split("\\s+");
 			totalNeuronsInPool[i] = Integer.parseInt(parsedLine[0]);
@@ -77,10 +81,10 @@ public class ColumnBuilder {
 
 				ConnectionDescriptor descr = new ConnectionDescriptor();
 
-				int layerNum = Integer.parseInt(parsedLine[0]);
+				Layer layerName = stringToLayer(parsedLine[0]);
 				Type type = stringToType(parsedLine[1]);
 				int targetColNum = Integer.parseInt(parsedLine[2]);
-				int targetLayer = Integer.parseInt(parsedLine[3]);
+				Layer targetLayer = stringToLayer(parsedLine[3]);
 				Type targetType = stringToType(parsedLine[4]);
 				double prob = Double.parseDouble(parsedLine[5]);
 				double newWeight = Double.parseDouble(parsedLine[6]) * weightMultiplier;
@@ -92,7 +96,7 @@ public class ColumnBuilder {
 				if ((type == Type.LTS) || (type == Type.FS)) {
 					newWeight = newWeight * fsMultiplier;
 				}
-				descr.setDescription(targetColNum, layerNum, targetLayer, type,
+				descr.setDescription(targetColNum, layerName, targetLayer, type,
 						targetType, newWeight, prob);
 
 				allProbabilities.add(descr);
@@ -107,60 +111,60 @@ public class ColumnBuilder {
 		NeuronColumn col = new NeuronColumn(colID);
 		net.addColumn(col);
 
-		for (int layer = 0; layer < numberOfLayers; layer++) {
-			NeuronPool pool = new NeuronPool();
+		for (int layerNum = 0; layerNum < numberOfLayers; layerNum++) {
+			NeuronPool pool = new NeuronPool(layerNames[layerNum]);
 			col.addPool(pool);
 			NeuronTypePool rsPool = new NeuronTypePool(Type.RS);
 			NeuronTypePool ibPool = new NeuronTypePool(Type.IB);
 			NeuronTypePool fsPool = new NeuronTypePool(Type.FS);
 			NeuronTypePool ltsPool = new NeuronTypePool(Type.LTS);
 
-			for (int i = 0; i < totalNeuronsInPool[layer]; i++) {
+			for (int i = 0; i < totalNeuronsInPool[layerNum]; i++) {
 				double r = 100 * generator.nextDouble();
 				double typeRandom = generator.nextDouble();
 
 				Neuron newNeuron;
-				if (r <= proportions[layer][0]) {
+				if (r <= proportions[layerNum][0]) {
 
 					double[] tempParam = neuronParameters.get(Type.RS)
 							.clone();
 					tempParam[2] += typeRandom * 5;
 					tempParam[3] -= typeRandom * 3;
-					newNeuron = new Neuron(tempParam, Type.RS, colID, layer);
-					newNeuron.setCoordinates(getCoordinates(colID, layer));
+					newNeuron = new Neuron(tempParam, Type.RS, colID, layerNames[layerNum]);
+					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					rsPool.addNeuron(newNeuron);
 
 				}
-				double p = proportions[layer][0];
+				double p = proportions[layerNum][0];
 
-				if ((r > p) && (r <= p + proportions[layer][1])) {
+				if ((r > p) && (r <= p + proportions[layerNum][1])) {
 
 					double[] tempParam = neuronParameters.get(Type.IB)
 							.clone();
 					tempParam[2] -= typeRandom * 5;
 					tempParam[3] += typeRandom * 2;
-					newNeuron = new Neuron(tempParam, Type.IB, colID, layer);
-					newNeuron.setCoordinates(getCoordinates(colID, layer));
+					newNeuron = new Neuron(tempParam, Type.IB, colID, layerNames[layerNum]);
+					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					ibPool.addNeuron(newNeuron);
 				}
-				p = p + proportions[layer][1];
-				if ((r > p) && (r <= p + proportions[layer][2])) {
+				p = p + proportions[layerNum][1];
+				if ((r > p) && (r <= p + proportions[layerNum][2])) {
 					double[] tempParam = neuronParameters.get(Type.FS)
 							.clone();
 					tempParam[0] -= typeRandom * 0.019;
 					tempParam[1] -= typeRandom * 0.025;
-					newNeuron = new Neuron(tempParam, Type.FS, colID, layer);
-					newNeuron.setCoordinates(getCoordinates(colID, layer));
+					newNeuron = new Neuron(tempParam, Type.FS, colID, layerNames[layerNum]);
+					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					fsPool.addNeuron(newNeuron);
 				}
-				p = p + proportions[layer][2];
+				p = p + proportions[layerNum][2];
 				if (r > p) {
 					double[] tempParam = neuronParameters.get(Type.LTS)
 							.clone();
 					tempParam[0] -= typeRandom * 0.019;
 					tempParam[1] -= typeRandom * 0.025;
-					newNeuron = new Neuron(tempParam, Type.LTS, colID, layer);
-					newNeuron.setCoordinates(getCoordinates(colID, layer));
+					newNeuron = new Neuron(tempParam, Type.LTS, colID, layerNames[layerNum]);
+					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					ltsPool.addNeuron(newNeuron);
 				}
 			}
@@ -204,20 +208,38 @@ public class ColumnBuilder {
 		}
 	}
 
-	int[] getCoordinates(int col, int layer) {
+	Layer stringToLayer(String s) throws IOException {
+
+		if (s.equals("III")) {
+			return Layer.III;
+		}
+		if (s.equals("IV")) {
+			return Layer.IV;
+		}
+		if (s.equals("V")) {
+			return Layer.V;
+		}
+		if (s.equals("VI")) {
+			return Layer.VI;
+		} else {
+			throw new IOException();
+		}
+	}
+
+	int[] getCoordinates(int col, Layer layer) {
 		int[] cords = new int[3]; // microns
 		cords[0] = generator.nextInt(401) + col * 400;
 		cords[1] = generator.nextInt(401);
-		if (layer == 0) {
+		if (layer == Layer.III) {
 			cords[2] = generator.nextInt(400);
 		}
-		if (layer == 1) {
+		if (layer == Layer.IV) {
 			cords[2] = generator.nextInt(200) + 400;
 		}
-		if (layer == 2) {
+		if (layer == Layer.V) {
 			cords[2] = generator.nextInt(600) + 600;
 		}
-		if (layer == 3) {
+		if (layer == Layer.VI) {
 			cords[2] = generator.nextInt(600) + 1200;
 		}
 		return cords;

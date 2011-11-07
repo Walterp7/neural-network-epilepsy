@@ -8,6 +8,7 @@ import java.util.List;
 import neuronPackage.FrequencyInputer;
 import neuronPackage.GaussianInputer;
 import neuronPackage.Inputer;
+import neuronPackage.Layer;
 import neuronPackage.Neuron;
 import neuronPackage.PickInputer;
 import neuronPackage.StpParameters;
@@ -72,14 +73,15 @@ public class InputBuilder {
 				}
 
 				int colNum = Integer.parseInt(parsedLine[wordIndex++]);
-				int poolNum = Integer.parseInt(parsedLine[wordIndex++]);
+				String poolName = parsedLine[wordIndex++];
 
 				if (colNum >= 0) { // input to a specific column
-					if (poolNum >= 0) { // input to a specific layer
-
+					if (!poolName.equals("-1")) { // input to a specific layer
+						Layer layer = stringToLayer(poolName);
 						for (Type type : typesToConnect) {
-							if (net.getColumn(colNum).getPool(poolNum).getTypePool(type) != null) {
-								ArrayList<Neuron> listNeuron = net.getColumn(colNum).getPool(poolNum).getTypePool(type)
+							if (net.getColumn(colNum).getPool(layer).getTypePool(type) != null) {
+								ArrayList<Neuron> listNeuron = net.getColumn(colNum).getPool(layer)
+										.getTypePool(type)
 										.getNeurons();
 
 								for (Neuron neur : listNeuron) {
@@ -106,11 +108,12 @@ public class InputBuilder {
 
 				} else { // all columns
 
-					if (poolNum >= 0) { // all columns but specific layer
+					if (!poolName.equals("-1")) { // all columns but specific
+						Layer layer = stringToLayer(poolName); // layer
 						for (NeuronColumn col : net.getAllColumns()) {
 							for (Type type : typesToConnect) {
-								if (col.getPool(poolNum).getTypePool(type) != null) {
-									ArrayList<Neuron> listNeuron = col.getPool(poolNum).getTypePool(type)
+								if (col.getPool(layer).getTypePool(type) != null) {
+									ArrayList<Neuron> listNeuron = col.getPool(layer).getTypePool(type)
 											.getNeurons();
 
 									for (Neuron neur : listNeuron) {
@@ -159,6 +162,24 @@ public class InputBuilder {
 		}
 		if (s.equals("LTS")) {
 			return Type.LTS;
+		} else {
+			throw new IOException();
+		}
+	}
+
+	Layer stringToLayer(String s) throws IOException {
+
+		if (s.equals("III")) {
+			return Layer.III;
+		}
+		if (s.equals("IV")) {
+			return Layer.IV;
+		}
+		if (s.equals("V")) {
+			return Layer.V;
+		}
+		if (s.equals("VI")) {
+			return Layer.VI;
 		} else {
 			throw new IOException();
 		}
