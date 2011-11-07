@@ -10,14 +10,14 @@ public class Neuron implements NetworkNode {
 	private final Type type;
 	private final double a, b, c, d;
 	private int neuronId;
-	private final int layer; // starts with 0
+	private final Layer layer;
 	private final ArrayList<Synapse> neuronConnections = new ArrayList<Synapse>();
 	// boolean wasPositiveInput = false;
 	private final int colNum;
 
 	private final int[] coordinates = new int[3];
 
-	public Neuron(double[] parameters, Type type, int col, int l) {
+	public Neuron(double[] parameters, Type type, int col, Layer l) {
 		v = -65;
 
 		currentInput = 0;
@@ -39,7 +39,7 @@ public class Neuron implements NetworkNode {
 
 	}
 
-	public int getLayer() {
+	public Layer getLayer() {
 		return layer;
 	}
 
@@ -141,22 +141,7 @@ public class Neuron implements NetworkNode {
 		if (str.equals("IB")) {
 			str = "RS";
 		}
-		if (layer == 0) {
-			str = str + "II"; // II-III layer
-		} else {
-			if (layer == 1) {
-				str = str + "IV"; // IV layer
-			} else {
-				if (layer == 2) {
-					str = str + "V"; // V layer
-				} else {
-					if (layer == 3) {
-						str = str + "VI"; // VI layer
-					}
-				}
-			}
-		}
 
-		return str;
+		return str + layer.toString();
 	}
 }
