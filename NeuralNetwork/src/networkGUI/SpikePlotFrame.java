@@ -94,15 +94,19 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 		NumberAxis xAxis = new NumberAxis(xAxisLabel); // zakres dodac!
 		xAxis.setAutoRangeIncludesZero(true);
 		xAxis.setRange(0, totalTime);
-		// String[] labels = { "VI", "V", "IV", "II/III" };
+
 		String[] labels = new String[764];
 		for (int i = 0; i < 764; i++) {
 			labels[i] = "x";
 		}
 
+		// final String[] labs = { "II/III", "IV", "V", "VI" };
 		final String[] labs = { "VI", "V", "IV", "II/III" };
-		final int[] pos = { 150, 358, 487, 652 };
+		final int[] pos = { 100, 300, 457, 652 };
+		// final int[] pos = { 80, 300, 487, 670 };
 		LabelAxis yAxis = new LabelAxis(yAxisLabel, labels, labs, pos);
+		// NumberAxis yAxis = new NumberAxis();
+		// yAxis.setInverted(true);
 
 		XYPlot plot = new XYPlot(dataset, xAxis, yAxis, null);
 
@@ -158,7 +162,7 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 		panel1.setMaximumDrawWidth(2000);
 		contentPane.add(panel1);
 
-		for (int i = 2; i < numberOfColumns; i++) {
+		for (int i = 2; i <= numberOfColumns; i++) {
 			JFreeChart chart = createSpikePlot(
 					"", // chart title
 					"", // x axis label
@@ -183,30 +187,6 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 			panel.setMaximumDrawWidth(2000);
 			contentPane.add(panel);
 		}
-
-		// the last one with legend
-		JFreeChart chartLast = createSpikePlot(
-				"", // chart title
-				"time [ms]", // x axis label
-				"Column " + numberOfColumns, // y axis label
-				data[numberOfColumns - 1], // data
-				PlotOrientation.VERTICAL,
-				false, // include legend
-				true, // tooltips
-				false, // urls
-				totalTime
-				);
-		// force aliasing of the rendered content..
-		chartLast.getRenderingHints().put
-				(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		charts.add(chartLast);
-		final ChartPanel panel = new ChartPanel(chartLast, true);
-		panel.setPreferredSize(new java.awt.Dimension(600, 800));
-		panel.setMinimumDrawHeight(10);
-		panel.setMaximumDrawHeight(2000);
-		panel.setMinimumDrawWidth(20);
-		panel.setMaximumDrawWidth(2000);
-		contentPane.add(panel);
 
 		this.pack();
 		this.setVisible(true);

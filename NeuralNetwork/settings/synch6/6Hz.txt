@@ -6,8 +6,10 @@
 % Step interTime SignalTime value * -1 -1
 % 6hz 155 10 5
 % 20Hz 40 10 5
-Step 166 5 1 RS 1 1
-Step 166 5 1 FS 1 1
+Step 166 5 1 RS 1 IV
+Step 166 5 1 FS 1 IV
+Step 166 5 0.7 RS 1 V
+Step 166 5 0.7 IB 1 V
 Gaussian 0 11 * -1 -1
 %Pick 10 20 10 RS 1 1
 %Pick 10 20 10 FS 1 1

@@ -198,9 +198,9 @@ public class SimChartTheme implements ChartTheme, Cloneable,
 			throw new IllegalArgumentException("Null 'name' argument.");
 		}
 		this.name = name;
-		this.extraLargeFont = new Font("Tahoma", Font.BOLD, 32);
-		this.largeFont = new Font("Tahoma", Font.BOLD, 28);
-		this.regularFont = new Font("Tahoma", Font.PLAIN, 24);
+		this.extraLargeFont = new Font("Tahoma", Font.BOLD, 28);
+		this.largeFont = new Font("Tahoma", Font.BOLD, 24);
+		this.regularFont = new Font("Tahoma", Font.PLAIN, 20);
 		this.smallFont = new Font("Tahoma", Font.PLAIN, 20);
 		this.titlePaint = Color.black;
 		this.subtitlePaint = Color.black;
