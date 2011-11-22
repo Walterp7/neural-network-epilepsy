@@ -1,16 +1,34 @@
 package simulationPackage;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map.Entry;
 
 import networkPackage.Network;
+import networkPackage.NeuronPool;
 import neuronPackage.NetworkNode;
 import neuronPackage.Neuron;
 import neuronPackage.Synapse;
 import neuronPackage.Type;
 
 class AnalyseNetwork {
+
+	void exportConnections(Network n) throws IOException {
+		FileWriter outFile = new FileWriter("network-nodes.txt");
+		for (NeuronPool pool : n.getColumn(0).getPools()) {
+			for (Neuron neur : pool.getNeurons()) {
+
+				for (Synapse syn : neur.getNeuronConnections()) {
+					Neuron outNeur = syn.getPostSynapticNeuron();
+					outFile.write(neur.getId() + neur.typeLayer2String() + "," + outNeur.getId()
+							+ outNeur.typeLayer2String() + "," + syn.getWeight() + "," + syn.getTimeDelay() + "\r\n");
+				}
+			}
+		}
+		outFile.close();
+	}
 
 	void getDegrees(Network n) {
 		List<NetworkNode> l = n.getAllNodes();

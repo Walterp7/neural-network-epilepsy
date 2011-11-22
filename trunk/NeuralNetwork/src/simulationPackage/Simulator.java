@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 
 import networkGUI.ConfigurationUnit;
 import networkGUI.EegColumnPlotFrame;
+import networkGUI.HistogramPlot;
 import networkGUI.InputPlotFrame;
 import networkGUI.LinePlot;
 import networkGUI.SpikePlotFrame;
@@ -56,6 +57,8 @@ public class Simulator {
 					try {
 						net = mag.createNetwork(simDir[0], configFromGUI, timeStep, totalTime, inDescriptor);
 
+						AnalyseNetwork analyser = new AnalyseNetwork();
+						analyser.exportConnections(net);
 						ArrayList<Integer> numOfNeuronsInColumn = net.getNumberOfNeuronsInColumn();
 
 						int numOfCols = numOfNeuronsInColumn.size();
@@ -117,24 +120,24 @@ public class Simulator {
 
 									if (s.getType() == Type.RS) {
 										dataSeries.get(neuronColNum)[0].add(s.getTime(),
-												764 - (s.getNumber() - neuronColNum
-												* 764)); // II-III layer on top
+												(s.getNumber() - neuronColNum
+												* 764));
 
 									} else {
 										if (s.getType() == Type.FS) {
 											dataSeries.get(neuronColNum)[1].add(s.getTime(),
-													764 - (s.getNumber() - neuronColNum
+													(s.getNumber() - neuronColNum
 													* 764));
 
 										} else {
 											if (s.getType() == Type.LTS) {
 												dataSeries.get(neuronColNum)[2].add(s.getTime(),
-														764 - (s.getNumber() - neuronColNum
+														(s.getNumber() - neuronColNum
 														* 764));
 
 											} else {
 												dataSeries.get(neuronColNum)[3].add(s.getTime(),
-														764 - (s.getNumber() - neuronColNum
+														(s.getNumber() - neuronColNum
 														* 764));
 
 											}
@@ -168,8 +171,6 @@ public class Simulator {
 							seriesLFP.add(timeOfSimulation, voltage);
 							seriesLFP2.add(timeOfSimulation, voltage2);
 							seriesEEG_LPF.add(timeOfSimulation, voltage_all / 2000);
-
-							// System.out.println(counter);
 
 							for (int i = 0; i < numOfCols; i++) {
 								eegSeries[i].add(timeOfSimulation, pspPerColumn[i] / 3000);
@@ -237,19 +238,11 @@ public class Simulator {
 						LinePlot lfpPlot = new LinePlot("Local Field Potential - col 2 " + simName, "lfp1");
 						lfpPlot.draw(datasetLFP, " Local Field Potential (stimulated column) ", true, minLFPplot,
 								maxLFPplot, true);
-						// lfpPlot.draw(datasetLFP,
-						// " (C) Local Field Potential (Stimulated Column)",
-						// true, minLFPplot,
-						// maxLFPplot);
 
 						LinePlot lfp2Plot = new LinePlot("Local Field Potential - col 3 " + simName, "lfp2");
 						lfp2Plot.draw(datasetLFP2,
 								"(D)  Local Field Potential (adjacent column)", true, minLFPplot,
 								maxLFPplot, true);
-						// lfp2Plot.draw(datasetLFP2,
-						// "(D) Local Field Potential (Adjacent Column)", true,
-						// minLFPplot,
-						// maxLFPplot);
 
 						LinePlot eeg_lfpPlot = new LinePlot("Local Field Potential - for all columns " + simName,
 								"lfpAllCols");
@@ -259,12 +252,16 @@ public class Simulator {
 						LinePlot neuronTestPlot = new LinePlot("test: neuron" + neuronNumber, "test" + neuronNumber);
 						neuronTestPlot.draw(datasetNeuronTest, "test: neuron" + neuronNumber, false, 0, 0, false);
 
+						HistogramPlot hist = new HistogramPlot("Network Activity", "histogram");
+						hist.draw(allDatasetSpikes[1], "Histogram", false, 0, 0, false);
+
 						InputPlotFrame inputFrame = new InputPlotFrame();
 						if (!inDescriptor.isEmpty()) {
 							inputFrame.plotInputs(inDescriptor);
 						}
 						listener.reportProgress(10);
 						System.out.println(simName + " done");
+
 					} catch (IOException e) {
 
 						e.printStackTrace();

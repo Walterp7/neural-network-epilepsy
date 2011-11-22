@@ -1,6 +1,6 @@
 package networkPackage;
 
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import neuronPackage.Layer;
@@ -8,8 +8,8 @@ import neuronPackage.Layer;
 public class NeuronColumn {
 	public int colID;
 
-	// private final ArrayList<NeuronPool> poolsArray = new
-	// ArrayList<NeuronPool>();
+	private final ArrayList<NeuronPool> poolsArray = new
+			ArrayList<NeuronPool>();
 
 	HashMap<Layer, NeuronPool> pools = new HashMap<Layer, NeuronPool>();
 
@@ -20,12 +20,12 @@ public class NeuronColumn {
 
 	void addPool(NeuronPool newPool) {
 		pools.put(newPool.getLayerName(), newPool);
-		// poolsArray.add(newPool);
+		poolsArray.add(newPool);
 	}
 
-	public Collection<NeuronPool> getPools() {
+	public ArrayList<NeuronPool> getPools() {
 		// return poolsArray;
-		return pools.values();
+		return poolsArray;
 	}
 
 	// public void setPools(ArrayList<NeuronPool> pools) {

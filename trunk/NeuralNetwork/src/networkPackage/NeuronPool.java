@@ -2,9 +2,12 @@ package networkPackage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import neuronPackage.Layer;
+import neuronPackage.Neuron;
 import neuronPackage.Type;
 
 public class NeuronPool {
@@ -34,6 +37,15 @@ public class NeuronPool {
 		}
 		return l;
 
+	}
+
+	public List<Neuron> getNeurons() {
+		List<Neuron> neuronList = new ArrayList<Neuron>();
+		for (Entry<Type, NeuronTypePool> entryPool : typePools.entrySet()) {
+
+			neuronList.addAll(entryPool.getValue().getNeurons());
+		}
+		return neuronList;
 	}
 
 	NeuronTypePool getTypePool(Type t) {
