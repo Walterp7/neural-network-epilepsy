@@ -33,10 +33,10 @@ public class FrequencyInputer extends Inputer {
 
 	@Override
 	public Status advance(double timeStep, double timeofSimulation) {
-		int w = ((int) timeofSimulation + 1) % (interTime);
+		int w = ((int) ((timeofSimulation + 1) / timeStep)) % (int) (interTime / timeStep);
 
 		if (w < timeStep) {
-
+			System.out.println(w + "-------->" + timeofSimulation);
 			for (Synapse n : inputConnections) {
 
 				n.addInput(value, timeStep, timeofSimulation);
