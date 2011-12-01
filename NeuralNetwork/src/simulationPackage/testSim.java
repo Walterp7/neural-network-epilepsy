@@ -19,8 +19,8 @@ public class testSim {
 		double[] ltsPar = { 0.02, 0.25, -65, 2 };
 		double[] fsPar = { 0.1, 0.2, -65, 2 };
 
-		Neuron neur1 = new Neuron(rsPar, Type.RS, 0, Layer.IV);
-		Neuron neur2 = new Neuron(rsPar, Type.RS, 0, Layer.IV);
+		Neuron neur1 = new Neuron(rsPar, Type.RS, 0, Layer.IV, 0);
+		Neuron neur2 = new Neuron(rsPar, Type.RS, 0, Layer.IV, 0);
 
 		Network net = new Network();
 

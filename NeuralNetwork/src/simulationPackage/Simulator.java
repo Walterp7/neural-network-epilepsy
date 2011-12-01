@@ -262,7 +262,7 @@ public class Simulator {
 						listener.reportProgress(10);
 						System.out.println(simName + " done");
 
-					} catch (IOException e) {
+					} catch (Exception e) {
 
 						e.printStackTrace();
 					}

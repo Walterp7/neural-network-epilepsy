@@ -17,7 +17,8 @@ public class Neuron implements NetworkNode {
 
 	private final int[] coordinates = new int[3];
 
-	public Neuron(double[] parameters, Type type, int col, Layer l) {
+	public Neuron(double[] parameters, Type type, int col, Layer l, double dv) {
+
 		v = -65;
 
 		currentInput = 0;
