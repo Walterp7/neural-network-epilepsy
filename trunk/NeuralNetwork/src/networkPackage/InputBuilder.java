@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import neuronPackage.ConstantInputer;
 import neuronPackage.FrequencyInputer;
 import neuronPackage.GaussianInputer;
 import neuronPackage.Inputer;
@@ -56,7 +57,15 @@ public class InputBuilder {
 							newInput = new PickInputer(startTime, signalTime,
 									value, stpParams);
 						} else {
-							throw new IOException();
+							if (parsedLine[wordIndex].equals("Constant")) {
+								wordIndex++;
+
+								double value = Double
+										.parseDouble(parsedLine[wordIndex++]);
+								newInput = new ConstantInputer(value);
+							} else {
+								throw new IOException();
+							}
 						}
 					}
 				}
