@@ -1,5 +1,6 @@
 package simulationPackage;
 
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
@@ -55,6 +56,7 @@ public class Simulator {
 					Network net;
 
 					try {
+						FileWriter outFile = new FileWriter("eeg" + simName + ".txt");
 						net = mag.createNetwork(simDir[0], configFromGUI, timeStep, totalTime, inDescriptor);
 
 						AnalyseNetwork analyser = new AnalyseNetwork();
@@ -147,6 +149,7 @@ public class Simulator {
 								}
 								if (s.getType() == Type.RS || s.getType() == Type.IB) {
 									if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V)) {
+
 										if ((s.getColumn() == 1)) {
 
 											voltage += s.getVoltage() / 273;
@@ -168,6 +171,8 @@ public class Simulator {
 							}
 
 							seriesPSP.add(timeOfSimulation, psp / 3000);
+
+							outFile.write(timeOfSimulation + ", " + psp / 3000 + "\r\n");
 							seriesLFP.add(timeOfSimulation, voltage);
 							seriesLFP2.add(timeOfSimulation, voltage2);
 							seriesEEG_LPF.add(timeOfSimulation, voltage_all / 2000);
@@ -236,12 +241,15 @@ public class Simulator {
 						eegPlot.draw(datasetEEG, " Simulated EEG ", false, 0, 0, false);
 
 						LinePlot lfpPlot = new LinePlot("Local Field Potential - col 2 " + simName, "lfp1");
-						lfpPlot.draw(datasetLFP, " Local Field Potential (stimulated column) ", true, minLFPplot,
+						lfpPlot.draw(datasetLFP,
+								" Local Field Potential (stimulated column) ", true,
+								minLFPplot,
 								maxLFPplot, true);
 
 						LinePlot lfp2Plot = new LinePlot("Local Field Potential - col 3 " + simName, "lfp2");
 						lfp2Plot.draw(datasetLFP2,
-								"(D)  Local Field Potential (adjacent column)", true, minLFPplot,
+								"  Local Field Potential (adjacent column)", true,
+								minLFPplot,
 								maxLFPplot, true);
 
 						LinePlot eeg_lfpPlot = new LinePlot("Local Field Potential - for all columns " + simName,
@@ -253,7 +261,8 @@ public class Simulator {
 						neuronTestPlot.draw(datasetNeuronTest, "test: neuron" + neuronNumber, false, 0, 0, false);
 
 						HistogramPlot hist = new HistogramPlot("Network Activity", "histogram");
-						hist.draw(allDatasetSpikes[1], "Histogram", false, 0, 0, false);
+						// hist.draw(allDatasetSpikes[1], "Histogram", false, 0,
+						// 0, false);
 
 						InputPlotFrame inputFrame = new InputPlotFrame();
 						if (!inDescriptor.isEmpty()) {
