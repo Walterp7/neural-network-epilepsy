@@ -69,9 +69,11 @@ public class ConnectionsBuilder {
 				for (NeuronTypePool inP : inPools) {
 					if (inP != null) {
 						for (Neuron inNeuron : inP.getNeurons()) {
-							double r = generator.nextDouble();
+							double r = generator.nextDouble(); // probability of
+																// the
+																// connection
 							if (r < prob) {
-
+								// add here randomization of the weight
 								net.addConnection(synFact.getSynapse(
 										outNeuron,
 										inNeuron,
