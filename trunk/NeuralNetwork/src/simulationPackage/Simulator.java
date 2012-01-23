@@ -56,8 +56,10 @@ public class Simulator {
 					Network net;
 
 					try {
-						FileWriter outFile = new FileWriter("eeg" + simName + ".txt");
+						FileWriter outFileEEG = new FileWriter("eeg" + simName + ".txt");
 						net = mag.createNetwork(simDir[0], configFromGUI, timeStep, totalTime, inDescriptor);
+
+						net.initialize(timeStep, 400);
 
 						AnalyseNetwork analyser = new AnalyseNetwork();
 						analyser.exportConnections(net);
@@ -90,6 +92,7 @@ public class Simulator {
 						XYSeries seriesNeuronTest = new XYSeries("Neuron number " + neuronNumber);
 
 						for (double timeOfSimulation = 0; timeOfSimulation <= totalTime; timeOfSimulation += timeStep) {
+
 							List<Status> stats = net.nextStep(timeStep, timeOfSimulation);
 
 							double psp = 0;
@@ -172,7 +175,7 @@ public class Simulator {
 
 							seriesPSP.add(timeOfSimulation, psp / 3000);
 
-							outFile.write(timeOfSimulation + ", " + psp / 3000 + "\r\n");
+							outFileEEG.write(timeOfSimulation + ", " + psp / 3000 + "\r\n");
 							seriesLFP.add(timeOfSimulation, voltage);
 							seriesLFP2.add(timeOfSimulation, voltage2);
 							seriesEEG_LPF.add(timeOfSimulation, voltage_all / 2000);
@@ -186,6 +189,8 @@ public class Simulator {
 								listener.reportProgress(timeOfSimulation / totalTime);
 							}
 						}
+
+						outFileEEG.close();
 
 						XYSeriesCollection[] allDatasetSpikes = new XYSeriesCollection[numOfCols];
 

@@ -39,9 +39,10 @@ public class SynapseFactory {
 
 	public Synapse getSynapse(Inputer preSynaptic, Neuron postSynaptic,
 			double weight, int delay) {
-
-		StpParameters stp = stdpParams.get("th2" + postSynaptic.typeLayer2String());
-
+		StpParameters stp = null;
+		if (stdpParams != null) {
+			stp = stdpParams.get("th2" + postSynaptic.typeLayer2String());
+		}
 		Synapse newSynapse = new Synapse(weight, postSynaptic, stp, thalamicPSP);
 
 		newSynapse.setTimeDelay(delay);

@@ -3,15 +3,18 @@ package networkPackage;
 import java.util.ArrayList;
 import java.util.List;
 
+import neuronPackage.GaussianInputer;
 import neuronPackage.Inputer;
 import neuronPackage.NetworkNode;
 import neuronPackage.Neuron;
+import neuronPackage.PickInputer;
 import neuronPackage.Status;
 import neuronPackage.Synapse;
 
 public class Network {
 	private final List<NeuronColumn> allColumns = new ArrayList<NeuronColumn>();
 	private final List<NetworkNode> allNodes = new ArrayList<NetworkNode>();
+	private final List<Neuron> allNeurons = new ArrayList<Neuron>();
 	private final List<Inputer> allInputs = new ArrayList<Inputer>();
 
 	public List<Status> nextStep(double timStep, double timeofSimulation) {
@@ -24,10 +27,10 @@ public class Network {
 				stats.add(newStat);
 			}
 		}
-		for (NetworkNode nod : allNodes) {
-			if (nod instanceof Neuron) {
-				nod.setCurrentInput();
-			}
+		for (Neuron nod : allNeurons) {
+
+			nod.setCurrentInput();
+
 		}
 		return stats;
 	}
@@ -66,16 +69,46 @@ public class Network {
 					for (Neuron neuron : typePool.getNeurons()) {
 
 						allNodes.add(neuron);
+						allNeurons.add(neuron);
 						neuron.setId(neurNum++);
 					}
 				}
 			}
 		}
 		System.out.println("total number of neurons " + neurNum);
+		// for (NetworkNode inp : allInputs) {
+		// allNodes.add(inp);
+		//
+		// }
+	}
+
+	public void setInputs() {
 		for (NetworkNode inp : allInputs) {
 			allNodes.add(inp);
 
 		}
+	}
+
+	public void initialize(double timeStep, int initTime) {
+
+		GaussianInputer randomInputer = new GaussianInputer();
+		PickInputer pickInputer = new PickInputer(0, 5, 10, null);
+		for (Neuron nod : allNeurons) {
+
+			randomInputer.addConnection(nod, this);
+			pickInputer.addConnection(nod, this);
+
+		}
+		allNodes.add(randomInputer);
+		allNodes.add(pickInputer);
+
+		for (double t = timeStep; t <= initTime; t += timeStep) {
+			nextStep(timeStep, t);
+		}
+		allNodes.remove(randomInputer);
+		allNodes.remove(pickInputer);
+		this.setInputs();
+
 	}
 
 	public int numberOfColumns() {
