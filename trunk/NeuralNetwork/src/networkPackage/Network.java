@@ -1,5 +1,7 @@
 package networkPackage;
 
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -143,4 +145,19 @@ public class Network {
 		return list;
 	}
 
+	public void saveToFile(String filename) throws IOException {
+		FileWriter outNeurons = new FileWriter(filename);
+		for (Neuron neuron : allNeurons) {
+			outNeurons.write(neuron.getId() + " " + neuron.getType() + " " + neuron.getLayer());
+			for (int i = 0; i < 3; i++) {
+				outNeurons.write(" " + neuron.getCoordinates()[i]);
+			}
+
+			for (Synapse syn : neuron.getNeuronConnections()) {
+				outNeurons.write(" " + syn.getPostSynapticNeuron().getId());
+			}
+			outNeurons.write("\r\n");
+		}
+		outNeurons.close();
+	}
 }

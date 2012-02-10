@@ -40,6 +40,7 @@ public class ConnectionsBuilder {
 
 			double prob = conDesc.getProbability();
 			double weight = conDesc.getWeight();
+			double std = conDesc.getStdWeight();
 
 			NeuronTypePool outPool = currentColumn.getPool(conDesc.getPoolName())
 					.getTypePool(conDesc.getType());
@@ -77,7 +78,7 @@ public class ConnectionsBuilder {
 								net.addConnection(synFact.getSynapse(
 										outNeuron,
 										inNeuron,
-										weight,
+										weight, std,
 										calculateDelay(
 												outNeuron.getCoordinates(),
 												inNeuron.getCoordinates(),
