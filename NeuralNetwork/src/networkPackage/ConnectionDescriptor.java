@@ -9,10 +9,11 @@ class ConnectionDescriptor {
 	private Layer targetPoolNumber;
 	private Type type, targetType;
 	private double weight;
+	private double stdWeight;
 	private double probability;
 
 	void setDescription(int targetcol, Layer pool, Layer targetPool, Type t,
-			Type tart, double w, double p) {
+			Type tart, double w, double stpw, double p) {
 
 		targetCol = targetcol;
 		poolName = pool;
@@ -21,6 +22,11 @@ class ConnectionDescriptor {
 		targetType = tart;
 		weight = w;
 		probability = p;
+		stdWeight = stpw;
+	}
+
+	double getStdWeight() {
+		return stdWeight;
 	}
 
 	double getWeight() {

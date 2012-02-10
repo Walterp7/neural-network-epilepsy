@@ -28,7 +28,7 @@ public class testSim {
 		GaussianInputer gInput = new GaussianInputer(4, 10);
 		// input.addConnection(neur, null);
 
-		Synapse s = fact.getSynapse(neur1, neur2, 1, 1);
+		Synapse s = fact.getSynapse(neur1, neur2, 1, 0.5, 1);
 
 		gInput.addConnection(neur1, net);
 		// input.inputConnections.add(s);

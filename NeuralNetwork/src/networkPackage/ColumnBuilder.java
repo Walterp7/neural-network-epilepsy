@@ -88,6 +88,7 @@ public class ColumnBuilder {
 				Type targetType = stringToType(parsedLine[4]);
 				double prob = Double.parseDouble(parsedLine[5]);
 				double newWeight = Double.parseDouble(parsedLine[6]) * weightMultiplier;
+				double std = Double.parseDouble(parsedLine[7]);
 
 				if ((type == Type.LTS)) {
 					newWeight = newWeight * ltsMultiplier;
@@ -97,7 +98,7 @@ public class ColumnBuilder {
 					newWeight = newWeight * fsMultiplier;
 				}
 				descr.setDescription(targetColNum, layerName, targetLayer, type,
-						targetType, newWeight, prob);
+						targetType, newWeight, std, prob);
 
 				allProbabilities.add(descr);
 			}
@@ -223,6 +224,7 @@ public class ColumnBuilder {
 		if (s.equals("VI")) {
 			return Layer.VI;
 		} else {
+			System.out.println(s);
 			throw new IOException();
 		}
 	}

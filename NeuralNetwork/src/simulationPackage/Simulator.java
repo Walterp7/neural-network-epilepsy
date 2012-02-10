@@ -57,8 +57,10 @@ public class Simulator {
 
 					try {
 						FileWriter outFileEEG = new FileWriter("eeg" + simName + ".txt");
+
 						net = mag.createNetwork(simDir[0], configFromGUI, timeStep, totalTime, inDescriptor);
 
+						net.saveToFile("neurons.txt");
 						net.initialize(timeStep, 400);
 
 						AnalyseNetwork analyser = new AnalyseNetwork();

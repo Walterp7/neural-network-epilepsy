@@ -1,6 +1,7 @@
 package networkPackage;
 
 import java.util.HashMap;
+import java.util.Random;
 
 import neuronPackage.Inputer;
 import neuronPackage.Neuron;
@@ -16,6 +17,8 @@ public class SynapseFactory {
 
 	PSPparameters thalamicPSP = new PSPparameters(1, 5, 0.535, 15);
 
+	Random generator = new Random(948234541);
+
 	public SynapseFactory(HashMap<String, StpParameters> params) {
 		this.stdpParams = params;
 		pspParams.put(Type.RS, new PSPparameters(1, 10, 0.6968, 25));
@@ -25,10 +28,23 @@ public class SynapseFactory {
 	}
 
 	public Synapse getSynapse(Neuron preSynaptic, Neuron postSynaptic,
-			double weight, int delay) {
+			double meanWeight, double std, int delay) {
 
 		StpParameters stp = stdpParams.get(preSynaptic.typeLayer2String()
 				+ "2" + postSynaptic.typeLayer2String());
+		double weight;
+
+		double lowBound = meanWeight - std;
+		double upperBound = meanWeight + std;
+
+		if ((preSynaptic.getType() == Type.RS || preSynaptic.getType() == Type.IB) && lowBound < 0) {
+			lowBound = 0;
+		} else {
+			if ((preSynaptic.getType() == Type.LTS || preSynaptic.getType() == Type.FS) && upperBound > 0) {
+				upperBound = 0;
+			}
+		}
+		weight = lowBound + (upperBound - lowBound) * generator.nextDouble();
 
 		Synapse newSynapse = new Synapse(weight, postSynaptic, stp, pspParams.get(preSynaptic.getType()));
 
