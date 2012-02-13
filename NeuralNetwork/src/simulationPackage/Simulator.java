@@ -62,7 +62,7 @@ public class Simulator {
 
 						net.saveToFile("neurons.txt");
 						net.initialize(timeStep, 400);
-
+						mag.modifyWeights(net);
 						AnalyseNetwork analyser = new AnalyseNetwork();
 						analyser.exportConnections(net);
 						ArrayList<Integer> numOfNeuronsInColumn = net.getNumberOfNeuronsInColumn();

@@ -9,15 +9,22 @@ import java.util.List;
 
 import networkGUI.ColDescr;
 import networkGUI.ConfigurationUnit;
+import neuronPackage.Neuron;
 import neuronPackage.StpParameters;
+import neuronPackage.Synapse;
+import neuronPackage.Type;
 
 public class NetworkBuilder {
 
 	private int totalColumnNumber = 0;
 	List<Integer> layersInColumn = new ArrayList<Integer>();
 	private double weightMultiplier = 1;
-	private double fsInhMultiplier;
-	private double ltsInhMultiplier;
+	private double fsInhMultiplier = 1;
+	private double ltsInhMultiplier = 1;
+
+	private String colNumFS = "*";
+	private String colNumLTS = "*";
+
 	List<String> inputs = new ArrayList<String>();
 	HashMap<String, StpParameters> stpParams = new HashMap<String, StpParameters>();
 
@@ -37,20 +44,42 @@ public class NetworkBuilder {
 		while ((newLine.charAt(0) == '%')) {
 			newLine = inSimConf.readLine();
 		}
-		parsedLine = newLine.trim().split("\\s+");
-		weightMultiplier = Double.parseDouble(parsedLine[0]);
-		fsInhMultiplier = Double.parseDouble(parsedLine[1]);
-		ltsInhMultiplier = Double.parseDouble(parsedLine[2]);
 
+		while ((newLine.charAt(0) != '%')) {
+
+			parsedLine = newLine.trim().split("\\s+");
+			if (parsedLine[0].equals("ALL")) {
+				weightMultiplier = Double.parseDouble(parsedLine[1]);
+			} else {
+				if (parsedLine[0].equals("FS")) {
+					fsInhMultiplier = Double.parseDouble(parsedLine[2]);
+					colNumFS = parsedLine[1];
+				} else {
+					if (parsedLine[0].equals("LTS")) {
+						ltsInhMultiplier = Double.parseDouble(parsedLine[2]);
+						colNumLTS = parsedLine[1];
+					}
+				}
+			}
+			newLine = inSimConf.readLine();
+		}
+
+		while ((newLine.charAt(0) == '%')) {
+			newLine = inSimConf.readLine();
+
+		}
 		// lines with description of inputs
-		while ((!(newLine = inSimConf.readLine()).equals("STP configuration"))) {
+		while ((!newLine.equals("STP configuration"))) {
 			if (!(newLine.charAt(0) == '%')) {
 				inputs.add(newLine);
 			}
+
+			newLine = inSimConf.readLine();
 		}
 		// lines with description on STP
 		while ((newLine = inSimConf.readLine()) != null) {
 			if (!(newLine.charAt(0) == '%')) {
+
 				parsedLine = newLine.trim().split("\\s+");
 				double ti = Double.parseDouble(parsedLine[1]);
 				double trec = Double.parseDouble(parsedLine[2]);
@@ -63,6 +92,45 @@ public class NetworkBuilder {
 		inSimConf.close();
 	}
 
+	public void modifyWeights(Network net) {
+		System.out.println("modifying weights");
+		if (weightMultiplier * fsInhMultiplier * ltsInhMultiplier != 1) {
+			for (Neuron neuron : net.getAllNeurons()) {
+				double multiplier = weightMultiplier;
+				if (fsInhMultiplier != 1) {
+					if (neuron.getType() == Type.FS) {
+						if (colNumFS.equals("*")) {
+							multiplier = multiplier * fsInhMultiplier;
+						} else {
+							int colNum = Integer.parseInt(colNumFS);
+							if (neuron.getColNum() == colNum) {
+								multiplier = multiplier * fsInhMultiplier;
+							}
+						}
+					}
+				}
+				if (ltsInhMultiplier != 1) {
+					if (neuron.getType() == Type.LTS) {
+						if (colNumFS.equals("*")) {
+							multiplier = multiplier * ltsInhMultiplier;
+						} else {
+							int colNum = Integer.parseInt(colNumLTS);
+							if (neuron.getColNum() == colNum) {
+								multiplier = multiplier * ltsInhMultiplier;
+							}
+						}
+					}
+				}
+				if (multiplier != 1) {
+					for (Synapse syn : neuron.getNeuronConnections()) {
+						syn.multiplyWeight(multiplier);
+
+					}
+				}
+			}
+		}
+	}
+
 	public Network createNetwork(String simConfigFile, ConfigurationUnit config, double timestep, double totalTime,
 			InputDescriptor inDescriptor) throws IOException { // simConfg
 		// general info,colConfList - connections
@@ -73,8 +141,7 @@ public class NetworkBuilder {
 		// for each column
 		for (int colNumber = 0; colNumber < totalColumnNumber; colNumber++) {
 			ColumnBuilder newColBuilder = new ColumnBuilder();
-			newColBuilder.initialize(config.getColConf(colNumber), layersInColumn.get(colNumber), colNumber,
-					weightMultiplier, fsInhMultiplier, ltsInhMultiplier);
+			newColBuilder.initialize(config.getColConf(colNumber), layersInColumn.get(colNumber), colNumber);
 
 			newColBuilder.pushNeurons(net);
 			builderList.add(newColBuilder);

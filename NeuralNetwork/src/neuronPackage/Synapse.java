@@ -142,4 +142,8 @@ public class Synapse implements NetworkNode { // connects node with neuron
 		return synapseWeight;
 	}
 
+	public void multiplyWeight(double value) {
+		synapseWeight = synapseWeight * value;
+	}
+
 }

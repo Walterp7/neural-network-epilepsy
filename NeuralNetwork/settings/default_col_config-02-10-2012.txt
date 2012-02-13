@@ -1,0 +1,128 @@
+%config file			
+%THERE MUST BE AN EMPTY LINE AFTER COMMENTS	
+----------------------------------------------	
+VI																								
+272																								
+84		0		10		5
+V																								
+160																								
+52		17		21		10																		
+IV																								
+114																								
+73		0		18		9															
+III																								
+215																								
+79		0		15		7																	
+III	RS		0			III		RS		0.16	1.67	1.67
+III	RS		0			III		FS		0.36	1.82	1.82
+III	RS		0			III		LTS		0.07	0.37	0.37
+III	RS		0			IV		RS		0.02	0.36	0.36
+III	RS		0			IV		FS		0.01	0.05	0.05
+III	RS		0			IV		LTS		0.01	0.05	0.05
+III	RS		0			V		RS		0.3	1.48	1.48
+III	RS		0			V		IB		0.3	1.48	1.48
+III	RS		1			III		RS		0.14	0.47	0.47
+III	RS		1			III		FS		0.14	1.5	1.5
+III	RS		2			III		RS		0.07	0.23	0.23
+III	RS		2			III		FS		0.08	0.7	0.7
+III	FS		0			III		RS		0.37	-1.54	-1.54
+III	FS		0			III		FS		0.62	-1.5	-1.5
+III	FS		0			III		LTS		0.34	-1.5	-1.5
+III	LTS		0			III		RS		0.54	-0.21	-0.21
+III	LTS		0			III		FS		0.53	-0.6	-0.6
+III	LTS		0			III		LTS		0.09	-1.5	-1.5
+III	LTS		0			V		RS		0.35	-0.83	-0.83
+III	LTS		0			V		FS		0.53	-0.83	-0.83
+III	LTS		0			V		IB		0.5	-0.83	-0.83
+III	LTS		0			VI		RS		0.25	-0.83	-0.83
+III	LTS		0			VI		FS		0.53	-0.83	-0.83
+IV	RS		0			III		RS		0.16	2.12	2.12
+IV	RS		0			III		FS		0.23	0.8	0.8
+IV	RS		0			III		LTS		0.22	0.3	0.3
+IV	RS		0			IV		RS		0.1	1.36	1.36
+IV	RS		0			IV		FS		0.55	2.17	2.17
+IV	RS		0			IV		LTS		0.26	0.68	0.68
+IV	RS		0			V		RS		0.1	0.5	0.5
+IV	RS		0			V		IB		0.1	0.8	0.8
+IV	RS		0			VI		RS		0.03	1.27	1.27
+IV	RS		1			IV		FS		0.14	1.5	1.5
+IV	FS		0			IV		RS		0.44	-1.24	-1.24
+IV	FS		0			IV		FS		0.74	-1.5	-1.5
+IV	FS		0			IV		LTS		0.36	-1	-1
+IV	LTS		0			III		RS		0.1	-0.4	-0.4
+IV	LTS		0			III		FS		0.3	-0.4	-0.4
+IV	LTS		0			IV		RS		0.39	-0.85	-0.85
+IV	LTS		0			IV		FS		0.62	-0.8	-0.8
+IV	LTS		0			IV		LTS		0.08	-0.8	-0.8
+IV	LTS		0			V		RS		0.1	-0.4	-0.4
+IV	LTS		0			V		FS		0.3	-0.4	-0.4
+V	RS		0			III		RS		0.02	0.67	0.67
+V	RS		0			III		FS		0.43	0.23	0.23
+V	RS		0			III		LTS		0.52	0.23	0.23
+V	RS		0			IV		RS		0.01	0.48	0.48
+V	RS		0			IV		FS		0.43	0.23	0.23
+V	RS		0			IV		LTS		0.51	0.23	0.23
+V	RS		0			V		RS		0.0875	1.06	1.06
+V	RS		0			V		FS		1	1.06	1.06
+V	RS		0			V		LTS		0.08	0.62	0.62
+V	RS		0			V		IB		0.0875	1.06	1.06
+V	RS		0			VI		RS		0.03	0.5	0.5
+V	RS		0			VI		FS		0.1	0.1	0.1
+V	RS		0			VI		LTS		0.15	0.1	0.1
+V	RS		1			V		RS		0.14	0.1	0.1
+V	RS		1			V		FS		0.14	0.1	0.1
+V	RS		1			V		IB		0.25	0.47	0.47
+V	FS		0			V		RS		0.33	-0.5	-0.5
+V	FS		0			V		FS		0.62	-1.5	-1.5
+V	FS		0			V		LTS		0.34	-1	-1
+V	FS		0			V		IB		0.33	-0.5	-0.5
+V	LTS		0			III		RS		0.35	-0.83	-0.83
+V	LTS		0			III		FS		0.53	-0.83	-0.83
+V	LTS		0			V		RS		0.35	-0.83	-0.83
+V	LTS		0			V		FS		0.53	-1	-1
+V	LTS		0			V		LTS		0.09	-1	-1
+V	LTS		0			V		IB		0.35	-0.83	-0.83
+V	LTS		0			VI		RS		0.25	-0.83	-0.83
+V	LTS		0			VI		FS		0.53	-0.83	-0.83
+V	IB		0			III		RS		0.02	0.26	0.26
+V	IB		0			III		FS		0.43	0.23	0.23
+V	IB		0			III		LTS		0.52	0.23	0.23
+V	IB		0			IV		RS		0.01	0.17	0.17
+V	IB		0			IV		FS		0.43	0.23	0.23
+V	IB		0			IV		LTS		0.51	0.23	0.23
+V	IB		0			V		RS		0.0875	1.06	1.06
+V	IB		0			V		FS		0.43	0.23	0.23
+V	IB		0			V		LTS		0.51	0.23	0.23
+V	IB		0			V		IB		0.07	1.06	1.06
+V	IB		0			VI		RS		0.07	0.49	0.49
+V	IB		1			III		RS		0.01	0.26	0.26
+V	IB		1			III		LTS		0.25	0.2	0.2
+V	IB		1			V		RS		0.06	0.8	0.8
+V	IB		1			V		FS		0.2	0.23	0.23
+V	IB		1			V		LTS		0.2	0.23	0.23
+V	IB		1			V		IB		0.03	0.8	0.8
+V	IB		2			III		RS		0.005	0.26	0.26
+V	IB		2			III		LTS		0.13	0.23	0.23
+V	IB		2			V		RS		0.04	0.8	0.8
+V	IB		2			V		FS		0.1	0.23	0.23
+V	IB		2			V		LTS		0.1	0.23	0.23
+V	IB		2			V		IB		0.01	0.8	0.8
+VI	RS		0			IV		RS		0.002	0.43	0.43
+VI	RS		0			IV		FS		0.05	0.34	0.34
+VI	RS		0			V		RS		0.006	1.39	1.39
+VI	RS		0			V		IB		0.03	1.39	1.39
+VI	RS		0			VI		RS		0.036	0.9	0.9
+VI	RS		0			VI		FS		0.225	0.69	0.69
+VI	RS		0			VI		LTS		0.21	0.16	0.16
+VI	RS		1			V		FS		0.14	0.23	0.23
+VI	FS		0			VI		RS		0.44	-0.9	-0.9
+VI	FS		0			VI		FS		0.62	-1.5	-1.5
+VI	FS		0			VI		LTS		0.34	-1	-1
+VI	LTS		0			III		RS		0.35	-0.83	-0.83
+VI	LTS		0			III		FS		0.53	-0.83	-0.83
+VI	LTS		0			V		RS		0.25	-0.83	-0.83
+VI	LTS		0			V		FS		0.53	-0.83	-0.83
+VI	LTS		0			V		IB		0.25	-0.83	-0.83
+VI	LTS		0			VI		RS		0.35	-0.63	-0.63
+VI	LTS		0			VI		FS		0.53	-0.83	-0.83
+VI	LTS		0			VI		LTS		0.09	-0.63	-0.63
