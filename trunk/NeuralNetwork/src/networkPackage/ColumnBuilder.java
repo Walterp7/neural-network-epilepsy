@@ -39,8 +39,7 @@ public class ColumnBuilder {
 		neuronParameters.put(Type.LTS, ltsPar);
 	}
 
-	void initialize(String pathname, int numOfLayers, int colNum, double weightMultiplier, double fsMultiplier,
-			double ltsMultiplier)
+	void initialize(String pathname, int numOfLayers, int colNum)
 			throws IOException {
 
 		colID = colNum;
@@ -87,16 +86,16 @@ public class ColumnBuilder {
 				Layer targetLayer = stringToLayer(parsedLine[3]);
 				Type targetType = stringToType(parsedLine[4]);
 				double prob = Double.parseDouble(parsedLine[5]);
-				double newWeight = Double.parseDouble(parsedLine[6]) * weightMultiplier;
+				double newWeight = Double.parseDouble(parsedLine[6]);
 				double std = Double.parseDouble(parsedLine[7]);
 
-				if ((type == Type.LTS)) {
-					newWeight = newWeight * ltsMultiplier;
-				}
-
-				if ((type == Type.LTS) || (type == Type.FS)) {
-					newWeight = newWeight * fsMultiplier;
-				}
+				// if ((type == Type.LTS)) {
+				// newWeight = newWeight * ltsMultiplier;
+				// }
+				//
+				// if ((type == Type.LTS) || (type == Type.FS)) {
+				// newWeight = newWeight * fsMultiplier;
+				// }
 				descr.setDescription(targetColNum, layerName, targetLayer, type,
 						targetType, newWeight, std, prob);
 

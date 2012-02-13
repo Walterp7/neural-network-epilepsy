@@ -136,6 +136,10 @@ public class Neuron implements NetworkNode {
 		return v;
 	}
 
+	public int getColNum() {
+		return colNum;
+	}
+
 	public String typeLayer2String() {
 		String str = type.toString();
 

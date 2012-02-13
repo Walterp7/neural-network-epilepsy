@@ -51,6 +51,10 @@ public class Network {
 		return allColumns;
 	}
 
+	public List<Neuron> getAllNeurons() {
+		return allNeurons;
+	}
+
 	public List<NetworkNode> getAllNodes() {
 		return allNodes;
 	}
@@ -94,7 +98,7 @@ public class Network {
 	public void initialize(double timeStep, int initTime) {
 
 		GaussianInputer randomInputer = new GaussianInputer();
-		PickInputer pickInputer = new PickInputer(0, 5, 10, null);
+		PickInputer pickInputer = new PickInputer(0, 5, 5, null);
 		for (Neuron nod : allNeurons) {
 
 			randomInputer.addConnection(nod, this);
