@@ -44,53 +44,54 @@ public class ConnectionsBuilder {
 
 			NeuronTypePool outPool = currentColumn.getPool(conDesc.getPoolName())
 					.getTypePool(conDesc.getType());
+			if ((outPool != null) && (!outPool.isEmpty())) {
+				ArrayList<NeuronTypePool> inPools = new ArrayList<NeuronTypePool>();
 
-			ArrayList<NeuronTypePool> inPools = new ArrayList<NeuronTypePool>();
-
-			if (conDesc.getTargetCol() == 0) {
-				inPools.add(currentColumn.getPool(conDesc.getTargetPoolName())
-						.getTypePool(conDesc.getTargetType()));
-			} else {
-				if (net.getColumn(currentColumnNum + conDesc.getTargetCol()) != null) {
-					inPools.add(net
-							.getColumn(currentColumnNum + conDesc.getTargetCol())
-							.getPool(conDesc.getTargetPoolName())
+				if (conDesc.getTargetCol() == 0) {
+					inPools.add(currentColumn.getPool(conDesc.getTargetPoolName())
 							.getTypePool(conDesc.getTargetType()));
+				} else {
+					if (net.getColumn(currentColumnNum + conDesc.getTargetCol()) != null) {
+						inPools.add(net
+								.getColumn(currentColumnNum + conDesc.getTargetCol())
+								.getPool(conDesc.getTargetPoolName())
+								.getTypePool(conDesc.getTargetType()));
+					}
+					if (net.getColumn(currentColumnNum - conDesc.getTargetCol()) != null) {
+						inPools.add(net
+								.getColumn(currentColumnNum - conDesc.getTargetCol())
+								.getPool(conDesc.getTargetPoolName())
+								.getTypePool(conDesc.getTargetType()));
+					}
 				}
-				if (net.getColumn(currentColumnNum - conDesc.getTargetCol()) != null) {
-					inPools.add(net
-							.getColumn(currentColumnNum - conDesc.getTargetCol())
-							.getPool(conDesc.getTargetPoolName())
-							.getTypePool(conDesc.getTargetType()));
-				}
-			}
-			SynapseFactory synFact = new SynapseFactory(stpParams);
+				SynapseFactory synFact = new SynapseFactory(stpParams);
 
-			for (Neuron outNeuron : outPool.getNeurons()) {
-				for (NeuronTypePool inP : inPools) {
-					if (inP != null) {
-						for (Neuron inNeuron : inP.getNeurons()) {
-							double r = generator.nextDouble(); // probability of
-																// the
-																// connection
-							if (r < prob) {
-								// add here randomization of the weight
-								net.addConnection(synFact.getSynapse(
-										outNeuron,
-										inNeuron,
-										weight, std,
-										calculateDelay(
-												outNeuron.getCoordinates(),
-												inNeuron.getCoordinates(),
-												timestep)));
+				for (Neuron outNeuron : outPool.getNeurons()) {
+					for (NeuronTypePool inP : inPools) {
+						if (inP != null) {
+							for (Neuron inNeuron : inP.getNeurons()) {
+								double r = generator.nextDouble(); // probability
+																	// of
+																	// the
+																	// connection
+								if (r < prob) {
+									// add here randomization of the weight
+									net.addConnection(synFact.getSynapse(
+											outNeuron,
+											inNeuron,
+											weight, std,
+											calculateDelay(
+													outNeuron.getCoordinates(),
+													inNeuron.getCoordinates(),
+													timestep)));
+
+								}
 
 							}
-
 						}
 					}
 				}
 			}
-
 		}
 	}
 }

@@ -64,21 +64,6 @@ public class InputDescriptor { // FOR PLOTTING MOSTLY
 		if (!parsedLine[index + 1].equals("-1")) {
 			keyTitle = "Col" + (Integer.parseInt(parsedLine[index + 1]) + 1) + ", ";
 		}
-		if (parsedLine[index + 2].equals("0")) {
-			keyTitle = keyTitle + "Layer II/III, ";
-		}
-		if (parsedLine[index + 2].equals("1")) {
-			keyTitle = keyTitle + "Layer IV, ";
-		}
-		if (parsedLine[index + 2].equals("2")) {
-			keyTitle = keyTitle + "Layer IV, ";
-		}
-		if (parsedLine[index + 2].equals("3")) {
-			keyTitle = keyTitle + "Layer VI, ";
-		}
-		if (parsedLine[index + 2].equals("-1")) {
-			keyTitle = keyTitle + "all layers, ";
-		}
 
 		keyTitle = keyTitle + parsedLine[index] + " neurons";
 

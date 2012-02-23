@@ -151,8 +151,9 @@ public class NetworkBuilder {
 			colBuilder.connectNetwork(net, stpParams, timestep);
 		}
 		InputBuilder inBuild = new InputBuilder();
-		inBuild.setInputs(inputs, stpParams, net, inDescriptor, totalTime);
 		net.setAllNodes();
+		inBuild.setInputs(inputs, stpParams, net, inDescriptor, totalTime);
+
 		return net;
 	}
 

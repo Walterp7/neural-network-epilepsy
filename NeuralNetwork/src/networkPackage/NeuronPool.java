@@ -48,7 +48,7 @@ public class NeuronPool {
 		return neuronList;
 	}
 
-	NeuronTypePool getTypePool(Type t) {
+	public NeuronTypePool getTypePool(Type t) {
 		return typePools.get(t);
 	}
 

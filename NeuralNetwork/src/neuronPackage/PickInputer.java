@@ -7,7 +7,7 @@ import networkPackage.Network;
 import networkPackage.SynapseFactory;
 
 public class PickInputer extends Inputer {
-	double value;
+
 	int startTime;
 	int signalTime;
 	protected final ArrayList<Synapse> inputConnections = new ArrayList<Synapse>();
@@ -21,9 +21,9 @@ public class PickInputer extends Inputer {
 	}
 
 	@Override
-	public void addConnection(Neuron n, Network net) {
+	public void addConnection(Neuron n, Network net, double strenght) {
 		// inputConnections.add(n);
-		Synapse s = synFact.getSynapse(this, n, 1, 1);
+		Synapse s = synFact.getSynapse(this, n, strenght, 1);
 		inputConnections.add(s);
 		net.addConnection(s);
 
