@@ -10,7 +10,6 @@ import java.util.concurrent.TimeUnit;
 
 import networkGUI.ConfigurationUnit;
 import networkGUI.EegColumnPlotFrame;
-import networkGUI.HistogramPlot;
 import networkGUI.InputPlotFrame;
 import networkGUI.LinePlot;
 import networkGUI.SpikePlotFrame;
@@ -61,7 +60,7 @@ public class Simulator {
 						net = mag.createNetwork(simDir[0], configFromGUI, timeStep, totalTime, inDescriptor);
 
 						net.saveToFile("neurons.txt");
-						net.initialize(timeStep, 400);
+						net.initialize(timeStep, 0);
 						mag.modifyWeights(net);
 						AnalyseNetwork analyser = new AnalyseNetwork();
 						analyser.exportConnections(net);
@@ -267,7 +266,8 @@ public class Simulator {
 						LinePlot neuronTestPlot = new LinePlot("test: neuron" + neuronNumber, "test" + neuronNumber);
 						neuronTestPlot.draw(datasetNeuronTest, "test: neuron" + neuronNumber, false, 0, 0, false);
 
-						HistogramPlot hist = new HistogramPlot("Network Activity", "histogram");
+						// HistogramPlot hist = new
+						// HistogramPlot("Network Activity", "histogram");
 						// hist.draw(allDatasetSpikes[1], "Histogram", false, 0,
 						// 0, false);
 

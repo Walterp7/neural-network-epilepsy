@@ -16,7 +16,7 @@ public class GaussianInputer extends Inputer {
 	protected final ArrayList<Neuron> inputConnections = new ArrayList<Neuron>();
 
 	@Override
-	public void addConnection(Neuron n, Network net) {
+	public void addConnection(Neuron n, Network net, double strength) {
 		// inputConnections.add(n);
 
 		inputConnections.add(n);

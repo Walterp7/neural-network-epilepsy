@@ -101,8 +101,8 @@ public class Network {
 		PickInputer pickInputer = new PickInputer(0, 5, 3.25, null);
 		for (Neuron nod : allNeurons) {
 
-			randomInputer.addConnection(nod, this);
-			pickInputer.addConnection(nod, this);
+			randomInputer.addConnection(nod, this, 1);
+			pickInputer.addConnection(nod, this, 1);
 
 		}
 		allNodes.add(randomInputer);
@@ -131,8 +131,8 @@ public class Network {
 		allColumns.add(col);
 	}
 
-	public void addInput(Inputer i) {
-		allInputs.add(i);
+	public void addInput(Inputer inputer) {
+		allInputs.add(inputer);
 
 	}
 

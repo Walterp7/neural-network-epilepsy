@@ -8,7 +8,6 @@ import networkPackage.SynapseFactory;
 
 public class FrequencyInputer extends Inputer {
 
-	double value;
 	int interTime;
 	int signalTime;
 
@@ -23,10 +22,10 @@ public class FrequencyInputer extends Inputer {
 	}
 
 	@Override
-	public void addConnection(Neuron n, Network net) {
+	public void addConnection(Neuron n, Network net, double strenght) {
 		// inputConnections.add(n);
 
-		Synapse s = synFact.getSynapse(this, n, 1, 1);
+		Synapse s = synFact.getSynapse(this, n, strenght, 1);
 		inputConnections.add(s);
 		net.addConnection(s);
 	}
