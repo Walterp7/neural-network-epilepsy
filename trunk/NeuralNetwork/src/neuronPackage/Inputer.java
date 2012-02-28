@@ -57,12 +57,12 @@ public abstract class Inputer implements NetworkNode {
 			setUpConnections(network, colNum, Layer.V, Type.IB, 0.9, 1);
 			// column to the left
 			if (colNum - 1 >= 0) {
-				setUpConnections(network, colNum - 1, Layer.IV, Type.RS, 0.05, 0.2);
+				setUpConnections(network, colNum - 1, Layer.IV, Type.RS, 0, 0.2);
 				setUpConnections(network, colNum - 1, Layer.IV, Type.FS, 0.96, 0.8);
 
 			}
 			if (colNum + 1 <= totalNumCol - 1) {
-				setUpConnections(network, colNum + 1, Layer.IV, Type.RS, 0.05, 0.2);
+				setUpConnections(network, colNum + 1, Layer.IV, Type.RS, 0, 0.2);
 				setUpConnections(network, colNum + 1, Layer.IV, Type.FS, 0.96, 0.8);
 			}
 

@@ -140,6 +140,16 @@ public class Neuron implements NetworkNode {
 		return colNum;
 	}
 
+	public String type2String() {
+		String result;
+		if (type == Type.IB) {
+			result = "RS";
+		} else {
+			result = type.toString();
+		}
+		return result;
+	}
+
 	public String typeLayer2String() {
 		String str = type.toString();
 
