@@ -1,7 +1,6 @@
 package neuronPackage;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedList;
 
 public class Synapse implements NetworkNode { // connects node with neuron
 	double synapseWeight;
@@ -10,8 +9,8 @@ public class Synapse implements NetworkNode { // connects node with neuron
 	// Neuron preSynapticNeuron;
 	// double ti, trec, tfac, U;
 	StpParameters stpParam = null;
-	List<SynapseInputPair> inputs = new ArrayList<SynapseInputPair>();
-
+	// List<SynapseInputPair> inputs = new ArrayList<SynapseInputPair>();
+	LinkedList<SynapseInputPair> inputs = new LinkedList<SynapseInputPair>();
 	PSPparameters pspParam;
 
 	double x, y, u;
@@ -33,7 +32,7 @@ public class Synapse implements NetworkNode { // connects node with neuron
 
 	private double psp(double dt) { // absolute value of a epsp or ipsp
 
-		return (-Math.exp(-dt / pspParam.getFirstT()) + Math.exp(-dt / pspParam.getSecT()))
+		return (Math.exp(-dt / pspParam.getSecT()) - Math.exp(-dt / pspParam.getFirstT()))
 				/ pspParam.getNormPar();
 
 	}
@@ -59,16 +58,13 @@ public class Synapse implements NetworkNode { // connects node with neuron
 			x = xtmp * (1 - u);
 			y = (y * Math.exp(-dt / ti) + xtmp * u);
 
-			inputs.add(new SynapseInputPair(-timeDelay * timeStep, synapseWeight * y * val / maxY));
+			inputs.addLast(new SynapseInputPair(-timeDelay * timeStep, synapseWeight * y * val / maxY));
 			lastSpike = time;
-			// System.out.println("addInput(1) " + synapseWeight * y * val);
-			// System.out.println("addInput(1) y " + y);
 
 		} else {
 			if (val > 0) {
-				// System.out.println("addInput(2) " + synapseWeight * val);
 
-				inputs.add(new SynapseInputPair(-timeDelay * timeStep, synapseWeight * val));
+				inputs.addLast(new SynapseInputPair(-timeDelay * timeStep, synapseWeight * val));
 			}
 
 		}
@@ -89,30 +85,45 @@ public class Synapse implements NetworkNode { // connects node with neuron
 		if (!inputs.isEmpty()) {
 
 			double inputValue = 0;
-			List<SynapseInputPair> tempInputs = new ArrayList<SynapseInputPair>();
+			// List<SynapseInputPair> tempInputs = new
+			// ArrayList<SynapseInputPair>();
+			boolean toRemove = false;
 			for (SynapseInputPair curInpt : inputs) {
 
 				double curTime = curInpt.getInputTime();
+
 				if (curTime >= 0) {
 					inputValue = inputValue + psp(curTime) * curInpt.getInputStrength();
 
 					curInpt.advanceInputTime(timeStep);
+
+					if (psp(curTime) < 0) {
+						System.out.println("time: " + time + " weight: " + synapseWeight + " psp:  " + psp(curTime)
+								+ " psp params: "
+								+ pspParam.getFirstT() + " , " + pspParam.getSecT());
+					}
 
 				} else {
 
 					curInpt.advanceInputTime(timeStep);
 
 				}
-				if (curTime < pspParam.getPspRange()) {
-					tempInputs.add(curInpt);
+				if (curTime > pspParam.getPspRange()) {
+					// tempInputs.add(curInpt);
+					// inputs.remove(curInpt);
+					toRemove = true;
+
 				}
 
 			}
-			if (inputs.size() > 410) {
-				System.out.println("	s input " + inputValue + " s size " +
-						tempInputs.size());
+			if (toRemove) {
+				inputs.removeFirst();
 			}
-			inputs = tempInputs;
+			// if (inputs.size() > 410) {
+			// System.out.println("	s input " + inputValue + " s size " +
+			// tempInputs.size());
+			// }
+			// inputs = tempInputs;
 
 			postSynapticNeuron.addInput(inputValue, timeStep, time);
 		}

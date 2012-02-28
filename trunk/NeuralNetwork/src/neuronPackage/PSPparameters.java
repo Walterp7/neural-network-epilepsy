@@ -3,7 +3,7 @@ package neuronPackage;
 public class PSPparameters {
 
 	/*
-	 * PSP is always of the form (e^dt/t1 - e^dt/t2)/c
+	 * PSP is always of the form (e^dt/t2 - e^dt/t1)/c
 	 */
 
 	private final double firstT;
