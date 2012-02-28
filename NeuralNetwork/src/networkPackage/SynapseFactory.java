@@ -30,7 +30,8 @@ public class SynapseFactory {
 
 		pspParams.put("RSVIFSVI", new PSPparameters(0.1, 7, 0.9261, 15));
 		pspParams.put("RSVIFSIV", new PSPparameters(0.01, 3, 0.9672, 10));
-		pspParams.put("RSVFSV", new PSPparameters(0.08, 15, 0.9669, 30));
+		pspParams.put("RSVFSV", new PSPparameters(0.1, 12, 0.9525, 20));
+		// pspParams.put("RSVFSV", new PSPparameters(0.08, 15, 0.9669, 30));
 		pspParams.put("RSIVFSIV", new PSPparameters(0.1, 7, 0.9261, 15));
 		pspParams.put("RSIIIFSIII", new PSPparameters(0.5, 5, 0.6968, 15));
 
@@ -50,7 +51,7 @@ public class SynapseFactory {
 		pspParams.put("RSIVRSIII", new PSPparameters(0.5, 15, 0.8596, 35));
 		pspParams.put("RSIIIRSIII", new PSPparameters(0.5, 20, 0.8870, 40));
 
-		secondaryPspParams.put("RSLTS", new PSPparameters(0.1, 5, 0.9048, 15));
+		secondaryPspParams.put("RSLTS", new PSPparameters(0.1, 5, 0.9048, 10));
 
 		secondaryPspParams.put("RSFS", new PSPparameters(0.1, 5, 0.9048, 15));
 		secondaryPspParams.put("RSRS", new PSPparameters(1, 12, 0.7313, 25));
