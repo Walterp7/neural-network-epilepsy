@@ -88,6 +88,9 @@ public class Synapse implements NetworkNode { // connects node with neuron
 			// List<SynapseInputPair> tempInputs = new
 			// ArrayList<SynapseInputPair>();
 			boolean toRemove = false;
+			if (inputs == null) {
+				System.out.println("time: " + time + " waga: " + synapseWeight);
+			}
 			for (SynapseInputPair curInpt : inputs) {
 
 				double curTime = curInpt.getInputTime();
@@ -96,12 +99,6 @@ public class Synapse implements NetworkNode { // connects node with neuron
 					inputValue = inputValue + psp(curTime) * curInpt.getInputStrength();
 
 					curInpt.advanceInputTime(timeStep);
-
-					if (psp(curTime) < 0) {
-						System.out.println("time: " + time + " weight: " + synapseWeight + " psp:  " + psp(curTime)
-								+ " psp params: "
-								+ pspParam.getFirstT() + " , " + pspParam.getSecT());
-					}
 
 				} else {
 
