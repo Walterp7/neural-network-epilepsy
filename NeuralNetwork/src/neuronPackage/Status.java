@@ -19,11 +19,9 @@ public class Status {
 		this.time = t;
 		this.hasFired = fired;
 		this.psp = psp;
-		if (col == -1) {
-			this.column = neuronNumber % 782; // TODO!!!!!!
-		} else {
-			this.column = col;
-		}
+
+		this.column = col;
+
 		this.layer = lay;
 	}
 

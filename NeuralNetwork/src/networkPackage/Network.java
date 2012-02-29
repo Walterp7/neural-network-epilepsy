@@ -4,6 +4,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.BrokenBarrierException;
+import java.util.concurrent.CyclicBarrier;
 
 import neuronPackage.GaussianInputer;
 import neuronPackage.Inputer;
@@ -16,34 +18,72 @@ import neuronPackage.Synapse;
 public class Network {
 	private final List<NeuronColumn> allColumns = new ArrayList<NeuronColumn>();
 	private final List<NetworkNode> allNodes = new ArrayList<NetworkNode>();
+	private final List<NetworkNode> allSynapses = new ArrayList<NetworkNode>();
 	private final List<Neuron> allNeurons = new ArrayList<Neuron>();
 	private final List<Inputer> allInputs = new ArrayList<Inputer>();
 
-	public List<Status> nextStep(double timStep, double timeofSimulation) {
-		List<Status> stats = new ArrayList<Status>();
+	private final CyclicBarrier barrier = null;
 
-		for (NetworkNode nod : allNodes) {
-			Status newStat = null;
-			newStat = nod.advance(timStep, timeofSimulation);
-			if (newStat != null) {
-				stats.add(newStat);
+	List<Status> stats = new ArrayList<Status>();
+
+	class Worker implements Runnable {
+		List<NetworkNode> workNodes;
+		double timeStep, timeofSimulation;
+
+		Worker(List<NetworkNode> nodes, double timeStep, double timeofSimulation) {
+			workNodes = nodes;
+			this.timeStep = timeStep;
+			this.timeofSimulation = timeofSimulation;
+		}
+
+		@Override
+		public void run() {
+
+			for (NetworkNode nod : workNodes) {
+				Status newStat = null;
+				newStat = nod.advance(timeStep, timeofSimulation);
+				if (newStat != null) {
+					stats.add(newStat);
+				}
 			}
-		}
-		for (Neuron nod : allNeurons) {
+			try {
+				barrier.await();
+			} catch (InterruptedException ex) {
+				return;
+			} catch (BrokenBarrierException ex) {
+				return;
+			}
 
-			nod.setCurrentInput();
-
 		}
-		return stats;
 	}
 
+	/*
+	 * public List<Status> nextStep(double timStep, double timeofSimulation)
+	 * throws InterruptedException, BrokenBarrierException { stats.clear(); int
+	 * numThreads = 4;
+	 * 
+	 * barrier = new CyclicBarrier(numThreads, new Runnable() {
+	 * 
+	 * @Override public void run() { for (Neuron nod : allNeurons) {
+	 * 
+	 * nod.setCurrentInput();
+	 * 
+	 * } } });
+	 * 
+	 * int totalLength = allNodes.size(); int size = totalLength / numThreads +
+	 * 1; for (int i = 0; i < numThreads; i++) { new Thread(new
+	 * Worker(allNodes.subList(i * size, Math.min((i + 1) * size, totalLength -
+	 * 1)), timStep, timeofSimulation)).start(); } // waitUntilDone();
+	 * barrier.await(); return stats; }
+	 */
 	void addNeuron(Neuron newNode) {
 		allNodes.add(newNode);
 	}
 
-	public void addConnection(Synapse newSynapse) {
+	public void addConnection(NetworkNode newSynapse) {
 
 		allNodes.add(newSynapse);
+		allSynapses.add(newSynapse);
 
 	}
 
@@ -57,6 +97,10 @@ public class Network {
 
 	public List<NetworkNode> getAllNodes() {
 		return allNodes;
+	}
+
+	public List<NetworkNode> getAllSynapses() {
+		return allSynapses;
 	}
 
 	public NeuronColumn getColumn(int index) {
@@ -91,6 +135,7 @@ public class Network {
 	public void setInputs() {
 		for (NetworkNode inp : allInputs) {
 			allNodes.add(inp);
+			allSynapses.add(inp);
 
 		}
 	}
@@ -109,7 +154,18 @@ public class Network {
 		allNodes.add(pickInputer);
 
 		for (double t = timeStep; t <= initTime; t += timeStep) {
-			nextStep(timeStep, t);
+			// nextStep(timeStep, t);
+
+			for (NetworkNode nod : allNodes) {
+
+				nod.advance(timeStep, t);
+
+			}
+			for (Neuron nod : allNeurons) {
+
+				nod.setCurrentInput();
+
+			}
 		}
 		allNodes.remove(randomInputer);
 		allNodes.remove(pickInputer);
