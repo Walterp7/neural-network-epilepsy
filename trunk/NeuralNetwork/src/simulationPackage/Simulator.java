@@ -125,7 +125,7 @@ public class Simulator {
 				net = mag.createNetwork(simDir[0], configFromGUI, timeStep, totalTime, inDescriptor);
 
 				net.saveToFile("neurons" + simName + ".txt");
-				net.initialize(timeStep, 0);
+				net.initialize(timeStep, 300);
 				mag.modifyWeights(net);
 
 				allSynapses = net.getAllSynapses();
@@ -153,7 +153,7 @@ public class Simulator {
 				// int neuronNumber = 380;
 				// XYSeries seriesNeuronTest = new XYSeries("Neuron number " +
 				// neuronNumber);
-				int numThreads = 8;
+				int numThreads = 4;
 
 				timeBarrier = new CyclicBarrier(numThreads + 1);
 				statsCreationBarrier = new CyclicBarrier(numThreads,
