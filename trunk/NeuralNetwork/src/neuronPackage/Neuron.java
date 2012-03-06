@@ -3,10 +3,10 @@ package neuronPackage;
 import java.util.ArrayList;
 
 public class Neuron implements NetworkNode {
-	private double v;
-	private double u;
-	private double currentInput;
-	private double nextInput;
+	private volatile double v;
+	private volatile double u;
+	private volatile double currentInput;
+	private volatile double nextInput;
 	private final Type type;
 	private final double a, b, c, d;
 	private int neuronId;
@@ -35,7 +35,7 @@ public class Neuron implements NetworkNode {
 	}
 
 	@Override
-	public void addInput(double val, double time, double timeStep) {
+	public synchronized void addInput(double val, double time, double timeStep) {
 		nextInput = nextInput + val;
 
 	}
