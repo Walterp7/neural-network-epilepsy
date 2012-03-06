@@ -1,20 +1,20 @@
 package neuronPackage;
 
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Synapse implements NetworkNode { // connects node with neuron
-	double synapseWeight;
-	int timeDelay; // in number of timeSteps
-	Neuron postSynapticNeuron;
+	private double synapseWeight;
+	private int timeDelay; // in number of timeSteps
+	private final Neuron postSynapticNeuron;
 	// Neuron preSynapticNeuron;
 	// double ti, trec, tfac, U;
-	StpParameters stpParam = null;
+	private final StpParameters stpParam;
 	// List<SynapseInputPair> inputs = new ArrayList<SynapseInputPair>();
-	LinkedList<SynapseInputPair> inputs = new LinkedList<SynapseInputPair>();
-	PSPparameters pspParam;
+	private final ConcurrentLinkedQueue<SynapseInputPair> inputs = new ConcurrentLinkedQueue<SynapseInputPair>();
+	private final PSPparameters pspParam;
 
-	double x, y, u;
-	double lastSpike;
+	private volatile double x, y, u;
+	private volatile double lastSpike;
 
 	public Synapse(double weight, Neuron postSynaptic,
 			StpParameters stpPar, PSPparameters pspParameters) {
@@ -58,13 +58,13 @@ public class Synapse implements NetworkNode { // connects node with neuron
 			x = xtmp * (1 - u);
 			y = (y * Math.exp(-dt / ti) + xtmp * u);
 
-			inputs.addLast(new SynapseInputPair(-timeDelay * timeStep, synapseWeight * y * val / maxY));
+			inputs.add(new SynapseInputPair(-timeDelay * timeStep, synapseWeight * y * val / maxY));
 			lastSpike = time;
 
 		} else {
 			if (val > 0) {
 
-				inputs.addLast(new SynapseInputPair(-timeDelay * timeStep, synapseWeight * val));
+				inputs.add(new SynapseInputPair(-timeDelay * timeStep, synapseWeight * val));
 			}
 
 		}
@@ -114,7 +114,7 @@ public class Synapse implements NetworkNode { // connects node with neuron
 
 			}
 			if (toRemove) {
-				inputs.removeFirst();
+				inputs.poll();
 			}
 			// if (inputs.size() > 410) {
 			// System.out.println("	s input " + inputValue + " s size " +

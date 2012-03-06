@@ -30,8 +30,8 @@ public class Simulator {
 	List<XYSeries[]> dataSeries = new ArrayList<XYSeries[]>();
 	XYSeries[] eegSeries;
 	XYSeries seriesPSP = new XYSeries("Simulated EEG");
-	XYSeries seriesLFP = new XYSeries("Local Field Potential - column 2");
-	XYSeries seriesLFP2 = new XYSeries("Local Field Potential - column 3");
+	XYSeries[] seriesLFP;
+
 	XYSeries seriesEEG_LPF = new XYSeries("LFP for all columns");
 	FileWriter outFileEEG;
 
@@ -118,37 +118,42 @@ public class Simulator {
 			InputDescriptor inDescriptor = new InputDescriptor();
 			NetworkBuilder mag = new NetworkBuilder();
 			Network net;
-
+			int numOfColsS;
 			try {
-				outFileEEG = new FileWriter("eeg" + simName + ".txt");
+				synchronized (Simulator.class) {
+					outFileEEG = new FileWriter("eeg" + simName + ".txt");
 
-				net = mag.createNetwork(simDir[0], configFromGUI, timeStep, totalTime, inDescriptor);
+					net = mag.createNetwork(simDir[0], configFromGUI, timeStep, totalTime, inDescriptor);
 
-				net.saveToFile("neurons" + simName + ".txt");
-				net.initialize(timeStep, 300);
-				mag.modifyWeights(net);
+					net.saveToFile("neurons" + simName + ".txt");
+					net.initialize(timeStep, 300);
+					mag.modifyWeights(net);
 
-				allSynapses = net.getAllSynapses();
-				allNeurons = net.getAllNeurons();
+					allSynapses = net.getAllSynapses();
+					allNeurons = net.getAllNeurons();
 
-				AnalyseNetwork analyser = new AnalyseNetwork();
-				analyser.exportConnections(net);
-				ArrayList<Integer> numOfNeuronsInColumn = net.getNumberOfNeuronsInColumn();
+					AnalyseNetwork analyser = new AnalyseNetwork();
+					analyser.exportConnections(net);
+					ArrayList<Integer> numOfNeuronsInColumn = net.getNumberOfNeuronsInColumn();
 
-				int numOfCols = numOfNeuronsInColumn.size();
-				eegSeries = new XYSeries[numOfCols];
-				System.out.println(simName + " Simulation start");
-				System.out.println();
+					numOfColsS = numOfNeuronsInColumn.size();
+					eegSeries = new XYSeries[numOfColsS];
+					seriesLFP = new XYSeries[numOfColsS];
+					System.out.println(simName + " Simulation start");
+					System.out.println();
 
-				for (int i = 0; i < numOfCols; i++) {
-					XYSeries[] newDataSeries = new XYSeries[4];
-					newDataSeries[0] = new XYSeries("RS neurons");
-					newDataSeries[1] = new XYSeries("FS neurons");
-					newDataSeries[2] = new XYSeries("LTS neurons");
-					newDataSeries[3] = new XYSeries("IB neurons");
-					dataSeries.add(newDataSeries);
-					eegSeries[i] = new XYSeries("Simulated EEG");
+					for (int i = 0; i < numOfColsS; i++) {
+						XYSeries[] newDataSeries = new XYSeries[4];
+						newDataSeries[0] = new XYSeries("RS neurons");
+						newDataSeries[1] = new XYSeries("FS neurons");
+						newDataSeries[2] = new XYSeries("LTS neurons");
+						newDataSeries[3] = new XYSeries("IB neurons");
+						seriesLFP[i] = new XYSeries("Local Field Potential (col " + (i + 1) + ")");
+						dataSeries.add(newDataSeries);
+						eegSeries[i] = new XYSeries("Simulated EEG");
+					}
 				}
+				final int numOfCols = numOfColsS;
 
 				// int neuronNumber = 380;
 				// XYSeries seriesNeuronTest = new XYSeries("Neuron number " +
@@ -172,12 +177,11 @@ public class Simulator {
 								}
 
 								double psp = 0;
-								double voltage = 0; // for local field
-													// potential
-								double voltage2 = 0; // for local field
-														// potential in
-														// adjacent column
-								double voltage_all = 0;
+								double[] voltage = new double[numOfCols]; // for
+																			// local
+																			// field
+								// potential
+
 								int numOfCols = eegSeries.length;
 								double[] pspPerColumn = new double[numOfCols];
 								// int counter = 0;
@@ -217,16 +221,7 @@ public class Simulator {
 									if (s.getType() == Type.RS || s.getType() == Type.IB) {
 										if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V)) {
 
-											if ((s.getColumn() == 1)) {
-
-												voltage += s.getVoltage() / 273;
-
-											}
-											if (s.getColumn() == 0) {
-												voltage2 += s.getVoltage() / 273;
-
-											}
-											voltage_all = s.getVoltage();
+											voltage[s.getColumn()] += s.getVoltage() / 273;
 
 										}
 
@@ -237,19 +232,19 @@ public class Simulator {
 								}
 								stats.clear();
 								seriesPSP.add(timeOfSimulation, psp / 3000);
-
+								if ((int) timeOfSimulation % 100 == 0) {
+									listener.reportProgress(timeOfSimulation / totalTime);
+								}
 								try {
 									outFileEEG.write(timeOfSimulation + ", " + psp / 3000 + "\r\n");
 								} catch (IOException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
-								seriesLFP.add(timeOfSimulation, voltage);
-								seriesLFP2.add(timeOfSimulation, voltage2);
-								seriesEEG_LPF.add(timeOfSimulation, voltage_all / 2000);
 
 								for (int i = 0; i < numOfCols; i++) {
 									eegSeries[i].add(timeOfSimulation, pspPerColumn[i] / 3000);
+									seriesLFP[i].add(timeOfSimulation, voltage[i] / 200);
 								}
 							}
 						});
@@ -288,33 +283,27 @@ public class Simulator {
 				seriesReferenceLine.add(0, -75);
 				seriesReferenceLine.add(totalTime, -75);
 
-				final XYSeriesCollection datasetEEG_LFP = new XYSeriesCollection();
-				datasetEEG_LFP.addSeries(seriesReferenceLine);
-				datasetEEG_LFP.addSeries(seriesEEG_LPF);
-
 				final XYSeriesCollection datasetEEG = new XYSeriesCollection();
 				datasetEEG.addSeries(seriesPSP);
 
-				final XYSeriesCollection datasetLFP = new XYSeriesCollection();
-				datasetLFP.addSeries(seriesReferenceLine);
-				datasetLFP.addSeries(seriesLFP);
-
-				double maxLFPplot = Math.max(seriesLFP2.getMaxY(), seriesLFP.getMaxY());
-				double minLFPplot = Math.min(seriesLFP2.getMinY(), seriesLFP.getMinY());
-
-				final XYSeriesCollection datasetLFP2 = new XYSeriesCollection();
-				datasetLFP2.addSeries(seriesReferenceLine);
-				datasetLFP2.addSeries(seriesLFP2);
+				final XYSeriesCollection[] datasetLFP = new XYSeriesCollection[numOfCols];
 
 				XYSeriesCollection[] datasetEEGperColumn = new XYSeriesCollection[numOfCols];
+				double maxLFPplot = -90;
+				double minLFPplot = 30;
 				for (int i = 0; i < numOfCols; i++) {
 					datasetEEGperColumn[i] = new XYSeriesCollection();
 					datasetEEGperColumn[i].addSeries(eegSeries[i]);
+					datasetLFP[i] = new XYSeriesCollection();
+					datasetLFP[i].addSeries(seriesReferenceLine);
+					datasetLFP[i].addSeries(seriesLFP[i]);
+					if (seriesLFP[i].getMaxY() > maxLFPplot) {
+						maxLFPplot = seriesLFP[i].getMaxY();
+					}
+					if (minLFPplot > seriesLFP[i].getMinY()) {
+						minLFPplot = seriesLFP[i].getMinY();
+					}
 				}
-
-				// final XYSeriesCollection datasetNeuronTest = new
-				// XYSeriesCollection();
-				// datasetNeuronTest.addSeries(seriesNeuronTest);
 
 				SpikePlotFrame plotFrame = new SpikePlotFrame();
 				plotFrame.plotNetwork(numOfCols, allDatasetSpikes, simName, totalTime);
@@ -325,32 +314,14 @@ public class Simulator {
 				LinePlot eegPlot = new LinePlot("Simulated EEG " + simName, "simulatedEEG");
 				eegPlot.draw(datasetEEG, " Simulated EEG ", false, 0, 0, false);
 
-				LinePlot lfpPlot = new LinePlot("Local Field Potential - col 2 " + simName, "lfp1");
-				lfpPlot.draw(datasetLFP,
-						" Local Field Potential (stimulated column) ", true,
-						minLFPplot,
-						maxLFPplot, true);
-
-				LinePlot lfp2Plot = new LinePlot("Local Field Potential - col 3 " + simName, "lfp2");
-				lfp2Plot.draw(datasetLFP2,
-						"  Local Field Potential (adjacent column)", true,
-						minLFPplot,
-						maxLFPplot, true);
-
-				LinePlot eeg_lfpPlot = new LinePlot("Local Field Potential - for all columns " + simName,
-						"lfpAllCols");
-				eeg_lfpPlot.draw(datasetEEG_LFP, "Local Field Potential - for all columns " + simName, false,
-						0, 0, true);
-
-				// LinePlot neuronTestPlot = new LinePlot("test: neuron" +
-				// neuronNumber, "test" + neuronNumber);
-				// neuronTestPlot.draw(datasetNeuronTest, "test: neuron" +
-				// neuronNumber, false, 0, 0, false);
-
-				// HistogramPlot hist = new
-				// HistogramPlot("Network Activity", "histogram");
-				// hist.draw(allDatasetSpikes[1], "Histogram", false, 0,
-				// 0, false);
+				for (int i = 0; i < numOfCols; i++) {
+					LinePlot lfpPlot = new LinePlot("Local Field Potential" + " col" + (i + 1) + " " + simName,
+							"lfp" + i);
+					lfpPlot.draw(datasetLFP[i],
+							" Local Field Potential (col " + (i + 1) + ")", true,
+							minLFPplot,
+							maxLFPplot, true);
+				}
 
 				InputPlotFrame inputFrame = new InputPlotFrame();
 				if (!inDescriptor.isEmpty()) {
