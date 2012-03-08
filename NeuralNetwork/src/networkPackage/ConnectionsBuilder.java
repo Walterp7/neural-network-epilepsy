@@ -47,23 +47,29 @@ public class ConnectionsBuilder {
 			if ((outPool != null) && (!outPool.isEmpty())) {
 				ArrayList<NeuronTypePool> inPools = new ArrayList<NeuronTypePool>();
 
+				int[] targetCols;
 				if (conDesc.getTargetCol() == 0) {
-					inPools.add(currentColumn.getPool(conDesc.getTargetPoolName())
-							.getTypePool(conDesc.getTargetType()));
+					targetCols = new int[1];
+					targetCols[0] = currentColumnNum;
 				} else {
-					if (net.getColumn(currentColumnNum + conDesc.getTargetCol()) != null) {
-						inPools.add(net
-								.getColumn(currentColumnNum + conDesc.getTargetCol())
-								.getPool(conDesc.getTargetPoolName())
-								.getTypePool(conDesc.getTargetType()));
-					}
-					if (net.getColumn(currentColumnNum - conDesc.getTargetCol()) != null) {
-						inPools.add(net
-								.getColumn(currentColumnNum - conDesc.getTargetCol())
-								.getPool(conDesc.getTargetPoolName())
-								.getTypePool(conDesc.getTargetType()));
+					targetCols = new int[2];
+					targetCols[0] = currentColumnNum + conDesc.getTargetCol();
+					targetCols[1] = currentColumnNum - conDesc.getTargetCol();
+				}
+
+				for (int targetCol : targetCols) {
+					if (net.getColumn(targetCol) != null) {
+						NeuronColumn col = net.getColumn(targetCol);
+						if (col.getPool(conDesc.getTargetPoolName()) != null) {
+							NeuronPool neuronPool = col.getPool(conDesc.getTargetPoolName());
+							if (neuronPool.getTypePool(conDesc.getTargetType()) != null) {
+								inPools.add(neuronPool.getTypePool(conDesc.getTargetType()));
+
+							}
+						}
 					}
 				}
+
 				SynapseFactory synFact = new SynapseFactory(stpParams);
 
 				for (Neuron outNeuron : outPool.getNeurons()) {
