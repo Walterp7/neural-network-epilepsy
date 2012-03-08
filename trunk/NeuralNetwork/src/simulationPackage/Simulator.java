@@ -155,9 +155,6 @@ public class Simulator {
 				}
 				final int numOfCols = numOfColsS;
 
-				// int neuronNumber = 380;
-				// XYSeries seriesNeuronTest = new XYSeries("Neuron number " +
-				// neuronNumber);
 				int numThreads = 4;
 
 				timeBarrier = new CyclicBarrier(numThreads + 1);
