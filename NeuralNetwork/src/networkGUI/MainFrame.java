@@ -66,7 +66,7 @@ public class MainFrame extends JFrame {
 	public MainFrame() {
 
 		final String defaultColConf = "settings/default_col_config.txt";
-		final String defaultSimConf = "settings/default/simConfig.txt";
+		final String defaultSimConf = "settings/control-allSTP/focal.txt";
 
 		setTitle("Neural Network Simulator");
 		setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -103,7 +103,7 @@ public class MainFrame extends JFrame {
 
 					for (int i = 0; i < n; i++) {
 
-						config.addSim2List(defaultSimConf, "default " + (i + 1));
+						config.addSim2List(defaultSimConf, "default_focal_" + (i + 1));
 						// config.addSimName("default" + (i + 1));
 					}
 
