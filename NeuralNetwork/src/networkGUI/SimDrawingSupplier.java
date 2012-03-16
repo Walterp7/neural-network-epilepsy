@@ -33,6 +33,12 @@ public class SimDrawingSupplier implements DrawingSupplier, Cloneable,
 
 	};
 
+	public static final Paint[] LINE_PAINT_SEQUENCE_FOR_STIM_COL = new Paint[] {
+			Color.red,
+			Color.LIGHT_GRAY
+
+	};
+
 	public static final Paint[] DEFAULT_PAINT_SEQUENCE = new Paint[] {
 			Color.red, // lts
 			Color.blue, // fs
@@ -111,9 +117,11 @@ public class SimDrawingSupplier implements DrawingSupplier, Cloneable,
 		if (n.equals("line")) {
 			this.paintSequence = LINE_PAINT_SEQUENCE;
 		} else {
-
-			this.paintSequence = DEFAULT_PAINT_SEQUENCE;
-
+			if (n.equals("stim")) {
+				this.paintSequence = LINE_PAINT_SEQUENCE_FOR_STIM_COL;
+			} else {
+				this.paintSequence = DEFAULT_PAINT_SEQUENCE;
+			}
 		}
 	}
 
