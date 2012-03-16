@@ -132,7 +132,7 @@ public class NetworkBuilder {
 	}
 
 	public Network createNetwork(String simConfigFile, ConfigurationUnit config, double timestep, double totalTime,
-			InputDescriptor inDescriptor) throws IOException { // simConfg
+			InputDescriptor inDescriptor) throws Exception { // simConfg
 		// general info,colConfList - connections
 		loadSimulationConfig(simConfigFile, config);
 		Network net = new Network();

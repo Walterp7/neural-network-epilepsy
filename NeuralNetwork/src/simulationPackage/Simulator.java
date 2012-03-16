@@ -2,6 +2,7 @@ package simulationPackage;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.BrokenBarrierException;
@@ -34,6 +35,7 @@ public class Simulator {
 
 	XYSeries seriesEEG_LPF = new XYSeries("LFP for all columns");
 	FileWriter outFileEEG;
+	FileWriter outFileLFP;
 
 	double timeOfSimulation = 0;
 
@@ -122,6 +124,7 @@ public class Simulator {
 			try {
 				synchronized (Simulator.class) {
 					outFileEEG = new FileWriter("eeg" + simName + ".txt");
+					outFileLFP = new FileWriter("data_" + simName + ".csv");
 
 					net = mag.createNetwork(simDir[0], configFromGUI, timeStep, totalTime, inDescriptor);
 
@@ -233,15 +236,21 @@ public class Simulator {
 									listener.reportProgress(timeOfSimulation / totalTime);
 								}
 								try {
-									outFileEEG.write(timeOfSimulation + ", " + psp / 3000 + "\r\n");
+									outFileEEG.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation) + ", "
+											+ psp / 3000 + "\r\n");
+
+									String lineToWriteLfp = ""
+											+ MessageFormat.format("{0,number,#.#}", timeOfSimulation);
+									for (int i = 0; i < numOfCols; i++) {
+										eegSeries[i].add(timeOfSimulation, pspPerColumn[i] / 3000);
+										seriesLFP[i].add(timeOfSimulation, voltage[i] / 200);
+										lineToWriteLfp = lineToWriteLfp + ","
+												+ MessageFormat.format("{0,number,#.#####}", (voltage[i] / 200));
+									}
+									outFileLFP.write(lineToWriteLfp + "\r\n");
 								} catch (IOException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
-								}
-
-								for (int i = 0; i < numOfCols; i++) {
-									eegSeries[i].add(timeOfSimulation, pspPerColumn[i] / 3000);
-									seriesLFP[i].add(timeOfSimulation, voltage[i] / 200);
 								}
 							}
 						});
@@ -309,15 +318,19 @@ public class Simulator {
 				eegFrame.plotNetwork(numOfCols, datasetEEGperColumn, "EEG per column");
 
 				LinePlot eegPlot = new LinePlot("Simulated EEG " + simName, "simulatedEEG");
-				eegPlot.draw(datasetEEG, " Simulated EEG ", false, 0, 0, false);
+				eegPlot.draw(datasetEEG, " Simulated EEG ", false, 0, 0, false, false);
 
 				for (int i = 0; i < numOfCols; i++) {
+					boolean isStimulated = false;
+					if (i == 1) {
+						isStimulated = true;
+					}
 					LinePlot lfpPlot = new LinePlot("Local Field Potential" + " col" + (i + 1) + " " + simName,
 							"lfp" + i);
 					lfpPlot.draw(datasetLFP[i],
 							" Local Field Potential (col " + (i + 1) + ")", true,
 							minLFPplot,
-							maxLFPplot, true);
+							maxLFPplot, true, isStimulated);
 				}
 
 				InputPlotFrame inputFrame = new InputPlotFrame();
@@ -327,6 +340,7 @@ public class Simulator {
 				listener.reportProgress(10);
 				System.out.println(simName + " done");
 				outFileEEG.close();
+				outFileLFP.close();
 
 			} catch (Exception e) {
 

@@ -8,6 +8,7 @@ public class ConstantInputer extends Inputer {
 	private final double value;
 
 	protected final ArrayList<Neuron> inputConnections = new ArrayList<Neuron>();
+	Type type;
 
 	@Override
 	public void addConnection(Neuron n, Network net, double strength) {
@@ -17,9 +18,9 @@ public class ConstantInputer extends Inputer {
 
 	}
 
-	public ConstantInputer(double v) {
+	public ConstantInputer(double v, Type type) {
 		value = v;
-
+		this.type = type;
 	}
 
 	@Override
@@ -31,6 +32,18 @@ public class ConstantInputer extends Inputer {
 		}
 
 		return null;
+	}
+
+	@Override
+	public void connect(int colNum, Network network) {
+
+		for (Neuron neur : network.getAllNeurons()) {
+			if (neur.getType() == type) {
+				addConnection(neur, network, 1);
+			}
+
+		}
+
 	}
 
 	@Override
