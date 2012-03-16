@@ -44,7 +44,7 @@ public abstract class Inputer implements NetworkNode {
 		}
 	}
 
-	public void connect(int colNum, Network network) {
+	public void connect(int colNum, Network network) throws Exception {
 
 		int totalNumCol = network.getNumberOfColumns();
 		if (colNum > 0) { // specific column
@@ -75,11 +75,9 @@ public abstract class Inputer implements NetworkNode {
 
 			}
 		} else { // all columns
-			System.out.println("to be implemented;]");
-			for (Neuron neur : network.getAllNeurons()) {
-				addConnection(neur, network, 1);
+			throw new Exception("No column specified for input");
 
-			}
 		}
+
 	}
 }

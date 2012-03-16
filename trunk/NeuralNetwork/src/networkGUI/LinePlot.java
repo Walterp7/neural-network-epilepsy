@@ -1,6 +1,5 @@
 package networkGUI;
 
-import java.awt.Color;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -96,7 +95,8 @@ public class LinePlot extends JFrame {
 		NumberAxis yAxis = new NumberAxis(yAxisLabel);
 		yAxis.setAutoRangeIncludesZero(false);
 		XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
-		renderer.setSeriesPaint(0, Color.black);
+		// renderer.setSeriesPaint(0, Color.red);
+		// renderer.setSeriesPaint(1, Color.red);
 		XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
 		plot.setOrientation(orientation);
 
@@ -113,18 +113,21 @@ public class LinePlot extends JFrame {
 
 		JFreeChart chart = new JFreeChart(title, JFreeChart.DEFAULT_TITLE_FONT,
 				plot, legend);
+
 		currentTheme.apply(chart);
 
 		return chart;
 
 	}
 
-	// public double getMaxRange() {
-	// return chart.getPlot().
-	// }
-
 	public void draw(XYSeriesCollection dataset, String title, boolean customRange, double lower, double upper,
-			boolean reverseYAxis) {
+			boolean reverseYAxis, boolean isStimulated) {
+
+		if (isStimulated) {
+			currentTheme = new SimChartTheme("stim");
+		} else {
+			currentTheme = new SimChartTheme("line");
+		}
 		chart = createXYLineChart(
 				title, // chart title
 				"time [ms]", // x axis label

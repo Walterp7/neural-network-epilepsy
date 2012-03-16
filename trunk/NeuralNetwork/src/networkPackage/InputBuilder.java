@@ -17,7 +17,7 @@ public class InputBuilder {
 
 	void setInputs(List<String> inputList, HashMap<String, StpParameters> stpParams, Network net,
 			InputDescriptor inDescriptor, double totalTime)
-			throws IOException {
+			throws Exception {
 
 		for (String newLine : inputList) {
 			String[] parsedLine = newLine.trim().split("\\s+");
@@ -60,7 +60,8 @@ public class InputBuilder {
 
 								double value = Double
 										.parseDouble(parsedLine[wordIndex++]);
-								newInput = new ConstantInputer(value);
+								String typeString = parsedLine[wordIndex++];
+								newInput = new ConstantInputer(value, stringToType(typeString));
 							} else {
 								throw new IOException();
 							}

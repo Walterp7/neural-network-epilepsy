@@ -37,7 +37,7 @@ public class InputPlotFrame extends JFrame {
 	private final JPanel contentPane;
 
 	List<JFreeChart> charts = new ArrayList<JFreeChart>();
-	private static ChartTheme currentTheme = new SimChartTheme("line");
+	private static ChartTheme currentTheme = new SimChartTheme("stim");
 
 	public InputPlotFrame() {
 		setTitle("Inputs");
@@ -101,7 +101,7 @@ public class InputPlotFrame extends JFrame {
 		xAxis.setAutoRangeIncludesZero(false);
 		NumberAxis yAxis = new NumberAxis(yAxisLabel);
 		XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
-		renderer.setSeriesPaint(0, Color.black);
+		renderer.setSeriesPaint(0, Color.red);
 
 		XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
 		plot.setOrientation(orientation);

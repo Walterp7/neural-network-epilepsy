@@ -23,6 +23,17 @@ public class GaussianInputer extends Inputer {
 
 	}
 
+	@Override
+	public void connect(int colNum, Network network) {
+
+		for (Neuron neur : network.getAllNeurons()) {
+
+			addConnection(neur, network, 1);
+
+		}
+
+	}
+
 	public GaussianInputer() {
 		mu = 0;
 		sigma = 1;
@@ -39,6 +50,7 @@ public class GaussianInputer extends Inputer {
 	public Status advance(double timeStep, double timeofSimulation) {
 
 		for (Neuron n : inputConnections) {
+
 			n.addInput(mu + sigma * generator.nextGaussian(), timeStep, timeofSimulation);
 
 		}
