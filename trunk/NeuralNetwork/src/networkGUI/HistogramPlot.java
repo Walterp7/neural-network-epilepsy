@@ -63,9 +63,6 @@ public class HistogramPlot extends JFrame {
 								new java.io.File(file.getAbsolutePath() + "/" + fileName + ".png"),
 								chart, 2000, 250);
 
-						SimulationEndDialog newDialog = new SimulationEndDialog();
-						newDialog.setVisible(true);
-
 					}
 
 				} catch (java.io.IOException exc) {

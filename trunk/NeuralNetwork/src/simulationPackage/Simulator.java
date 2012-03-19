@@ -12,6 +12,8 @@ import networkGUI.ConfigurationUnit;
 import networkGUI.EegColumnPlotFrame;
 import networkGUI.InputPlotFrame;
 import networkGUI.LinePlot;
+import networkGUI.PlotFrame;
+import networkGUI.SimulationEndDialog;
 import networkGUI.SpikePlotFrame;
 import networkPackage.InputDescriptor;
 import networkPackage.Network;
@@ -272,6 +274,9 @@ public class Simulator {
 				timeBarrier.await();
 				long t2 = System.currentTimeMillis();
 				System.out.println(t2 - t1);
+
+				List<PlotFrame> plots = new ArrayList<PlotFrame>();
+
 				XYSeriesCollection[] allDatasetSpikes = new XYSeriesCollection[numOfCols];
 
 				int count = 0;
@@ -313,12 +318,15 @@ public class Simulator {
 
 				SpikePlotFrame plotFrame = new SpikePlotFrame();
 				plotFrame.plotNetwork(numOfCols, allDatasetSpikes, simName, totalTime);
+				plots.add(plotFrame);
 
 				EegColumnPlotFrame eegFrame = new EegColumnPlotFrame();
 				eegFrame.plotNetwork(numOfCols, datasetEEGperColumn, "EEG per column");
+				plots.add(eegFrame);
 
 				LinePlot eegPlot = new LinePlot("Simulated EEG " + simName, "simulatedEEG");
 				eegPlot.draw(datasetEEG, " Simulated EEG ", false, 0, 0, false, false);
+				plots.add(eegPlot);
 
 				for (int i = 0; i < numOfCols; i++) {
 					boolean isStimulated = false;
@@ -331,12 +339,16 @@ public class Simulator {
 							" Local Field Potential (col " + (i + 1) + ")", true,
 							minLFPplot,
 							maxLFPplot, true, isStimulated);
+					plots.add(lfpPlot);
 				}
 
 				InputPlotFrame inputFrame = new InputPlotFrame();
 				if (!inDescriptor.isEmpty()) {
 					inputFrame.plotInputs(inDescriptor);
 				}
+				plots.add(inputFrame);
+
+				SimulationEndDialog endDialog = new SimulationEndDialog(plots, "data_" + simName + ".csv");
 				listener.reportProgress(10);
 				System.out.println(simName + " done");
 				outFileEEG.close();

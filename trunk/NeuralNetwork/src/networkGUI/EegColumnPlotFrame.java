@@ -4,6 +4,7 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +22,7 @@ import org.jfree.chart.JFreeChart;
 import org.jfree.chart.plot.PlotOrientation;
 import org.jfree.data.xy.XYSeriesCollection;
 
-public class EegColumnPlotFrame extends JFrame {
+public class EegColumnPlotFrame extends PlotFrame {
 
 	private final JPanel contentPane;
 	List<JFreeChart> charts = new ArrayList<JFreeChart>();
@@ -59,9 +60,6 @@ public class EegColumnPlotFrame extends JFrame {
 									chart, 2000, 300);
 						}
 
-						SimulationEndDialog newDialog = new SimulationEndDialog();
-						newDialog.setVisible(true);
-
 					}
 
 				} catch (java.io.IOException exc) {
@@ -71,6 +69,16 @@ public class EegColumnPlotFrame extends JFrame {
 		});
 		contentPane.add(btnSave);
 
+	}
+
+	@Override
+	public void save(String pathName) throws IOException {
+		for (JFreeChart chart : charts) {
+			ChartUtilities.saveChartAsPNG(
+					new java.io.File(pathName + "/" + "eeg_col"
+							+ charts.indexOf(chart) + ".png"),
+					chart, 2000, 300);
+		}
 	}
 
 	public void plotNetwork(int numberOfColumns, XYSeriesCollection[] data, String title) {

@@ -5,6 +5,7 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +33,7 @@ import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeries;
 import org.jfree.data.xy.XYSeriesCollection;
 
-public class InputPlotFrame extends JFrame {
+public class InputPlotFrame extends PlotFrame {
 
 	private final JPanel contentPane;
 
@@ -71,9 +72,6 @@ public class InputPlotFrame extends JFrame {
 											+ ".png"), chart, 2000, 200);
 						}
 
-						SimulationEndDialog newDialog = new SimulationEndDialog();
-						newDialog.setVisible(true);
-
 					}
 
 				} catch (java.io.IOException exc) {
@@ -83,6 +81,15 @@ public class InputPlotFrame extends JFrame {
 		});
 		contentPane.add(btnSave);
 
+	}
+
+	@Override
+	public void save(String pathName) throws IOException {
+		for (JFreeChart chart : charts) {
+			ChartUtilities.saveChartAsPNG(
+					new java.io.File(pathName + "/" + "inputsCol" + charts.indexOf(chart)
+							+ ".png"), chart, 2000, 200);
+		}
 	}
 
 	protected static JFreeChart createXYLineChart(String title,
