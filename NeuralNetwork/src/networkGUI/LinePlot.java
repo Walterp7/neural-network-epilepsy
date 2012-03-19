@@ -4,6 +4,7 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
@@ -24,7 +25,7 @@ import org.jfree.chart.urls.StandardXYURLGenerator;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 
-public class LinePlot extends JFrame {
+public class LinePlot extends PlotFrame {
 
 	private static final long serialVersionUID = 1L; // /???
 	JFreeChart chart;
@@ -61,9 +62,6 @@ public class LinePlot extends JFrame {
 								new java.io.File(file.getAbsolutePath() + "/" + fileName + ".png"),
 								chart, 2000, 250);
 
-						SimulationEndDialog newDialog = new SimulationEndDialog();
-						newDialog.setVisible(true);
-
 					}
 
 				} catch (java.io.IOException exc) {
@@ -72,6 +70,11 @@ public class LinePlot extends JFrame {
 			}
 		});
 		contentPane.add(btnSave);
+	}
+
+	@Override
+	public void save(String pathName) throws IOException {
+		ChartUtilities.saveChartAsPNG(new java.io.File(pathName + "/" + fileName + ".png"), chart, 2000, 250);
 	}
 
 	public double getMax() {

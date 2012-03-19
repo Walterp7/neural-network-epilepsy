@@ -4,6 +4,7 @@ import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +31,7 @@ import org.jfree.chart.urls.XYURLGenerator;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 
-public class SpikePlotFrame extends JFrame { // plots scatter plot and the
+public class SpikePlotFrame extends PlotFrame { // plots scatter plot and the
 
 	private final JPanel contentPane;
 	List<JFreeChart> charts = new ArrayList<JFreeChart>();
@@ -70,9 +71,6 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 									chart, 2000, 300);
 						}
 
-						SimulationEndDialog newDialog = new SimulationEndDialog();
-						newDialog.setVisible(true);
-
 					}
 
 				} catch (java.io.IOException exc) {
@@ -82,6 +80,17 @@ public class SpikePlotFrame extends JFrame { // plots scatter plot and the
 		});
 		contentPane.add(btnSave);
 
+	}
+
+	@Override
+	public void save(String pathName) throws IOException {
+		for (JFreeChart chart : charts) {
+			ChartUtilities.saveChartAsPNG(
+					new java.io.File(pathName + "/"
+							+ "spikes_col"
+							+ charts.indexOf(chart) + ".png"),
+					chart, 2000, 300);
+		}
 	}
 
 	public JFreeChart createSpikePlot(String title, String xAxisLabel,
