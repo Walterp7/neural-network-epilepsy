@@ -1,5 +1,6 @@
 package networkGUI;
 
+import java.awt.Color;
 import java.awt.RenderingHints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -98,7 +99,7 @@ public class LinePlot extends PlotFrame {
 		NumberAxis yAxis = new NumberAxis(yAxisLabel);
 		yAxis.setAutoRangeIncludesZero(false);
 		XYItemRenderer renderer = new XYLineAndShapeRenderer(true, false);
-		// renderer.setSeriesPaint(0, Color.red);
+		renderer.setSeriesPaint(0, Color.red);
 		// renderer.setSeriesPaint(1, Color.red);
 		XYPlot plot = new XYPlot(dataset, xAxis, yAxis, renderer);
 		plot.setOrientation(orientation);

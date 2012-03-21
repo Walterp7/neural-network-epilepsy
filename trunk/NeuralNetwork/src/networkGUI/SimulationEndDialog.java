@@ -23,7 +23,7 @@ public class SimulationEndDialog extends JDialog {
 	private final JPanel contentPanel = new JPanel();
 	private final List<PlotFrame> plotFrames;
 
-	public SimulationEndDialog(List<PlotFrame> frames, final String lfpFileName) {
+	public SimulationEndDialog(List<PlotFrame> frames, final String lfpFileName, final String ipspFileName) {
 
 		plotFrames = frames;
 
@@ -61,6 +61,7 @@ public class SimulationEndDialog extends JDialog {
 						}
 
 						FileUtils.copyFileToDirectory(new File(lfpFileName), file);
+						FileUtils.copyFileToDirectory(new File(ipspFileName), file);
 					} catch (IOException e1) {
 						// TODO Auto-generated catch block
 						e1.printStackTrace();

@@ -80,6 +80,15 @@ public class Network {
 		allNodes.add(newNode);
 	}
 
+	public Neuron getNeuron(int number) {
+		for (Neuron n : allNeurons) {
+			if (n.getId() == number) {
+				return allNeurons.get(number);
+			}
+		}
+		return null;
+	}
+
 	public void addConnection(NetworkNode newSynapse) {
 
 		allNodes.add(newSynapse);

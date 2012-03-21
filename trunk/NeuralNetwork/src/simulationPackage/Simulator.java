@@ -38,6 +38,7 @@ public class Simulator {
 	XYSeries seriesEEG_LPF = new XYSeries("LFP for all columns");
 	FileWriter outFileEEG;
 	FileWriter outFileLFP;
+	FileWriter outFileIPSP;
 
 	double timeOfSimulation = 0;
 
@@ -127,8 +128,9 @@ public class Simulator {
 				synchronized (Simulator.class) {
 					outFileEEG = new FileWriter("eeg" + simName + ".txt");
 					outFileLFP = new FileWriter("data_" + simName + ".csv");
+					outFileIPSP = new FileWriter("ipsp_" + simName + ".csv");
 
-					net = mag.createNetwork(simDir[0], configFromGUI, timeStep, totalTime, inDescriptor);
+					net = mag.createNetwork(simDir[0], 391781649, configFromGUI, timeStep, totalTime, inDescriptor);
 
 					net.saveToFile("neurons" + simName + ".txt");
 					net.initialize(timeStep, 300);
@@ -183,7 +185,12 @@ public class Simulator {
 																			// local
 																			// field
 								// potential
-
+								double[] ipsps = new double[5];
+								// 345 - col 1, layer V, RS
+								// 1075 - col 2, layer V, RS
+								// 1825 - col 3, layer V, RS
+								// 2645 - col 4, layer V, RS
+								int[] neurIndx = { 345, 1075, 1825, 2645, 3400 };
 								int numOfCols = eegSeries.length;
 								double[] pspPerColumn = new double[numOfCols];
 								// int counter = 0;
@@ -191,29 +198,31 @@ public class Simulator {
 
 									int neuronColNum = s.getColumn();
 
+									int totalNeuronsPerColumn = 764;
+									// int totalNeuronsPerColumn = 568;
 									if (s.fired()) {
 
 										if (s.getType() == Type.RS) {
 											dataSeries.get(neuronColNum)[0].add(s.getTime(),
 													(s.getNumber() - neuronColNum
-													* 764));
+															* totalNeuronsPerColumn));
 
 										} else {
 											if (s.getType() == Type.FS) {
 												dataSeries.get(neuronColNum)[1].add(s.getTime(),
 														(s.getNumber() - neuronColNum
-														* 764));
+																* totalNeuronsPerColumn));
 
 											} else {
 												if (s.getType() == Type.LTS) {
 													dataSeries.get(neuronColNum)[2].add(s.getTime(),
 															(s.getNumber() - neuronColNum
-															* 764));
+																	* totalNeuronsPerColumn));
 
 												} else {
 													dataSeries.get(neuronColNum)[3].add(s.getTime(),
 															(s.getNumber() - neuronColNum
-															* 764));
+																	* totalNeuronsPerColumn));
 
 												}
 											}
@@ -223,31 +232,52 @@ public class Simulator {
 									if (s.getType() == Type.RS || s.getType() == Type.IB) {
 										if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V)) {
 
-											voltage[s.getColumn()] += s.getVoltage() / 273;
+											voltage[s.getColumn()] += s.getVoltage();
+
+											boolean assigned = false;
+											int i = 0;
+											while ((!assigned) && (i < neurIndx.length)) {
+												if (s.getNumber() == neurIndx[i]) {
+													ipsps[i] = s.getIPSP();
+													assigned = true;
+
+												}
+												i++;
+											}
 
 										}
 
-										psp += s.getPSP();
-										pspPerColumn[neuronColNum] += s.getPSP();
+										psp = psp + s.getIPSP() + s.getEPSP();
+										pspPerColumn[neuronColNum] = pspPerColumn[neuronColNum] + s.getIPSP()
+												+ s.getEPSP();
 									}
 
 								}
 								stats.clear();
-								seriesPSP.add(timeOfSimulation, psp / 3000);
+								seriesPSP.add(timeOfSimulation, psp); // for eeg
+
 								if ((int) timeOfSimulation % 100 == 0) {
 									listener.reportProgress(timeOfSimulation / totalTime);
 								}
 								try {
 									outFileEEG.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation) + ", "
-											+ psp / 3000 + "\r\n");
+											+ psp + "\r\n");
 
+									outFileIPSP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
+									for (int i = 0; i < neurIndx.length; i++) {
+										outFileIPSP.write("," + MessageFormat.format("{0,number,#.#####}", ipsps[i]));
+									}
+									outFileIPSP.write("\r\n");
 									String lineToWriteLfp = ""
 											+ MessageFormat.format("{0,number,#.#}", timeOfSimulation);
-									for (int i = 0; i < numOfCols; i++) {
-										eegSeries[i].add(timeOfSimulation, pspPerColumn[i] / 3000);
-										seriesLFP[i].add(timeOfSimulation, voltage[i] / 200);
-										lineToWriteLfp = lineToWriteLfp + ","
-												+ MessageFormat.format("{0,number,#.#####}", (voltage[i] / 200));
+									if (timeOfSimulation > 0) {
+										for (int i = 0; i < numOfCols; i++) {
+											eegSeries[i].add(timeOfSimulation, pspPerColumn[i]);
+											seriesLFP[i].add(timeOfSimulation, voltage[i]);
+
+											lineToWriteLfp = lineToWriteLfp + ","
+													+ MessageFormat.format("{0,number,#.#####}", (voltage[i]));
+										}
 									}
 									outFileLFP.write(lineToWriteLfp + "\r\n");
 								} catch (IOException e) {
@@ -300,7 +330,7 @@ public class Simulator {
 				final XYSeriesCollection[] datasetLFP = new XYSeriesCollection[numOfCols];
 
 				XYSeriesCollection[] datasetEEGperColumn = new XYSeriesCollection[numOfCols];
-				double maxLFPplot = -90;
+				double maxLFPplot = -1000000000;
 				double minLFPplot = 30;
 				for (int i = 0; i < numOfCols; i++) {
 					datasetEEGperColumn[i] = new XYSeriesCollection();
@@ -315,7 +345,7 @@ public class Simulator {
 						minLFPplot = seriesLFP[i].getMinY();
 					}
 				}
-
+				System.out.println(minLFPplot + " " + maxLFPplot);
 				SpikePlotFrame plotFrame = new SpikePlotFrame();
 				plotFrame.plotNetwork(numOfCols, allDatasetSpikes, simName, totalTime);
 				plots.add(plotFrame);
@@ -348,11 +378,13 @@ public class Simulator {
 				}
 				plots.add(inputFrame);
 
-				SimulationEndDialog endDialog = new SimulationEndDialog(plots, "data_" + simName + ".csv");
+				SimulationEndDialog endDialog = new SimulationEndDialog(plots, "data_" + simName + ".csv", "ipsp_"
+						+ simName + ".csv");
 				listener.reportProgress(10);
 				System.out.println(simName + " done");
 				outFileEEG.close();
 				outFileLFP.close();
+				outFileIPSP.close();
 
 			} catch (Exception e) {
 

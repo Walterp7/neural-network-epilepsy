@@ -6,20 +6,21 @@ public class Status {
 	private final Type type;
 	private double time;
 	private final boolean hasFired;
-	private final double psp;
+	private final double epsp;
+	private final double ipsp;
 	private Layer layer = null;
 	private int column = -1;
 
 	public Status(boolean fired, int number, double t, double voltage,
-			Type type, double psp, int col, Layer lay) {
+			Type type, double ipsp, double epsp, int col, Layer lay) {
 		super();
 		this.neuronNumber = number;
 		this.voltage = voltage;
 		this.type = type;
 		this.time = t;
 		this.hasFired = fired;
-		this.psp = psp;
-
+		this.ipsp = ipsp;
+		this.epsp = epsp;
 		this.column = col;
 
 		this.layer = lay;
@@ -49,8 +50,12 @@ public class Status {
 		return voltage;
 	}
 
-	public double getPSP() {
-		return psp;
+	public double getEPSP() {
+		return epsp;
+	}
+
+	public double getIPSP() {
+		return ipsp;
 	}
 
 	public double getTime() {
