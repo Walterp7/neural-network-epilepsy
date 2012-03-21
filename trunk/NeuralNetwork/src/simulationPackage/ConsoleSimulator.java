@@ -202,7 +202,7 @@ public class ConsoleSimulator {
 									if (s.getType() == Type.RS || s.getType() == Type.IB) {
 										if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V)) {
 
-											voltage[s.getColumn()] += s.getVoltage();
+											voltage[s.getColumn()] += s.getVoltage() / 1000;
 
 											boolean assigned = false;
 											int i = 0;

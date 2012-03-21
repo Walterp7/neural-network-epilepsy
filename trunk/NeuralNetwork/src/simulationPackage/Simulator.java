@@ -232,7 +232,11 @@ public class Simulator {
 									if (s.getType() == Type.RS || s.getType() == Type.IB) {
 										if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V)) {
 
-											voltage[s.getColumn()] += s.getVoltage();
+											voltage[s.getColumn()] += s.getVoltage() / 1000; // just
+																								// to
+																								// keep
+																								// it
+																								// normalized
 
 											boolean assigned = false;
 											int i = 0;
@@ -247,14 +251,16 @@ public class Simulator {
 
 										}
 
-										psp = psp + s.getIPSP() + s.getEPSP();
-										pspPerColumn[neuronColNum] = pspPerColumn[neuronColNum] + s.getIPSP()
-												+ s.getEPSP();
+										psp = psp + (s.getIPSP() + s.getEPSP()) / 1000; // keep
+																						// normalized
+										pspPerColumn[neuronColNum] = pspPerColumn[neuronColNum] + (s.getIPSP()
+												+ s.getEPSP()) / 1000;
 									}
 
 								}
 								stats.clear();
-								seriesPSP.add(timeOfSimulation, psp); // for eeg
+								seriesPSP.add(timeOfSimulation, psp); // for
+																		// eeg
 
 								if ((int) timeOfSimulation % 100 == 0) {
 									listener.reportProgress(timeOfSimulation / totalTime);
@@ -330,8 +336,8 @@ public class Simulator {
 				final XYSeriesCollection[] datasetLFP = new XYSeriesCollection[numOfCols];
 
 				XYSeriesCollection[] datasetEEGperColumn = new XYSeriesCollection[numOfCols];
-				double maxLFPplot = Double.MIN_VALUE;
-				double minLFPplot = Double.MAX_VALUE;
+				double maxLFPplot = -1000000;
+				double minLFPplot = 30;
 				for (int i = 0; i < numOfCols; i++) {
 					datasetEEGperColumn[i] = new XYSeriesCollection();
 					datasetEEGperColumn[i].addSeries(eegSeries[i]);
