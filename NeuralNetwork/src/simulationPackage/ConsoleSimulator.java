@@ -227,9 +227,6 @@ public class ConsoleSimulator {
 								stats.clear();
 
 								try {
-									// outFileEEG.write(MessageFormat.format("{0,number,#.#}",
-									// timeOfSimulation) + ", "
-									// + psp / 3000 + "\r\n");
 
 									outFileIPSP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
 									outFileEPSP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
@@ -244,7 +241,7 @@ public class ConsoleSimulator {
 									for (int i = 0; i < numOfCols; i++) {
 
 										lineToWriteLfp = lineToWriteLfp + ","
-												+ MessageFormat.format("{0,number,#.#####}", (voltage[i] / 200));
+												+ MessageFormat.format("{0,number,#.#####}", (voltage[i]));
 									}
 									outFileLFP.write(lineToWriteLfp + "\r\n");
 								} catch (IOException e) {
