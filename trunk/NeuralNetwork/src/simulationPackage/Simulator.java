@@ -330,8 +330,8 @@ public class Simulator {
 				final XYSeriesCollection[] datasetLFP = new XYSeriesCollection[numOfCols];
 
 				XYSeriesCollection[] datasetEEGperColumn = new XYSeriesCollection[numOfCols];
-				double maxLFPplot = -1000000000;
-				double minLFPplot = 30;
+				double maxLFPplot = Double.MIN_VALUE;
+				double minLFPplot = Double.MAX_VALUE;
 				for (int i = 0; i < numOfCols; i++) {
 					datasetEEGperColumn[i] = new XYSeriesCollection();
 					datasetEEGperColumn[i].addSeries(eegSeries[i]);
@@ -345,7 +345,7 @@ public class Simulator {
 						minLFPplot = seriesLFP[i].getMinY();
 					}
 				}
-				System.out.println(minLFPplot + " " + maxLFPplot);
+
 				SpikePlotFrame plotFrame = new SpikePlotFrame();
 				plotFrame.plotNetwork(numOfCols, allDatasetSpikes, simName, totalTime);
 				plots.add(plotFrame);
