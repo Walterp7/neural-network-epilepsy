@@ -10,8 +10,8 @@ LTS 2 0.5
 % 20Hz 40 10 5
 %Step 48 2 20 RS 1 1
 %Step 48 2 20 FS 1 1
-Gaussian 0 9.5 -1 1 1
-Pick 100 2 15 1 1
+Gaussian 0 8 -1 0 1
+Pick 100 2 8 1 1
 %Pick 100 20 10 RS 1 1
 %Pick 100 20 10 FS 1 1
 %Step 10 5 10 FS 1 1

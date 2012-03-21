@@ -131,7 +131,8 @@ public class NetworkBuilder {
 		}
 	}
 
-	public Network createNetwork(String simConfigFile, ConfigurationUnit config, double timestep, double totalTime,
+	public Network createNetwork(String simConfigFile, long seed, ConfigurationUnit config, double timestep,
+			double totalTime,
 			InputDescriptor inDescriptor) throws Exception { // simConfg
 		// general info,colConfList - connections
 		loadSimulationConfig(simConfigFile, config);
@@ -143,7 +144,7 @@ public class NetworkBuilder {
 			ColumnBuilder newColBuilder = new ColumnBuilder();
 			newColBuilder.initialize(config.getColConf(colNumber), layersInColumn.get(colNumber), colNumber);
 
-			newColBuilder.pushNeurons(net);
+			newColBuilder.pushNeurons(net, seed);
 			builderList.add(newColBuilder);
 		}
 		// now neurons are added, we need to connect them

@@ -106,8 +106,9 @@ public class ColumnBuilder {
 
 	}
 
-	void pushNeurons(Network net) {
-		Random generator = new Random(391781649);
+	void pushNeurons(Network net, long seed) {
+		// Random generator = new Random(391781649);
+		Random generator = new Random(seed);
 		NeuronColumn col = new NeuronColumn(colID);
 		net.addColumn(col);
 

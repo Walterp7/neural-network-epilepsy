@@ -5,8 +5,12 @@ import java.util.ArrayList;
 public class Neuron implements NetworkNode {
 	private volatile double v;
 	private volatile double u;
-	private volatile double currentInput;
-	private volatile double nextInput;
+	// private volatile double currentInput;
+	// private volatile double nextInput;
+	private volatile double nextIPSP;
+	private volatile double nextEPSP;
+	private volatile double currentIPSP;
+	private volatile double currentEPSP;
 	private final Type type;
 	private final double a, b, c, d;
 	private int neuronId;
@@ -21,9 +25,12 @@ public class Neuron implements NetworkNode {
 
 		v = -65;
 
-		currentInput = 0;
-
-		nextInput = 0;
+		// currentInput = 0;
+		currentIPSP = 0;
+		currentEPSP = 0;
+		// nextInput = 0;
+		nextEPSP = 0;
+		nextIPSP = 0;
 		this.type = type;
 		a = parameters[0];
 		b = parameters[1];
@@ -36,7 +43,12 @@ public class Neuron implements NetworkNode {
 
 	@Override
 	public synchronized void addInput(double val, double time, double timeStep) {
-		nextInput = nextInput + val;
+		// nextInput = nextInput + val;
+		if (val < 0) {
+			nextIPSP += val;
+		} else {
+			nextEPSP += val;
+		}
 
 	}
 
@@ -64,7 +76,7 @@ public class Neuron implements NetworkNode {
 			v = c;
 			u = u + d;
 		}
-		v = v + timeStep * (0.04 * v * v + 5 * v + 140 - u + currentInput);
+		v = v + timeStep * (0.04 * v * v + 5 * v + 140 - u + currentEPSP + currentIPSP);
 		u = u + timeStep * a * (b * v - u);
 
 		if (isFiring) {
@@ -72,11 +84,11 @@ public class Neuron implements NetworkNode {
 				s.addInput(1, timeStep, timeofSimulation);
 			}
 		}
-		if (v > 30) {
-			v = 30;
-		}
+		// if (v > 30) {
+		// v = 30;
+		// }
 
-		stat = new Status(isFiring, neuronId, timeofSimulation, v, type, currentInput, colNum, layer);
+		stat = new Status(isFiring, neuronId, timeofSimulation, v, type, currentIPSP, currentEPSP, colNum, layer);
 
 		// v = v + timeStep * (0.04 * v * v + 5 * v + 140 - u + currentInput);
 		//
@@ -102,9 +114,12 @@ public class Neuron implements NetworkNode {
 
 	@Override
 	public void setCurrentInput() {
-		currentInput = nextInput;
-
-		nextInput = 0;
+		// currentInput = nextInput;
+		currentEPSP = nextEPSP;
+		currentIPSP = nextIPSP;
+		// nextInput = 0;
+		nextEPSP = 0;
+		nextIPSP = 0;
 	}
 
 	double getMembraneVoltage() {
