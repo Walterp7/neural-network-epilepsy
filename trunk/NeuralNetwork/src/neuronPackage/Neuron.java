@@ -90,25 +90,6 @@ public class Neuron implements NetworkNode {
 
 		stat = new Status(isFiring, neuronId, timeofSimulation, v, type, currentIPSP, currentEPSP, colNum, layer);
 
-		// v = v + timeStep * (0.04 * v * v + 5 * v + 140 - u + currentInput);
-		//
-		// u = u + timeStep * a * (b * v - u);
-		//
-		// if (v >= 30) { // is firing
-		//
-		// stat = new Status(true, neuronId, timeofSimulation, v, type,
-		// currentInput);
-		// v = c;
-		// u = u + d;
-		//
-		// for (Synapse s : neuronConnections) {
-		// s.addInput(1, timeStep, timeofSimulation);
-		// }
-		// } else {
-		//
-		// stat = new Status(false, neuronId, timeofSimulation, v, type,
-		// currentInput);
-		// }
 		return stat;
 	}
 

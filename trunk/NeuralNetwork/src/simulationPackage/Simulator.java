@@ -132,15 +132,15 @@ public class Simulator {
 
 					net = mag.createNetwork(simDir[0], 391781649, configFromGUI, timeStep, totalTime, inDescriptor);
 
-					net.saveToFile("neurons" + simName + ".txt");
+					// net.saveToFile("neurons" + simName + ".txt");
 					net.initialize(timeStep, 300);
 					mag.modifyWeights(net);
 
 					allSynapses = net.getAllSynapses();
 					allNeurons = net.getAllNeurons();
 
-					AnalyseNetwork analyser = new AnalyseNetwork();
-					analyser.exportConnections(net);
+					// AnalyseNetwork analyser = new AnalyseNetwork();
+					// analyser.exportConnections(net);
 					ArrayList<Integer> numOfNeuronsInColumn = net.getNumberOfNeuronsInColumn();
 
 					numOfColsS = numOfNeuronsInColumn.size();
@@ -162,7 +162,7 @@ public class Simulator {
 				}
 				final int numOfCols = numOfColsS;
 
-				int numThreads = 4;
+				int numThreads = 1;
 
 				timeBarrier = new CyclicBarrier(numThreads + 1);
 				statsCreationBarrier = new CyclicBarrier(numThreads,
@@ -172,11 +172,11 @@ public class Simulator {
 
 								for (Neuron nod : allNeurons) {
 									Status newStat = null;
+									nod.setCurrentInput();
 									newStat = nod.advance(timeStep, timeOfSimulation);
 									if (newStat != null) {
 										stats.add(newStat);
 									}
-									nod.setCurrentInput();
 
 								}
 
@@ -276,15 +276,15 @@ public class Simulator {
 									outFileIPSP.write("\r\n");
 									String lineToWriteLfp = ""
 											+ MessageFormat.format("{0,number,#.#}", timeOfSimulation);
-									if (timeOfSimulation > 0) {
-										for (int i = 0; i < numOfCols; i++) {
-											eegSeries[i].add(timeOfSimulation, pspPerColumn[i]);
-											seriesLFP[i].add(timeOfSimulation, voltage[i]);
 
-											lineToWriteLfp = lineToWriteLfp + ","
-													+ MessageFormat.format("{0,number,#.#####}", (voltage[i]));
-										}
+									for (int i = 0; i < numOfCols; i++) {
+										eegSeries[i].add(timeOfSimulation, pspPerColumn[i]);
+										seriesLFP[i].add(timeOfSimulation, voltage[i]);
+
+										lineToWriteLfp = lineToWriteLfp + ","
+												+ MessageFormat.format("{0,number,#.#####}", (voltage[i]));
 									}
+
 									outFileLFP.write(lineToWriteLfp + "\r\n");
 								} catch (IOException e) {
 									// TODO Auto-generated catch block

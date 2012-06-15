@@ -39,7 +39,13 @@ public class ConstantInputer extends Inputer {
 
 		for (Neuron neur : network.getAllNeurons()) {
 			if (neur.getType() == type) {
-				addConnection(neur, network, 1);
+				if (type == Type.RS) {
+					// if (neur.getLayer() == Layer.IV) {
+					addConnection(neur, network, 1);
+					// }
+				} else {
+					addConnection(neur, network, 1);
+				}
 			}
 
 		}
