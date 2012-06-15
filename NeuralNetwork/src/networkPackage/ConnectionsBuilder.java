@@ -25,7 +25,7 @@ public class ConnectionsBuilder {
 			delay++;
 		}
 
-		return delay; // ms -> how many timesteps
+		return delay; // not ms, but the number of timesteps
 	}
 
 	public void setUpConnections(Network net,

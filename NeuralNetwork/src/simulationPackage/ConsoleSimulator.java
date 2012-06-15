@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
@@ -26,7 +27,8 @@ public class ConsoleSimulator {
 	FileWriter outFileEPSP;
 
 	double timeOfSimulation = 0;
-	private final int[] neurIndx = { 345, 1075, 1825, 2645, 3400 };
+	// private final int[] neurIndx = { 345, 1075, 1825, 2645, 3400 };
+	private final int[] neurIndx = { 346, 345, 1077, 1078, 1826, 1827, 2644, 2645, 3498, 3498 };
 	private List<NetworkNode> allSynapses = new ArrayList<NetworkNode>(); // plus
 	// inputs
 	private List<Neuron> allNeurons = new ArrayList<Neuron>();
@@ -108,7 +110,7 @@ public class ConsoleSimulator {
 			InputDescriptor inDescriptor = new InputDescriptor();
 			NetworkBuilder mag = new NetworkBuilder();
 
-			boolean[] neuronsCorrect = { false, false, false, false, false };
+			boolean[] neuronsCorrect = { false, false, false, false, false, false, false, false, false, false };
 
 			Network net;
 			int numOfColsS;
@@ -121,31 +123,41 @@ public class ConsoleSimulator {
 					outFileEPSP = new FileWriter(pathName + "/epsp_" + simName + ".csv");
 					net = mag.createNetwork(simDir[0], seed, configFromFiles, timeStep, totalTime, inDescriptor);
 
-					int[] tempIndexes = { 302, 848, 1394, 1940, 2486 };
+					// int[] tempIndexes = { 302, 848, 1394, 1940, 2486 };
+					int[] tempIndexes = { 300, 846, 1392, 1939, 2484 };
+					Random gen = new Random(2394862);
 
 					Neuron tempNeuron;
-					while ((!neuronsCorrect[0]) || (!neuronsCorrect[1]) || (!neuronsCorrect[2]) || (!neuronsCorrect[3])
-							|| (!neuronsCorrect[4])) {
-						for (int i = 0; i < 5; i++) {
+					boolean areNeuronsCorrect = false;
+
+					while ((!areNeuronsCorrect)) {
+						for (int i = 0; i < neurIndx.length; i++) {
 							tempNeuron = net.getNeuron(neurIndx[i]);
 							if (tempNeuron != null) {
 								if ((!neuronsCorrect[i]) && (tempNeuron.getType() == Type.RS)
 										&& (tempNeuron.getLayer() == Layer.V)
-										&& (net.getNeuron(neurIndx[i]).getColNum() == i)) {
+										&& (net.getNeuron(neurIndx[i]).getColNum() == i / 2)) {
 									neuronsCorrect[i] = true;
 
 								} else {
-									neurIndx[i] = neurIndx[i] - 10;
+									neurIndx[i] = (i / 2 + 1) * gen.nextInt(700);
 									if (neurIndx[i] <= 10) {
-										neurIndx[i] = (i + 1) * 600;
+										neurIndx[i] = (i / 2 + 1) * 600;
 									}
 								}
 							} else {
 								if (!neuronsCorrect[i]) {
-									neurIndx[i] = tempIndexes[i];
+									neurIndx[i] = tempIndexes[i / 2] - 3;
 								}
 							}
 
+						}
+						areNeuronsCorrect = true;
+						for (boolean isCorrect : neuronsCorrect) {
+
+							if (!isCorrect) {
+								areNeuronsCorrect = false;
+							}
 						}
 					}
 					System.out.println("initializing");
@@ -162,7 +174,7 @@ public class ConsoleSimulator {
 				}
 				final int numOfCols = numOfColsS;
 
-				int numThreads = 4;
+				int numThreads = 1;
 
 				timeBarrier = new CyclicBarrier(numThreads + 1);
 				statsCreationBarrier = new CyclicBarrier(numThreads,
@@ -185,8 +197,8 @@ public class ConsoleSimulator {
 																			// local
 																			// field
 								// potential
-								double[] ipsps = new double[5];
-								double[] epsps = new double[5];
+								double[] ipsps = new double[neurIndx.length];
+								double[] epsps = new double[neurIndx.length];
 								// 345 - col 1, layer V, RS
 								// 1075 - col 2, layer V, RS
 								// 1825 - col 3, layer V, RS

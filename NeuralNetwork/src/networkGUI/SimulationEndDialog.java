@@ -20,6 +20,10 @@ import org.apache.commons.io.FileUtils;
 
 public class SimulationEndDialog extends JDialog {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 12L;
 	private final JPanel contentPanel = new JPanel();
 	private final List<PlotFrame> plotFrames;
 

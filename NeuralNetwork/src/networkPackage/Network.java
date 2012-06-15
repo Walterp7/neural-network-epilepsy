@@ -223,7 +223,7 @@ public class Network {
 			}
 
 			for (Synapse syn : neuron.getNeuronConnections()) {
-				outNeurons.write(" " + syn.getPostSynapticNeuron().getId());
+				outNeurons.write(" " + syn.getPostSynapticNeuron().getId() + " " + syn.getWeight());
 			}
 			outNeurons.write("\r\n");
 		}

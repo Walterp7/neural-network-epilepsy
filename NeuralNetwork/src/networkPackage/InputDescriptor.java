@@ -61,7 +61,7 @@ public class InputDescriptor { // FOR PLOTTING MOSTLY
 
 		String keyTitle = "";
 
-		if (!parsedLine[index + 1].equals("-1")) {
+		if (!(parsedLine[index + 1].equals("-1") || parsedLine[0].equals("Constant"))) {
 			keyTitle = "Col" + (Integer.parseInt(parsedLine[index + 1]) + 1) + ", ";
 		}
 

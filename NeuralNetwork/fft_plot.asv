@@ -1,0 +1,38 @@
+function [  ] = fft( filename, color )
+%function plots abs of fft coefficients
+% arguments: filenam - a string with the name of the file (path)
+% color - char for the color ('b','r','g' etc)
+
+%read the file
+eeg_gamma = load(filename);
+
+time = transpose(eeg_gamma(:,1));
+eeg = transpose(eeg_gamma(:,2));
+
+%figure;
+%plot(time, eeg);
+%title('EEG over time');
+
+%open the file - has to already EXIST 
+fileNum = fopen('result_fft.txt');
+
+
+Fs = length(eeg);
+T = 1/Fs;
+L=length(eeg);
+NFFT = 2^nextpow2(L);
+Y = fft(eeg,NFFT)/L;
+f = Fs/2*linspace(0,1,NFFT/2+1);
+
+%figure;
+%plot(f,2*abs(Y(1:NFFT/2+1)))
+%title('Absolute value of the FFT coefficients');
+figure;
+result = 2*abs(Y(1:NFFT/2+1));
+%figure;
+plot(f(10:500),result(10:500), color)
+xlabel('[Hz]');
+ylabel('amplitude');
+title(strcat('FFT - simulation ', filename))
+end
+
