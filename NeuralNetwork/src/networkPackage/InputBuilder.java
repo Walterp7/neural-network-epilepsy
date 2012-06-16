@@ -9,13 +9,16 @@ import neuronPackage.FrequencyInputer;
 import neuronPackage.GaussianInputer;
 import neuronPackage.Inputer;
 import neuronPackage.Layer;
+import neuronPackage.PSPparameters;
 import neuronPackage.PickInputer;
 import neuronPackage.StpParameters;
 import neuronPackage.Type;
 
 public class InputBuilder {
 
-	void setInputs(List<String> inputList, HashMap<String, StpParameters> stpParams, Network net,
+	void setInputs(List<String> inputList, HashMap<String, StpParameters> stpParams,
+			HashMap<String, PSPparameters> pspParams,
+			HashMap<String, PSPparameters> secondaryPspParams, Network net,
 			InputDescriptor inDescriptor, double totalTime)
 			throws Exception {
 
@@ -42,7 +45,7 @@ public class InputBuilder {
 						double value = Double
 								.parseDouble(parsedLine[wordIndex++]);
 						System.out.println("inter " + interTime + " signal " + signalTime + " value " + value);
-						newInput = new FrequencyInputer(interTime, value, stpParams);
+						newInput = new FrequencyInputer(interTime, value, stpParams, pspParams, secondaryPspParams);
 					} else {
 						if (parsedLine[wordIndex].equals("Pick")) {
 							wordIndex++;
@@ -53,7 +56,7 @@ public class InputBuilder {
 							double value = Double
 									.parseDouble(parsedLine[wordIndex++]);
 							newInput = new PickInputer(startTime, signalTime,
-									value, stpParams);
+									value, stpParams, pspParams, secondaryPspParams);
 						} else {
 							if (parsedLine[wordIndex].equals("Constant")) {
 								wordIndex++;

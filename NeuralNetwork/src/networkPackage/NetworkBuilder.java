@@ -10,6 +10,7 @@ import java.util.List;
 import networkGUI.ColDescr;
 import networkGUI.ConfigurationUnit;
 import neuronPackage.Neuron;
+import neuronPackage.PSPparameters;
 import neuronPackage.StpParameters;
 import neuronPackage.Synapse;
 import neuronPackage.Type;
@@ -27,6 +28,8 @@ public class NetworkBuilder {
 
 	List<String> inputs = new ArrayList<String>();
 	HashMap<String, StpParameters> stpParams = new HashMap<String, StpParameters>();
+	HashMap<String, PSPparameters> pspParams = new HashMap<String, PSPparameters>();
+	HashMap<String, PSPparameters> secondaryPspParams = new HashMap<String, PSPparameters>();
 
 	void loadSimulationConfig(String simConfigPath, ConfigurationUnit config) throws IOException {
 
@@ -69,15 +72,18 @@ public class NetworkBuilder {
 
 		}
 		// lines with description of inputs
-		while ((!newLine.equals("STP configuration"))) {
+		while ((newLine != null)) {
 			if (!(newLine.charAt(0) == '%')) {
 				inputs.add(newLine);
 			}
 
 			newLine = inSimConf.readLine();
 		}
+		inSimConf.close();
+
+		BufferedReader stpPspConfig = new BufferedReader(new FileReader("config.txt"));
 		// lines with description on STP
-		while ((newLine = inSimConf.readLine()) != null) {
+		while (((newLine = stpPspConfig.readLine()) != null) && (!newLine.equals("PSP configuration"))) {
 			if (!(newLine.charAt(0) == '%')) {
 
 				parsedLine = newLine.trim().split("\\s+");
@@ -89,7 +95,32 @@ public class NetworkBuilder {
 				stpParams.put(parsedLine[0], new StpParameters(ti, trec, tfac, u, maxy));
 			}
 		}
-		inSimConf.close();
+		// lines with description on PSP
+		while (((newLine = stpPspConfig.readLine()) != null) && (!newLine.equals("SECONDARY PSP configuration"))) {
+			if (!(newLine.charAt(0) == '%')) {
+
+				parsedLine = newLine.trim().split("\\s+");
+				double t1 = Double.parseDouble(parsedLine[1]);
+				double t2 = Double.parseDouble(parsedLine[2]);
+				double norm = Double.parseDouble(parsedLine[3]);
+				double range = Double.parseDouble(parsedLine[4]);
+
+				pspParams.put(parsedLine[0], new PSPparameters(t1, t2, norm, range));
+			}
+		}
+		// lines with secondary description on PSP
+		while ((newLine = stpPspConfig.readLine()) != null) {
+			if (!(newLine.charAt(0) == '%')) {
+				parsedLine = newLine.trim().split("\\s+");
+				double t1 = Double.parseDouble(parsedLine[1]);
+				double t2 = Double.parseDouble(parsedLine[2]);
+				double norm = Double.parseDouble(parsedLine[3]);
+				double range = Double.parseDouble(parsedLine[4]);
+
+				secondaryPspParams.put(parsedLine[0], new PSPparameters(t1, t2, norm, range));
+			}
+		}
+		stpPspConfig.close();
 	}
 
 	public void modifyWeights(Network net) {
@@ -149,11 +180,11 @@ public class NetworkBuilder {
 		}
 		// now neurons are added, we need to connect them
 		for (ColumnBuilder colBuilder : builderList) {
-			colBuilder.connectNetwork(net, stpParams, timestep);
+			colBuilder.connectNetwork(net, stpParams, pspParams, secondaryPspParams, timestep);
 		}
 		InputBuilder inBuild = new InputBuilder();
 		net.setAllNodes();
-		inBuild.setInputs(inputs, stpParams, net, inDescriptor, totalTime);
+		inBuild.setInputs(inputs, stpParams, pspParams, secondaryPspParams, net, inDescriptor, totalTime);
 
 		return net;
 	}

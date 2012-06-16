@@ -2,6 +2,7 @@ package networkPackage;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -12,7 +13,7 @@ import neuronPackage.Type;
 
 public class NeuronPool {
 
-	Map<Type, NeuronTypePool> typePools = new HashMap<Type, NeuronTypePool>();
+	Map<Type, NeuronTypePool> typePools = new LinkedHashMap<Type, NeuronTypePool>();
 	final Layer poolName;
 
 	// ArrayList<NeuronTypePool> typePool = new ArrayList<NeuronTypePool>();

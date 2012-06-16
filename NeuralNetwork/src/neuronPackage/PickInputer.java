@@ -13,11 +13,13 @@ public class PickInputer extends Inputer {
 	protected final ArrayList<Synapse> inputConnections = new ArrayList<Synapse>();
 	SynapseFactory synFact = null;
 
-	public PickInputer(int interTime, int signalTime, double value, HashMap<String, StpParameters> stpParams) {
+	public PickInputer(int interTime, int signalTime, double value, HashMap<String, StpParameters> stpParams,
+			HashMap<String, PSPparameters> pspParams,
+			HashMap<String, PSPparameters> secondaryPspParams) {
 		this.value = value;
 		this.startTime = interTime;
 		this.signalTime = signalTime;
-		synFact = new SynapseFactory(stpParams);
+		synFact = new SynapseFactory(stpParams, pspParams, secondaryPspParams);
 	}
 
 	@Override
