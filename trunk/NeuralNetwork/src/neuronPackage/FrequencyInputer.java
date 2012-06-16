@@ -14,11 +14,13 @@ public class FrequencyInputer extends Inputer {
 	public final ArrayList<Synapse> inputConnections = new ArrayList<Synapse>();
 	public SynapseFactory synFact = null;
 
-	public FrequencyInputer(int interTime, double value, HashMap<String, StpParameters> stpParams) {
+	public FrequencyInputer(int interTime, double value, HashMap<String, StpParameters> stpParams,
+			HashMap<String, PSPparameters> pspParams,
+			HashMap<String, PSPparameters> secondaryPspParams) {
 		this.value = value;
 		this.interTime = interTime;
 		// this.signalTime = signalTime;
-		synFact = new SynapseFactory(stpParams);
+		synFact = new SynapseFactory(stpParams, pspParams, secondaryPspParams);
 	}
 
 	@Override

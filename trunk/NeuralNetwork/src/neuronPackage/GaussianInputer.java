@@ -10,8 +10,8 @@ public class GaussianInputer extends Inputer {
 
 	// Random generator = new Random(12364579);
 	// Random generator = new Random(123645711);
-	// Random generator = new Random(978645711);
-	Random generator = new Random(978649719);
+	Random generator = new Random(978645711);
+	// Random generator = new Random(978649719);
 
 	protected final ArrayList<Neuron> inputConnections = new ArrayList<Neuron>();
 

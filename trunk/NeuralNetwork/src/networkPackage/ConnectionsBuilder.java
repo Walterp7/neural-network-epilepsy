@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Random;
 
 import neuronPackage.Neuron;
+import neuronPackage.PSPparameters;
 import neuronPackage.StpParameters;
 
 public class ConnectionsBuilder {
@@ -30,8 +31,9 @@ public class ConnectionsBuilder {
 
 	public void setUpConnections(Network net,
 			List<ConnectionDescriptor> allProbabilities, HashMap<String, StpParameters> stpParams,
-			int currentColumnNum,
-			double timestep) {
+			HashMap<String, PSPparameters> pspParams,
+			HashMap<String, PSPparameters> secondaryPspParams, int currentColumnNum, double timestep) {
+
 		Random generator = new Random(19580427);
 
 		NeuronColumn currentColumn = net.getColumn(currentColumnNum);
@@ -70,7 +72,7 @@ public class ConnectionsBuilder {
 					}
 				}
 
-				SynapseFactory synFact = new SynapseFactory(stpParams);
+				SynapseFactory synFact = new SynapseFactory(stpParams, pspParams, secondaryPspParams);
 
 				for (Neuron outNeuron : outPool.getNeurons()) {
 					for (NeuronTypePool inP : inPools) {

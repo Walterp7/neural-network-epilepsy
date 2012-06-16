@@ -10,6 +10,7 @@ import java.util.Random;
 
 import neuronPackage.Layer;
 import neuronPackage.Neuron;
+import neuronPackage.PSPparameters;
 import neuronPackage.StpParameters;
 import neuronPackage.Type;
 
@@ -186,9 +187,12 @@ public class ColumnBuilder {
 		}
 	}
 
-	void connectNetwork(Network net, HashMap<String, StpParameters> stpParams, double timeStep) {
+	void connectNetwork(Network net, HashMap<String, StpParameters> stpParams,
+			HashMap<String, PSPparameters> pspParams,
+			HashMap<String, PSPparameters> secondaryPspParams, double timeStep) {
 		ConnectionsBuilder connectionBuilder = new ConnectionsBuilder();
-		connectionBuilder.setUpConnections(net, allProbabilities, stpParams, colID, timeStep);
+		connectionBuilder.setUpConnections(net, allProbabilities, stpParams, pspParams, secondaryPspParams, colID,
+				timeStep);
 
 	}
 

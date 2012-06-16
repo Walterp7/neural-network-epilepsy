@@ -152,7 +152,7 @@ public class Network {
 	public void initialize(double timeStep, int initTime) {
 
 		GaussianInputer randomInputer = new GaussianInputer();
-		PickInputer pickInputer = new PickInputer(0, 5, 3.25, null);
+		PickInputer pickInputer = new PickInputer(0, 5, 3.25, null, null, null);
 		for (Neuron nod : allNeurons) {
 
 			randomInputer.addConnection(nod, this, 1);
