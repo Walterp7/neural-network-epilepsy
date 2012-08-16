@@ -86,8 +86,8 @@ public class SpikePlotFrame extends PlotFrame { // plots scatter plot and the
 	public void save(String pathName) throws IOException {
 		for (JFreeChart chart : charts) {
 			ChartUtilities.saveChartAsPNG(
-					new java.io.File(pathName + "/"
-							+ "spikes_col"
+					new java.io.File(pathName
+							+ "/" + "spikes_col"
 							+ charts.indexOf(chart) + ".png"),
 					chart, 2000, 300);
 		}

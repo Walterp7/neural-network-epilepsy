@@ -10,6 +10,8 @@ import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
 import networkGUI.ConfigurationUnit;
+import networkGUI.PlotFrame;
+import networkGUI.SpikePlotFrame;
 import networkPackage.InputDescriptor;
 import networkPackage.Network;
 import networkPackage.NetworkBuilder;
@@ -18,6 +20,9 @@ import neuronPackage.NetworkNode;
 import neuronPackage.Neuron;
 import neuronPackage.Status;
 import neuronPackage.Type;
+
+import org.jfree.data.xy.XYSeries;
+import org.jfree.data.xy.XYSeriesCollection;
 
 public class ConsoleSimulator {
 
@@ -32,6 +37,7 @@ public class ConsoleSimulator {
 	private List<NetworkNode> allSynapses = new ArrayList<NetworkNode>(); // plus
 	// inputs
 	private List<Neuron> allNeurons = new ArrayList<Neuron>();
+	List<PlotFrame> plots = new ArrayList<PlotFrame>();
 
 	ConfigurationUnit configFromFiles;
 
@@ -40,6 +46,8 @@ public class ConsoleSimulator {
 	private CyclicBarrier statsCreationBarrier = null;
 
 	private CyclicBarrier timeBarrier = null;
+
+	List<XYSeries[]> dataSeries = new ArrayList<XYSeries[]>();
 
 	public ConsoleSimulator(ConfigurationUnit conf) {
 		configFromFiles = conf;
@@ -65,6 +73,7 @@ public class ConsoleSimulator {
 				return;
 			}
 			for (double currentTime = 0; currentTime <= totalTime; currentTime += timeStep) {
+
 				timeOfSimulation = currentTime;
 				// List<Status> stats = net.nextStep(timeStep,
 				// timeOfSimulation);
@@ -113,15 +122,26 @@ public class ConsoleSimulator {
 			boolean[] neuronsCorrect = { false, false, false, false, false, false, false, false, false, false };
 
 			Network net;
-			int numOfColsS;
+			int numOfColsS = 5;
 			try {
 				synchronized (ConsoleSimulator.class) {
 					// outFileEEG = new FileWriter(pathName + "/eeg" + simName +
 					// ".txt");
-					outFileLFP = new FileWriter(pathName + "/lfp_" + simName + ".csv");
-					outFileIPSP = new FileWriter(pathName + "/ipsp_" + simName + ".csv");
-					outFileEPSP = new FileWriter(pathName + "/epsp_" + simName + ".csv");
+					outFileLFP = new FileWriter(pathName + "\\lfp_" + simName + ".csv");
+					outFileIPSP = new FileWriter(pathName + "\\ipsp_" + simName + ".csv");
+					outFileEPSP = new FileWriter(pathName + "\\epsp_" + simName + ".csv");
 					net = mag.createNetwork(simDir[0], seed, configFromFiles, timeStep, totalTime, inDescriptor);
+
+					for (int i = 0; i < numOfColsS; i++) {
+						XYSeries[] newDataSeries = new XYSeries[4];
+						newDataSeries[0] = new XYSeries("RS neurons");
+						newDataSeries[1] = new XYSeries("FS neurons");
+						newDataSeries[2] = new XYSeries("LTS neurons");
+						newDataSeries[3] = new XYSeries("IB neurons");
+
+						dataSeries.add(newDataSeries);
+
+					}
 
 					// int[] tempIndexes = { 302, 848, 1394, 1940, 2486 };
 					int[] tempIndexes = { 300, 846, 1392, 1939, 2484 };
@@ -174,7 +194,7 @@ public class ConsoleSimulator {
 				}
 				final int numOfCols = numOfColsS;
 
-				int numThreads = 1;
+				int numThreads = 4;
 
 				timeBarrier = new CyclicBarrier(numThreads + 1);
 				statsCreationBarrier = new CyclicBarrier(numThreads,
@@ -211,6 +231,38 @@ public class ConsoleSimulator {
 
 									int neuronColNum = s.getColumn();
 
+									int totalNeuronsPerColumn = 764;
+
+									if (s.fired()) {
+
+										if (s.getType() == Type.RS) {
+											dataSeries.get(neuronColNum)[0].add(s.getTime(),
+													(s.getNumber() - neuronColNum
+															* totalNeuronsPerColumn));
+
+										} else {
+											if (s.getType() == Type.FS) {
+												dataSeries.get(neuronColNum)[1].add(s.getTime(),
+														(s.getNumber() - neuronColNum
+																* totalNeuronsPerColumn));
+
+											} else {
+												if (s.getType() == Type.LTS) {
+													dataSeries.get(neuronColNum)[2].add(s.getTime(),
+															(s.getNumber() - neuronColNum
+																	* totalNeuronsPerColumn));
+
+												} else {
+													dataSeries.get(neuronColNum)[3].add(s.getTime(),
+															(s.getNumber() - neuronColNum
+																	* totalNeuronsPerColumn));
+
+												}
+											}
+										}
+
+									}
+
 									if (s.getType() == Type.RS || s.getType() == Type.IB) {
 										if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V)) {
 
@@ -246,8 +298,8 @@ public class ConsoleSimulator {
 										outFileIPSP.write("," + MessageFormat.format("{0,number,#.######}", ipsps[i]));
 										outFileEPSP.write("," + MessageFormat.format("{0,number,#.######}", epsps[i]));
 									}
-									outFileIPSP.write("\r\n");
-									outFileEPSP.write("\r\n");
+									outFileIPSP.write("\n");
+									outFileEPSP.write("\n");
 									String lineToWriteLfp = ""
 											+ MessageFormat.format("{0,number,#.#}", timeOfSimulation);
 									for (int i = 0; i < numOfCols; i++) {
@@ -255,7 +307,7 @@ public class ConsoleSimulator {
 										lineToWriteLfp = lineToWriteLfp + ","
 												+ MessageFormat.format("{0,number,#.#####}", (voltage[i]));
 									}
-									outFileLFP.write(lineToWriteLfp + "\r\n");
+									outFileLFP.write(lineToWriteLfp + "\n");
 								} catch (IOException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -280,7 +332,27 @@ public class ConsoleSimulator {
 				timeBarrier.await();
 				// long t2 = System.currentTimeMillis();
 				// System.out.println(t2 - t1);
+				XYSeriesCollection[] allDatasetSpikes = new XYSeriesCollection[numOfCols];
 
+				int count = 0;
+				for (XYSeries[] data : dataSeries) {
+					final XYSeriesCollection datasetSpikes = new XYSeriesCollection();
+					datasetSpikes.addSeries(data[3]); // lts
+					datasetSpikes.addSeries(data[0]); // fs
+					datasetSpikes.addSeries(data[1]); // rs
+					datasetSpikes.addSeries(data[2]); // ib
+					allDatasetSpikes[count] = datasetSpikes;
+					count++;
+				}
+				SpikePlotFrame plotFrame = new SpikePlotFrame();
+				plotFrame.plotNetwork(numOfCols, allDatasetSpikes, simName, totalTime);
+				plots.add(plotFrame);
+				for (PlotFrame frame : plots) {
+
+					frame.save(simName);
+
+				}
+				// timeBarrier.await();
 				System.out.println(simName + " done");
 				// outFileEEG.close();
 				outFileLFP.close();
@@ -295,5 +367,7 @@ public class ConsoleSimulator {
 		}
 
 		System.out.println("done");
+		System.exit(0);
+
 	}
 }

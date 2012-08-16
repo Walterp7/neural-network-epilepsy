@@ -23,17 +23,19 @@ public class ConsoleSimRunner {
 		confUnit.setTimeStep(0.1);
 		confUnit.setTotalTime(1000);
 
-		confUnit.addSim2List("F:/experiments/settings/" + simConfigFileName, simName);
+		confUnit.addSim2List(simConfigFileName, simName);
 		for (int i = 0; i < 5; i++) {
-			confUnit.addCol2List("F:/experiments/settings/" + colConfigFileName, numOfLayers);
+			confUnit.addCol2List(colConfigFileName, numOfLayers);
 		}
 
 		ConsoleSimulator sim = new ConsoleSimulator(confUnit);
-		String pathName = "F:/experiments/data/" + simName + "s" + seed;
+		// String pathName = simName + "s" + seed;
+		String pathName = simName;
 		File file = new File(pathName);
 		if (!file.exists()) {
 			new File(file.getAbsolutePath()).mkdir();
 		}
-		sim.runSimulation(seed, "F:/experiments/data/" + simName + "s" + seed);
+		// sim.runSimulation(seed, simName + "s" + seed);
+		sim.runSimulation(seed, simName);
 	}
 }
