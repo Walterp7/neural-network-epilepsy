@@ -162,7 +162,7 @@ public class Simulator {
 				}
 				final int numOfCols = numOfColsS;
 
-				int numThreads = 1;
+				int numThreads = 4;
 
 				timeBarrier = new CyclicBarrier(numThreads + 1);
 				statsCreationBarrier = new CyclicBarrier(numThreads,

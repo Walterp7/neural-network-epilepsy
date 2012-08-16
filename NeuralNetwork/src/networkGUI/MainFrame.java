@@ -164,6 +164,7 @@ public class MainFrame extends JFrame {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				dispose();
+				System.exit(0);
 			}
 		});
 		GridBagConstraints gbc_btnExit = new GridBagConstraints();
