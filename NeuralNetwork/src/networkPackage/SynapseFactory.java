@@ -80,9 +80,19 @@ public class SynapseFactory {
 	public Synapse getSynapse(Neuron preSynaptic, Neuron postSynaptic,
 			double meanWeight, double std, int delay) {
 
-		StpParameters stp = stdpParams.get(preSynaptic.typeLayer2String()
+		// StpParameters stp = stdpParams.get(preSynaptic.typeLayer2String()
+		// + postSynaptic.typeLayer2String());
+
+		StpParameters stpTemplate = stdpParams.get(preSynaptic.typeLayer2String()
 				+ postSynaptic.typeLayer2String());
 
+		StpParameters stp = null;
+		if (stpTemplate != null) {
+			stp = new StpParameters(stpTemplate.getTi(), stpTemplate.getTrec() + generator.nextGaussian()
+					* stpTemplate.getTrec() / 3, stpTemplate.getTfac() + generator.nextGaussian()
+					* stpTemplate.getTfac() / 3,
+					stpTemplate.getU(), stpTemplate.getMaxY());
+		}
 		double weight;
 
 		double lowBound = meanWeight - std;
