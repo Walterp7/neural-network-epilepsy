@@ -88,11 +88,14 @@ public class SynapseFactory {
 
 		StpParameters stp = null;
 		if (stpTemplate != null) {
-			stp = new StpParameters(stpTemplate.getTi(), stpTemplate.getTrec() + generator.nextGaussian()
-					* stpTemplate.getTrec() / 3, stpTemplate.getTfac() + generator.nextGaussian()
-					* stpTemplate.getTfac() / 3,
-					stpTemplate.getU(), stpTemplate.getMaxY());
+			double newTi = stpTemplate.getTi();
+			double newTrec = Math.max(10, stpTemplate.getTrec() + generator.nextGaussian() * stpTemplate.getTrec() / 5);
+			double newTfac = Math.max(0.000001,
+					stpTemplate.getTfac() + generator.nextGaussian() * stpTemplate.getTfac() / 5);
+
+			stp = new StpParameters(newTi, newTrec, newTfac, stpTemplate.getU(), stpTemplate.getMaxY());
 		}
+
 		double weight;
 
 		double lowBound = meanWeight - std;
