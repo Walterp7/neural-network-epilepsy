@@ -92,7 +92,7 @@ public class SynapseFactory {
 			double newTrec = Math.max(10, stpTemplate.getTrec() + generator.nextGaussian() * stpTemplate.getTrec() / 5);
 			double newTfac = Math.max(0.000001,
 					stpTemplate.getTfac() + generator.nextGaussian() * stpTemplate.getTfac() / 5);
-
+			double newU = Math.max(0.01, stpTemplate.getU() + generator.nextGaussian() * stpTemplate.getU() / 10);
 			stp = new StpParameters(newTi, newTrec, newTfac, stpTemplate.getU(), stpTemplate.getMaxY());
 		}
 
