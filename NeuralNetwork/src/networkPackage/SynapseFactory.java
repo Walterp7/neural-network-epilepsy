@@ -41,10 +41,10 @@ public class SynapseFactory {
 		StpParameters stp = null;
 		if (stpTemplate != null) {
 			double newTi = stpTemplate.getTi();
-			double newTrec = Math.max(10, stpTemplate.getTrec() + generator.nextGaussian() * stpTemplate.getTrec() / 4);
+			double newTrec = Math.max(5, stpTemplate.getTrec() + generator.nextGaussian() * stpTemplate.getTrec() / 4);
 			double newTfac = Math.max(0.000001,
 					stpTemplate.getTfac() + generator.nextGaussian() * stpTemplate.getTfac() / 4);
-			double newU = Math.max(0.01, stpTemplate.getU() + generator.nextGaussian() * stpTemplate.getU() / 10);
+			double newU = Math.max(0.01, stpTemplate.getU() + generator.nextGaussian() * stpTemplate.getU() / 4);
 			stp = new StpParameters(newTi, newTrec, newTfac, stpTemplate.getU(), stpTemplate.getMaxY());
 		}
 
