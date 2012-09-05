@@ -28,14 +28,17 @@ public class ConsoleSimRunner {
 			confUnit.addCol2List(colConfigFileName, numOfLayers);
 		}
 
+		String fullSimName = simName + ((int) (seed / 100000000)) + "x" + (seed % 10);
+
 		ConsoleSimulator sim = new ConsoleSimulator(confUnit);
-		// String pathName = simName + "s" + seed;
-		String pathName = simName;
+		String pathName = fullSimName;
+		// String pathName = simName;
 		File file = new File(pathName);
 		if (!file.exists()) {
 			new File(file.getAbsolutePath()).mkdir();
 		}
 		// sim.runSimulation(seed, simName + "s" + seed);
-		sim.runSimulation(seed, simName);
+		// sim.runSimulation(seed, simName);
+		sim.runSimulation(seed, fullSimName);
 	}
 }

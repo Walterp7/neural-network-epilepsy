@@ -40,7 +40,7 @@ public class SynapseFactory {
 
 		StpParameters stp = null;
 		if (stpTemplate != null) {
-			double newTi = stpTemplate.getTi();
+			double newTi = stpTemplate.getTi() + generator.nextGaussian() * stpTemplate.getTi() / 4;
 			double newTrec = Math.max(5, stpTemplate.getTrec() + generator.nextGaussian() * stpTemplate.getTrec() / 4);
 			double newTfac = Math.max(0.000001,
 					stpTemplate.getTfac() + generator.nextGaussian() * stpTemplate.getTfac() / 4);

@@ -9,9 +9,9 @@ import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
+import networkGUI.ChartCollection;
 import networkGUI.ConfigurationUnit;
 import networkGUI.PlotFrame;
-import networkGUI.SpikePlotFrame;
 import networkPackage.InputDescriptor;
 import networkPackage.Network;
 import networkPackage.NetworkBuilder;
@@ -127,9 +127,9 @@ public class ConsoleSimulator {
 				synchronized (ConsoleSimulator.class) {
 					// outFileEEG = new FileWriter(pathName + "/eeg" + simName +
 					// ".txt");
-					outFileLFP = new FileWriter(pathName + "\\lfp_" + simName + ".csv");
-					outFileIPSP = new FileWriter(pathName + "\\ipsp_" + simName + ".csv");
-					outFileEPSP = new FileWriter(pathName + "\\epsp_" + simName + ".csv");
+					outFileLFP = new FileWriter(pathName + "/lfp_" + simName + ".csv");
+					outFileIPSP = new FileWriter(pathName + "/ipsp_" + simName + ".csv");
+					outFileEPSP = new FileWriter(pathName + "/epsp_" + simName + ".csv");
 					net = mag.createNetwork(simDir[0], seed, configFromFiles, timeStep, totalTime, inDescriptor);
 
 					for (int i = 0; i < numOfColsS; i++) {
@@ -344,14 +344,10 @@ public class ConsoleSimulator {
 					allDatasetSpikes[count] = datasetSpikes;
 					count++;
 				}
-				SpikePlotFrame plotFrame = new SpikePlotFrame();
-				plotFrame.plotNetwork(numOfCols, allDatasetSpikes, simName, totalTime);
-				plots.add(plotFrame);
-				for (PlotFrame frame : plots) {
+				ChartCollection spikeCharts = new ChartCollection();
+				spikeCharts.plotNetwork(numOfCols, allDatasetSpikes, simName, totalTime);
+				spikeCharts.save(simName);
 
-					frame.save(simName);
-
-				}
 				// timeBarrier.await();
 				System.out.println(simName + " done");
 				// outFileEEG.close();
