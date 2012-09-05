@@ -22,7 +22,7 @@ public class SpikePlotFrame extends PlotFrame { // plots scatter plot and the
 
 	private final JPanel contentPane;
 	// List<JFreeChart> charts = new ArrayList<JFreeChart>();
-	ChartCollection charts = new ChartCollection();
+	SpikeChartCollection charts = new SpikeChartCollection();
 	String frameTitle;
 	private static ChartTheme currentTheme = new SimChartTheme("JFree");
 
