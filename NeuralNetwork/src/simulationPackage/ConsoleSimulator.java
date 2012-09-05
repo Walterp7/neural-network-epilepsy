@@ -9,7 +9,7 @@ import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
-import networkGUI.ChartCollection;
+import networkGUI.SpikeChartCollection;
 import networkGUI.ConfigurationUnit;
 import networkGUI.PlotFrame;
 import networkPackage.InputDescriptor;
@@ -344,9 +344,9 @@ public class ConsoleSimulator {
 					allDatasetSpikes[count] = datasetSpikes;
 					count++;
 				}
-				ChartCollection spikeCharts = new ChartCollection();
+				SpikeChartCollection spikeCharts = new SpikeChartCollection();
 				spikeCharts.plotNetwork(numOfCols, allDatasetSpikes, simName, totalTime);
-				spikeCharts.save(simName);
+				spikeCharts.save(pathName);
 
 				// timeBarrier.await();
 				System.out.println(simName + " done");

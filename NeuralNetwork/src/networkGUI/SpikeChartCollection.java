@@ -20,7 +20,7 @@ import org.jfree.chart.urls.XYURLGenerator;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 
-public class ChartCollection {
+public class SpikeChartCollection {
 
 	List<JFreeChart> charts = new ArrayList<JFreeChart>();
 
@@ -33,6 +33,9 @@ public class ChartCollection {
 							+ "/" + "spikes_col"
 							+ charts.indexOf(chart) + ".png"),
 					chart, 2000, 300);
+			System.out.println("saving" + pathName
+					+ "/" + "spikes_col"
+					+ charts.indexOf(chart) + ".png");
 		}
 	}
 
