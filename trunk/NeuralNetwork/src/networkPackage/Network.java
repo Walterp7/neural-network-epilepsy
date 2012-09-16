@@ -134,7 +134,7 @@ public class Network {
 				}
 			}
 		}
-		System.out.println("total number of neurons " + neurNum);
+		// System.out.println("total number of neurons " + neurNum);
 		// for (NetworkNode inp : allInputs) {
 		// allNodes.add(inp);
 		//

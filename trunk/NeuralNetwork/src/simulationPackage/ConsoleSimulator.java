@@ -9,9 +9,9 @@ import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 
-import networkGUI.SpikeChartCollection;
 import networkGUI.ConfigurationUnit;
-import networkGUI.PlotFrame;
+import networkGUI.LinePlotChart;
+import networkGUI.SpikeChartCollection;
 import networkPackage.InputDescriptor;
 import networkPackage.Network;
 import networkPackage.NetworkBuilder;
@@ -30,6 +30,7 @@ public class ConsoleSimulator {
 	FileWriter outFileLFP;
 	FileWriter outFileIPSP;
 	FileWriter outFileEPSP;
+	XYSeries[] seriesLFP;
 
 	double timeOfSimulation = 0;
 	// private final int[] neurIndx = { 345, 1075, 1825, 2645, 3400 };
@@ -37,7 +38,6 @@ public class ConsoleSimulator {
 	private List<NetworkNode> allSynapses = new ArrayList<NetworkNode>(); // plus
 	// inputs
 	private List<Neuron> allNeurons = new ArrayList<Neuron>();
-	List<PlotFrame> plots = new ArrayList<PlotFrame>();
 
 	ConfigurationUnit configFromFiles;
 
@@ -130,7 +130,10 @@ public class ConsoleSimulator {
 					outFileLFP = new FileWriter(pathName + "/lfp_" + simName + ".csv");
 					outFileIPSP = new FileWriter(pathName + "/ipsp_" + simName + ".csv");
 					outFileEPSP = new FileWriter(pathName + "/epsp_" + simName + ".csv");
+
 					net = mag.createNetwork(simDir[0], seed, configFromFiles, timeStep, totalTime, inDescriptor);
+
+					seriesLFP = new XYSeries[numOfColsS];
 
 					for (int i = 0; i < numOfColsS; i++) {
 						XYSeries[] newDataSeries = new XYSeries[4];
@@ -140,7 +143,7 @@ public class ConsoleSimulator {
 						newDataSeries[3] = new XYSeries("IB neurons");
 
 						dataSeries.add(newDataSeries);
-
+						seriesLFP[i] = new XYSeries("Local Field Potential (col " + (i + 1) + ")");
 					}
 
 					// int[] tempIndexes = { 302, 848, 1394, 1940, 2486 };
@@ -180,7 +183,7 @@ public class ConsoleSimulator {
 							}
 						}
 					}
-					System.out.println("initializing");
+					// System.out.println("initializing");
 					net.initialize(timeStep, 300);
 					mag.modifyWeights(net);
 
@@ -300,14 +303,17 @@ public class ConsoleSimulator {
 									}
 									outFileIPSP.write("\n");
 									outFileEPSP.write("\n");
-									String lineToWriteLfp = ""
-											+ MessageFormat.format("{0,number,#.#}", timeOfSimulation);
+									outFileIPSP.flush();
+									outFileEPSP.flush();
+									StringBuffer lineToWriteLfp = new StringBuffer(MessageFormat.format(
+											"{0,number,#.#}", timeOfSimulation));
 									for (int i = 0; i < numOfCols; i++) {
-
-										lineToWriteLfp = lineToWriteLfp + ","
-												+ MessageFormat.format("{0,number,#.#####}", (voltage[i]));
+										seriesLFP[i].add(timeOfSimulation, voltage[i]);
+										lineToWriteLfp.append(","
+												+ MessageFormat.format("{0,number,#.#####}", voltage[i]));
 									}
 									outFileLFP.write(lineToWriteLfp + "\n");
+									outFileLFP.flush();
 								} catch (IOException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
@@ -349,20 +355,54 @@ public class ConsoleSimulator {
 				spikeCharts.save(pathName);
 
 				// timeBarrier.await();
-				System.out.println(simName + " done");
+				XYSeries seriesReferenceLine = new XYSeries("reference line -75mV");
+				seriesReferenceLine.add(0, -75);
+				seriesReferenceLine.add(totalTime, -75);
+
+				final XYSeriesCollection[] datasetLFP = new XYSeriesCollection[numOfCols];
+				double maxLFPplot = -1000000;
+				double minLFPplot = 30;
+				for (int i = 0; i < numOfCols; i++) {
+
+					datasetLFP[i] = new XYSeriesCollection();
+					datasetLFP[i].addSeries(seriesReferenceLine);
+					datasetLFP[i].addSeries(seriesLFP[i]);
+					if (seriesLFP[i].getMaxY() > maxLFPplot) {
+						maxLFPplot = seriesLFP[i].getMaxY();
+					}
+					if (minLFPplot > seriesLFP[i].getMinY()) {
+						minLFPplot = seriesLFP[i].getMinY();
+					}
+				}
+
+				for (int i = 0; i < numOfCols; i++) {
+					boolean isStimulated = false;
+					if (i == 1) {
+						isStimulated = true;
+					}
+					LinePlotChart lfpPlot = new LinePlotChart("Local Field Potential" + " col" + (i + 1) + " "
+							+ simName,
+							"lfp" + i);
+					lfpPlot.draw(datasetLFP[i],
+							" Local Field Potential (col " + (i + 1) + ")", true,
+							minLFPplot,
+							maxLFPplot, true, isStimulated);
+					lfpPlot.save(pathName);
+				}
+
 				// outFileEEG.close();
 				outFileLFP.close();
 				outFileIPSP.close();
 				outFileEPSP.close();
 
-			} catch (Exception e) {
+			} catch (Throwable e) {
 
 				e.printStackTrace();
 			}
 
 		}
+		System.out.println(pathName + " done");
 
-		System.out.println("done");
 		System.exit(0);
 
 	}

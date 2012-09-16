@@ -124,7 +124,7 @@ public class NetworkBuilder {
 	}
 
 	public void modifyWeights(Network net) {
-		System.out.println("modifying weights");
+		// System.out.println("modifying weights");
 		if (weightMultiplier * fsInhMultiplier * ltsInhMultiplier != 1) {
 			for (Neuron neuron : net.getAllNeurons()) {
 				double multiplier = weightMultiplier;

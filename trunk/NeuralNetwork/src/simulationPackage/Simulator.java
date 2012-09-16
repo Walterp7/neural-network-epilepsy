@@ -11,7 +11,7 @@ import java.util.concurrent.CyclicBarrier;
 import networkGUI.ConfigurationUnit;
 import networkGUI.EegColumnPlotFrame;
 import networkGUI.InputPlotFrame;
-import networkGUI.LinePlot;
+import networkGUI.LinePlotFrame;
 import networkGUI.PlotFrame;
 import networkGUI.SimulationEndDialog;
 import networkGUI.SpikePlotFrame;
@@ -360,7 +360,7 @@ public class Simulator {
 				eegFrame.plotNetwork(numOfCols, datasetEEGperColumn, "EEG per column");
 				plots.add(eegFrame);
 
-				LinePlot eegPlot = new LinePlot("Simulated EEG " + simName, "simulatedEEG");
+				LinePlotFrame eegPlot = new LinePlotFrame("Simulated EEG " + simName, "simulatedEEG");
 				eegPlot.draw(datasetEEG, " Simulated EEG ", false, 0, 0, false, false);
 				plots.add(eegPlot);
 
@@ -369,7 +369,7 @@ public class Simulator {
 					if (i == 1) {
 						isStimulated = true;
 					}
-					LinePlot lfpPlot = new LinePlot("Local Field Potential" + " col" + (i + 1) + " " + simName,
+					LinePlotFrame lfpPlot = new LinePlotFrame("Local Field Potential" + " col" + (i + 1) + " " + simName,
 							"lfp" + i);
 					lfpPlot.draw(datasetLFP[i],
 							" Local Field Potential (col " + (i + 1) + ")", true,

@@ -2,17 +2,8 @@ package networkGUI;
 
 import java.awt.Color;
 import java.awt.RenderingHints;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.io.File;
 import java.io.IOException;
 
-import javax.swing.JButton;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JPanel;
-
-import org.jfree.chart.ChartPanel;
 import org.jfree.chart.ChartTheme;
 import org.jfree.chart.ChartUtilities;
 import org.jfree.chart.JFreeChart;
@@ -26,60 +17,19 @@ import org.jfree.chart.urls.StandardXYURLGenerator;
 import org.jfree.data.xy.XYDataset;
 import org.jfree.data.xy.XYSeriesCollection;
 
-public class LinePlot extends PlotFrame {
+public class LinePlotChart {
 
-	private static final long serialVersionUID = 1L; // /???
 	JFreeChart chart;
-	private final JPanel contentPane;
+
 	private static ChartTheme currentTheme = new SimChartTheme("line");
 	final String fileName;
 
-	public LinePlot(final String frameTitle, final String fileName) {
-		super(frameTitle);
-
+	public LinePlotChart(final String frameTitle, final String fileName) {
 		this.fileName = fileName;
-		contentPane = new JPanel();
-		setContentPane(contentPane);
-		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-
-		JButton btnSave = new JButton("Save");
-		btnSave.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				try {
-
-					final JFileChooser fc = new JFileChooser("F:/workspaces/neuronWorkspace/NeuralNetwork/data");
-					fc.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-					int returnVal = fc.showOpenDialog(null);
-
-					if (returnVal == JFileChooser.APPROVE_OPTION) {
-						File file = fc.getSelectedFile();
-						// This is where a real application would open the file.
-						if (!file.exists()) {
-							new File(file.getAbsolutePath()).mkdir();
-						}
-
-						ChartUtilities.saveChartAsPNG(
-								new java.io.File(file.getAbsolutePath() + "/" + fileName + ".png"),
-								chart, 2000, 250);
-
-					}
-
-				} catch (java.io.IOException exc) {
-					System.err.println("Error writing image to file");
-				}
-			}
-		});
-		contentPane.add(btnSave);
 	}
 
-	@Override
 	public void save(String pathName) throws IOException {
 		ChartUtilities.saveChartAsPNG(new java.io.File(pathName + "/" + fileName + ".png"), chart, 2000, 250);
-	}
-
-	public double getMax() {
-		return 0;
 	}
 
 	protected static JFreeChart createXYLineChart(String title,
@@ -151,15 +101,6 @@ public class LinePlot extends PlotFrame {
 		chart.getRenderingHints().put
 				(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 
-		final ChartPanel panel = new ChartPanel(chart, true);
-		panel.setPreferredSize(new java.awt.Dimension(1000, 300));
-		panel.setMinimumDrawHeight(10);
-		panel.setMaximumDrawHeight(2000);
-		panel.setMinimumDrawWidth(20);
-		panel.setMaximumDrawWidth(2000);
-		contentPane.add(panel);
-
-		this.pack();
-		this.setVisible(true);
 	}
+
 }
