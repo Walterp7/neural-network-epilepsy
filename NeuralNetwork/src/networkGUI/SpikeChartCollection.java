@@ -33,9 +33,7 @@ public class SpikeChartCollection {
 							+ "/" + "spikes_col"
 							+ charts.indexOf(chart) + ".png"),
 					chart, 2000, 300);
-			System.out.println("saving" + pathName
-					+ "/" + "spikes_col"
-					+ charts.indexOf(chart) + ".png");
+
 		}
 	}
 
