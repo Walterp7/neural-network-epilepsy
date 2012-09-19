@@ -121,8 +121,9 @@ public class Synapse implements NetworkNode { // connects node with neuron
 			// tempInputs.size());
 			// }
 			// inputs = tempInputs;
-
-			postSynapticNeuron.addInput(inputValue, timeStep, time);
+			if (inputValue != 0) {
+				postSynapticNeuron.addInput(inputValue, timeStep, time);
+			}
 		}
 
 		// old: postSynapticNeuron.addInput(synapseWeight * inputs.remove(0));
