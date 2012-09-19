@@ -50,8 +50,9 @@ public class GaussianInputer extends Inputer {
 	public Status advance(double timeStep, double timeofSimulation) {
 
 		for (Neuron n : inputConnections) {
+			double input = mu + sigma * generator.nextGaussian();
 
-			n.addInput(mu + sigma * generator.nextGaussian(), timeStep, timeofSimulation);
+			n.addInput(input, timeStep, timeofSimulation);
 
 		}
 

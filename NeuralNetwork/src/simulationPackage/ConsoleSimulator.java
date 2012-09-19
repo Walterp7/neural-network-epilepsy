@@ -8,6 +8,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import networkGUI.ConfigurationUnit;
 import networkGUI.LinePlotChart;
@@ -15,6 +19,7 @@ import networkGUI.SpikeChartCollection;
 import networkPackage.InputDescriptor;
 import networkPackage.Network;
 import networkPackage.NetworkBuilder;
+import networkPackage.NeuronColumn;
 import neuronPackage.Layer;
 import neuronPackage.NetworkNode;
 import neuronPackage.Neuron;
@@ -33,11 +38,12 @@ public class ConsoleSimulator {
 	XYSeries[] seriesLFP;
 
 	double timeOfSimulation = 0;
-	// private final int[] neurIndx = { 345, 1075, 1825, 2645, 3400 };
-	private final int[] neurIndx = { 346, 345, 1077, 1078, 1826, 1827, 2644, 2645, 3498, 3498 };
+
 	private List<NetworkNode> allSynapses = new ArrayList<NetworkNode>(); // plus
 	// inputs
 	private List<Neuron> allNeurons = new ArrayList<Neuron>();
+
+	private Neuron[] sampleNeurons = null;
 
 	ConfigurationUnit configFromFiles;
 
@@ -48,6 +54,8 @@ public class ConsoleSimulator {
 	private CyclicBarrier timeBarrier = null;
 
 	List<XYSeries[]> dataSeries = new ArrayList<XYSeries[]>();
+
+	ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	public ConsoleSimulator(ConfigurationUnit conf) {
 		configFromFiles = conf;
@@ -119,8 +127,6 @@ public class ConsoleSimulator {
 			InputDescriptor inDescriptor = new InputDescriptor();
 			NetworkBuilder mag = new NetworkBuilder();
 
-			boolean[] neuronsCorrect = { false, false, false, false, false, false, false, false, false, false };
-
 			Network net;
 			int numOfColsS = 5;
 			try {
@@ -146,43 +152,6 @@ public class ConsoleSimulator {
 						seriesLFP[i] = new XYSeries("Local Field Potential (col " + (i + 1) + ")");
 					}
 
-					// int[] tempIndexes = { 302, 848, 1394, 1940, 2486 };
-					int[] tempIndexes = { 300, 846, 1392, 1939, 2484 };
-					Random gen = new Random(2394862);
-
-					Neuron tempNeuron;
-					boolean areNeuronsCorrect = false;
-
-					while ((!areNeuronsCorrect)) {
-						for (int i = 0; i < neurIndx.length; i++) {
-							tempNeuron = net.getNeuron(neurIndx[i]);
-							if (tempNeuron != null) {
-								if ((!neuronsCorrect[i]) && (tempNeuron.getType() == Type.RS)
-										&& (tempNeuron.getLayer() == Layer.V)
-										&& (net.getNeuron(neurIndx[i]).getColNum() == i / 2)) {
-									neuronsCorrect[i] = true;
-
-								} else {
-									neurIndx[i] = (i / 2 + 1) * gen.nextInt(700);
-									if (neurIndx[i] <= 10) {
-										neurIndx[i] = (i / 2 + 1) * 600;
-									}
-								}
-							} else {
-								if (!neuronsCorrect[i]) {
-									neurIndx[i] = tempIndexes[i / 2] - 3;
-								}
-							}
-
-						}
-						areNeuronsCorrect = true;
-						for (boolean isCorrect : neuronsCorrect) {
-
-							if (!isCorrect) {
-								areNeuronsCorrect = false;
-							}
-						}
-					}
 					// System.out.println("initializing");
 					net.initialize(timeStep, 300);
 					mag.modifyWeights(net);
@@ -197,124 +166,140 @@ public class ConsoleSimulator {
 				}
 				final int numOfCols = numOfColsS;
 
+				initializeSampleNeurons(2, numOfCols, net);
+
 				int numThreads = 4;
 
 				timeBarrier = new CyclicBarrier(numThreads + 1);
 				statsCreationBarrier = new CyclicBarrier(numThreads,
 						new Runnable() {
+
 							@Override
 							public void run() {
+								Future future = executor.submit(new Runnable() {
 
-								for (Neuron nod : allNeurons) {
-									Status newStat = null;
-									newStat = nod.advance(timeStep, timeOfSimulation);
-									if (newStat != null) {
-										stats.add(newStat);
-									}
-									nod.setCurrentInput();
+									@Override
+									public void run() {
 
-								}
+										for (Neuron nod : allNeurons) {
+											Status newStat = null;
+											newStat = nod.advance(timeStep, timeOfSimulation);
+											if (newStat != null) {
+												stats.add(newStat);
+											}
+											nod.setCurrentInput();
 
-								double psp = 0;
-								double[] voltage = new double[numOfCols]; // for
-																			// local
-																			// field
-								// potential
-								double[] ipsps = new double[neurIndx.length];
-								double[] epsps = new double[neurIndx.length];
-								// 345 - col 1, layer V, RS
-								// 1075 - col 2, layer V, RS
-								// 1825 - col 3, layer V, RS
-								// 2645 - col 4, layer V, RS
+										}
 
-								double[] pspPerColumn = new double[numOfCols];
-								// int counter = 0;
+										double psp = 0;
+										double[] voltage = new double[numOfCols]; // for
+																					// local
+																					// field
+										// potential
+										double[] ipsps = new double[sampleNeurons.length];
+										double[] epsps = new double[sampleNeurons.length];
 
-								for (Status s : stats) {
+										double[] pspPerColumn = new double[numOfCols];
+										// int counter = 0;
 
-									int neuronColNum = s.getColumn();
+										for (Status s : stats) {
 
-									int totalNeuronsPerColumn = 764;
+											int neuronColNum = s.getColumn();
 
-									if (s.fired()) {
+											int totalNeuronsPerColumn = 764;
 
-										if (s.getType() == Type.RS) {
-											dataSeries.get(neuronColNum)[0].add(s.getTime(),
-													(s.getNumber() - neuronColNum
-															* totalNeuronsPerColumn));
+											if (s.fired()) {
 
-										} else {
-											if (s.getType() == Type.FS) {
-												dataSeries.get(neuronColNum)[1].add(s.getTime(),
-														(s.getNumber() - neuronColNum
-																* totalNeuronsPerColumn));
-
-											} else {
-												if (s.getType() == Type.LTS) {
-													dataSeries.get(neuronColNum)[2].add(s.getTime(),
+												if (s.getType() == Type.RS) {
+													dataSeries.get(neuronColNum)[0].add(s.getTime(),
 															(s.getNumber() - neuronColNum
 																	* totalNeuronsPerColumn));
 
 												} else {
-													dataSeries.get(neuronColNum)[3].add(s.getTime(),
-															(s.getNumber() - neuronColNum
-																	* totalNeuronsPerColumn));
+													if (s.getType() == Type.FS) {
+														dataSeries.get(neuronColNum)[1].add(s.getTime(),
+																(s.getNumber() - neuronColNum
+																		* totalNeuronsPerColumn));
 
+													} else {
+														if (s.getType() == Type.LTS) {
+															dataSeries.get(neuronColNum)[2].add(s.getTime(),
+																	(s.getNumber() - neuronColNum
+																			* totalNeuronsPerColumn));
+
+														} else {
+															dataSeries.get(neuronColNum)[3].add(s.getTime(),
+																	(s.getNumber() - neuronColNum
+																			* totalNeuronsPerColumn));
+
+														}
+													}
 												}
-											}
-										}
 
-									}
-
-									if (s.getType() == Type.RS || s.getType() == Type.IB) {
-										if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V)) {
-
-											voltage[s.getColumn()] += s.getVoltage() / 1000;
-
-											boolean assigned = false;
-											int i = 0;
-											while ((!assigned) && (i < neurIndx.length)) {
-												if (s.getNumber() == neurIndx[i]) {
-													ipsps[i] = s.getIPSP();
-													epsps[i] = s.getEPSP();
-													assigned = true;
-
-												}
-												i++;
 											}
 
-										}
+											if (s.getType() == Type.RS || s.getType() == Type.IB) {
+												if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V)) {
 
-										psp = psp + s.getIPSP() + s.getEPSP();
-										pspPerColumn[neuronColNum] = pspPerColumn[neuronColNum] + s.getIPSP()
-												+ s.getEPSP();
+													voltage[s.getColumn()] += s.getVoltage() / 1000;
+
+													boolean assigned = false;
+													int i = 0;
+													while ((!assigned) && (i < sampleNeurons.length)) {
+														if (s.getNumber() == sampleNeurons[i].getId()) {
+															ipsps[i] = s.getIPSP();
+															epsps[i] = s.getEPSP();
+															assigned = true;
+
+														}
+														i++;
+
+													}
+
+												}
+
+												psp = psp + s.getIPSP() + s.getEPSP();
+												pspPerColumn[neuronColNum] = pspPerColumn[neuronColNum] + s.getIPSP()
+														+ s.getEPSP();
+											}
+
+										}
+										stats.clear();
+
+										try {
+
+											outFileIPSP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
+											outFileEPSP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
+											for (int i = 0; i < sampleNeurons.length; i++) {
+												outFileIPSP.write(","
+														+ MessageFormat.format("{0,number,#.######}", ipsps[i]));
+												outFileEPSP.write(","
+														+ MessageFormat.format("{0,number,#.######}", epsps[i]));
+											}
+											outFileIPSP.write("\n");
+											outFileEPSP.write("\n");
+
+											outFileLFP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
+											for (int i = 0; i < 5; i++) {
+												seriesLFP[i].add(timeOfSimulation, voltage[i]);
+												outFileLFP.write(","
+														+ MessageFormat.format("{0,number,#.#####}", voltage[i]));
+											}
+											outFileLFP.write("\n");
+
+										} catch (IOException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
 									}
 
-								}
-								stats.clear();
-
+								});
 								try {
-
-									outFileIPSP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
-									outFileEPSP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
-									for (int i = 0; i < neurIndx.length; i++) {
-										outFileIPSP.write("," + MessageFormat.format("{0,number,#.######}", ipsps[i]));
-										outFileEPSP.write("," + MessageFormat.format("{0,number,#.######}", epsps[i]));
-									}
-									outFileIPSP.write("\n");
-									outFileEPSP.write("\n");
-									outFileIPSP.flush();
-									outFileEPSP.flush();
-									StringBuffer lineToWriteLfp = new StringBuffer(MessageFormat.format(
-											"{0,number,#.#}", timeOfSimulation));
-									for (int i = 0; i < numOfCols; i++) {
-										seriesLFP[i].add(timeOfSimulation, voltage[i]);
-										lineToWriteLfp.append(","
-												+ MessageFormat.format("{0,number,#.#####}", voltage[i]));
-									}
-									outFileLFP.write(lineToWriteLfp + "\n");
-									outFileLFP.flush();
-								} catch (IOException e) {
+									future.get();
+								} catch (InterruptedException e) {
+									// TODO Auto-generated catch block
+									e.printStackTrace();
+								} catch (ExecutionException e) {
 									// TODO Auto-generated catch block
 									e.printStackTrace();
 								}
@@ -404,6 +389,19 @@ public class ConsoleSimulator {
 		System.out.println(pathName + " done");
 
 		System.exit(0);
+
+	}
+
+	void initializeSampleNeurons(int multiplier, int numberofcolumns, Network net) {
+		sampleNeurons = new Neuron[numberofcolumns * multiplier];
+		Random gen = new Random(122834762);
+		for (int i = 0; i < numberofcolumns; i++) {
+			NeuronColumn col = net.getAllColumns().get(i);
+			List<Neuron> list = col.getPool(Layer.V).getTypePool(Type.RS).getNeurons();
+			sampleNeurons[i] = list.get(gen.nextInt(list.size()));
+			sampleNeurons[i + numberofcolumns] = list.get(gen.nextInt(list.size()));
+
+		}
 
 	}
 }

@@ -44,6 +44,9 @@ public class Neuron implements NetworkNode {
 	@Override
 	public synchronized void addInput(double val, double time, double timeStep) {
 		// nextInput = nextInput + val;
+		if (val == 0) {
+			System.out.println("" + time + " " + layer + " " + neuronId + " " + type);
+		}
 		if (val < 0) {
 			nextIPSP += val;
 		} else {
@@ -84,9 +87,6 @@ public class Neuron implements NetworkNode {
 				s.addInput(1, timeStep, timeofSimulation);
 			}
 		}
-		// if (v > 30) {
-		// v = 30;
-		// }
 
 		stat = new Status(isFiring, neuronId, timeofSimulation, v, type, currentIPSP, currentEPSP, colNum, layer);
 
@@ -96,6 +96,7 @@ public class Neuron implements NetworkNode {
 	@Override
 	public void setCurrentInput() {
 		// currentInput = nextInput;
+
 		currentEPSP = nextEPSP;
 		currentIPSP = nextIPSP;
 		// nextInput = 0;
