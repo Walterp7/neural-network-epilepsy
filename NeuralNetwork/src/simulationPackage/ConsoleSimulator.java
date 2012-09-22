@@ -1,17 +1,12 @@
 package simulationPackage;
 
+import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-import java.util.concurrent.BrokenBarrierException;
-import java.util.concurrent.CyclicBarrier;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
 
 import networkGUI.ConfigurationUnit;
 import networkGUI.LinePlotChart;
@@ -32,12 +27,10 @@ import org.jfree.data.xy.XYSeriesCollection;
 public class ConsoleSimulator {
 
 	// FileWriter outFileEEG;
-	FileWriter outFileLFP;
+	BufferedWriter outFileLFP;
 	FileWriter outFileIPSP;
 	FileWriter outFileEPSP;
 	XYSeries[] seriesLFP;
-
-	double timeOfSimulation = 0;
 
 	private List<NetworkNode> allSynapses = new ArrayList<NetworkNode>(); // plus
 	// inputs
@@ -49,66 +42,10 @@ public class ConsoleSimulator {
 
 	List<Status> stats = new ArrayList<Status>();
 
-	private CyclicBarrier statsCreationBarrier = null;
-
-	private CyclicBarrier timeBarrier = null;
-
 	List<XYSeries[]> dataSeries = new ArrayList<XYSeries[]>();
-
-	ExecutorService executor = Executors.newSingleThreadExecutor();
 
 	public ConsoleSimulator(ConfigurationUnit conf) {
 		configFromFiles = conf;
-	}
-
-	class Worker implements Runnable {
-		List<NetworkNode> workNodes;
-		double timeStep, totalTime;
-
-		Worker(List<NetworkNode> nodes, double timeStep, double totalTime) {
-			workNodes = nodes;
-			this.timeStep = timeStep;
-			this.totalTime = totalTime;
-		}
-
-		@Override
-		public void run() {
-			try {
-				timeBarrier.await();
-			} catch (InterruptedException ex) {
-				return;
-			} catch (BrokenBarrierException ex) {
-				return;
-			}
-			for (double currentTime = 0; currentTime <= totalTime; currentTime += timeStep) {
-
-				timeOfSimulation = currentTime;
-				// List<Status> stats = net.nextStep(timeStep,
-				// timeOfSimulation);
-
-				// here modify only own list
-				for (NetworkNode nod : workNodes) {
-					nod.advance(timeStep, currentTime);
-
-				}
-
-				try {
-					statsCreationBarrier.await();
-				} catch (InterruptedException ex) {
-					return;
-				} catch (BrokenBarrierException ex) {
-					return;
-				}
-
-			}
-			try {
-				timeBarrier.await();
-			} catch (InterruptedException ex) {
-				return;
-			} catch (BrokenBarrierException ex) {
-				return;
-			}
-		}
 	}
 
 	public void runSimulation(long seed, String pathName) throws IOException, InterruptedException {
@@ -117,8 +54,6 @@ public class ConsoleSimulator {
 
 		final List<String[]> simulations = configFromFiles.getAllSimulations();
 
-		// final int tenPercent = (int) (totalTime / (10 * timeStep));
-
 		for (final String[] simDir : simulations) {
 
 			String simName = simDir[1];
@@ -126,201 +61,181 @@ public class ConsoleSimulator {
 			System.out.println(simName + " starting");
 			InputDescriptor inDescriptor = new InputDescriptor();
 			NetworkBuilder mag = new NetworkBuilder();
-
-			Network net;
-			int numOfColsS = 5;
 			try {
-				synchronized (ConsoleSimulator.class) {
-					// outFileEEG = new FileWriter(pathName + "/eeg" + simName +
-					// ".txt");
-					outFileLFP = new FileWriter(pathName + "/lfp_" + simName + ".csv");
-					outFileIPSP = new FileWriter(pathName + "/ipsp_" + simName + ".csv");
-					outFileEPSP = new FileWriter(pathName + "/epsp_" + simName + ".csv");
+				/*
+				 * BUILDING STAGE
+				 */
+				Network net;
 
-					net = mag.createNetwork(simDir[0], seed, configFromFiles, timeStep, totalTime, inDescriptor);
+				net = mag.createNetwork(simDir[0], seed, configFromFiles, timeStep, totalTime, inDescriptor);
 
-					seriesLFP = new XYSeries[numOfColsS];
-
-					for (int i = 0; i < numOfColsS; i++) {
-						XYSeries[] newDataSeries = new XYSeries[4];
-						newDataSeries[0] = new XYSeries("RS neurons");
-						newDataSeries[1] = new XYSeries("FS neurons");
-						newDataSeries[2] = new XYSeries("LTS neurons");
-						newDataSeries[3] = new XYSeries("IB neurons");
-
-						dataSeries.add(newDataSeries);
-						seriesLFP[i] = new XYSeries("Local Field Potential (col " + (i + 1) + ")");
-					}
-
-					// System.out.println("initializing");
-					net.initialize(timeStep, 300);
-					mag.modifyWeights(net);
-
-					allSynapses = net.getAllSynapses();
-					allNeurons = net.getAllNeurons();
-
-					ArrayList<Integer> numOfNeuronsInColumn = net.getNumberOfNeuronsInColumn();
-
-					numOfColsS = numOfNeuronsInColumn.size();
-
-				}
-				final int numOfCols = numOfColsS;
-
+				// outFileEEG = new FileWriter(pathName + "/eeg" + simName +
+				// ".txt");
+				net.initialize(timeStep, 300);
+				mag.modifyWeights(net);
+				ArrayList<Integer> numOfNeuronsInColumn = net.getNumberOfNeuronsInColumn();
+				final int numOfCols = numOfNeuronsInColumn.size();
 				initializeSampleNeurons(2, numOfCols, net);
 
-				int numThreads = 4;
+				/*
+				 * DECLARATION OF OUTPUT VARIABLES AND FILES
+				 */
+				outFileLFP = new BufferedWriter(new FileWriter(pathName + "/lfp_" + simName + ".csv"));
+				outFileIPSP = new FileWriter(pathName + "/ipsp_" + simName + ".csv");
 
-				timeBarrier = new CyclicBarrier(numThreads + 1);
-				statsCreationBarrier = new CyclicBarrier(numThreads,
-						new Runnable() {
+				outFileEPSP = new FileWriter(pathName + "/epsp_" + simName + ".csv");
 
-							@Override
-							public void run() {
-								Future future = executor.submit(new Runnable() {
+				seriesLFP = new XYSeries[numOfCols];
 
-									@Override
-									public void run() {
+				for (int i = 0; i < numOfCols; i++) {
+					XYSeries[] newDataSeries = new XYSeries[4];
+					newDataSeries[0] = new XYSeries("RS neurons");
+					newDataSeries[1] = new XYSeries("FS neurons");
+					newDataSeries[2] = new XYSeries("LTS neurons");
+					newDataSeries[3] = new XYSeries("IB neurons");
 
-										for (Neuron nod : allNeurons) {
-											Status newStat = null;
-											newStat = nod.advance(timeStep, timeOfSimulation);
-											if (newStat != null) {
-												stats.add(newStat);
-											}
-											nod.setCurrentInput();
+					dataSeries.add(newDataSeries);
+					seriesLFP[i] = new XYSeries("Local Field Potential (col " + (i + 1) + ")");
+				}
 
-										}
+				allSynapses = net.getAllSynapses();
+				allNeurons = net.getAllNeurons();
 
-										double psp = 0;
-										double[] voltage = new double[numOfCols]; // for
-																					// local
-																					// field
-										// potential
-										double[] ipsps = new double[sampleNeurons.length];
-										double[] epsps = new double[sampleNeurons.length];
+				/*
+				 * ACTUAL SIMULATION
+				 */
 
-										double[] pspPerColumn = new double[numOfCols];
-										// int counter = 0;
+				for (double currentTime = 0; currentTime <= totalTime; currentTime += timeStep) {
 
-										for (Status s : stats) {
+					/*
+					 * ONE ITERATION
+					 */
+					for (NetworkNode nod : allSynapses) {
+						nod.advance(timeStep, currentTime);
 
-											int neuronColNum = s.getColumn();
+					}
+					for (Neuron nod : allNeurons) {
+						Status newStat = null;
+						newStat = nod.advance(timeStep, currentTime);
+						if (newStat != null) {
+							stats.add(newStat);
+						}
+						nod.setCurrentInput();
 
-											int totalNeuronsPerColumn = 764;
+					}
 
-											if (s.fired()) {
+					/*
+					 * COLLECTIONG DATA
+					 */
+					double psp = 0;
+					double[] voltage = new double[numOfCols]; // for
+																// local
+																// field
+					// potential
+					double[] ipsps = new double[sampleNeurons.length];
+					double[] epsps = new double[sampleNeurons.length];
 
-												if (s.getType() == Type.RS) {
-													dataSeries.get(neuronColNum)[0].add(s.getTime(),
-															(s.getNumber() - neuronColNum
-																	* totalNeuronsPerColumn));
+					double[] pspPerColumn = new double[numOfCols];
 
-												} else {
-													if (s.getType() == Type.FS) {
-														dataSeries.get(neuronColNum)[1].add(s.getTime(),
-																(s.getNumber() - neuronColNum
-																		* totalNeuronsPerColumn));
+					for (Status s : stats) {
 
-													} else {
-														if (s.getType() == Type.LTS) {
-															dataSeries.get(neuronColNum)[2].add(s.getTime(),
-																	(s.getNumber() - neuronColNum
-																			* totalNeuronsPerColumn));
+						int neuronColNum = s.getColumn();
 
-														} else {
-															dataSeries.get(neuronColNum)[3].add(s.getTime(),
-																	(s.getNumber() - neuronColNum
-																			* totalNeuronsPerColumn));
+						int totalNeuronsPerColumn = 764;
 
-														}
-													}
-												}
+						if (s.fired()) {
 
-											}
+							if (s.getType() == Type.RS) {
+								dataSeries.get(neuronColNum)[0].add(s.getTime(),
+										(s.getNumber() - neuronColNum
+												* totalNeuronsPerColumn));
 
-											if (s.getType() == Type.RS || s.getType() == Type.IB) {
-												if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V)) {
+							} else {
+								if (s.getType() == Type.FS) {
+									dataSeries.get(neuronColNum)[1].add(s.getTime(),
+											(s.getNumber() - neuronColNum
+													* totalNeuronsPerColumn));
 
-													voltage[s.getColumn()] += s.getVoltage() / 1000;
+								} else {
+									if (s.getType() == Type.LTS) {
+										dataSeries.get(neuronColNum)[2].add(s.getTime(),
+												(s.getNumber() - neuronColNum
+														* totalNeuronsPerColumn));
 
-													boolean assigned = false;
-													int i = 0;
-													while ((!assigned) && (i < sampleNeurons.length)) {
-														if (s.getNumber() == sampleNeurons[i].getId()) {
-															ipsps[i] = s.getIPSP();
-															epsps[i] = s.getEPSP();
-															assigned = true;
+									} else {
+										dataSeries.get(neuronColNum)[3].add(s.getTime(),
+												(s.getNumber() - neuronColNum
+														* totalNeuronsPerColumn));
 
-														}
-														i++;
-
-													}
-
-												}
-
-												psp = psp + s.getIPSP() + s.getEPSP();
-												pspPerColumn[neuronColNum] = pspPerColumn[neuronColNum] + s.getIPSP()
-														+ s.getEPSP();
-											}
-
-										}
-										stats.clear();
-
-										try {
-
-											outFileIPSP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
-											outFileEPSP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
-											for (int i = 0; i < sampleNeurons.length; i++) {
-												outFileIPSP.write(","
-														+ MessageFormat.format("{0,number,#.######}", ipsps[i]));
-												outFileEPSP.write(","
-														+ MessageFormat.format("{0,number,#.######}", epsps[i]));
-											}
-											outFileIPSP.write("\n");
-											outFileEPSP.write("\n");
-
-											outFileLFP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
-											for (int i = 0; i < 5; i++) {
-												seriesLFP[i].add(timeOfSimulation, voltage[i]);
-												outFileLFP.write(","
-														+ MessageFormat.format("{0,number,#.#####}", voltage[i]));
-											}
-											outFileLFP.write("\n");
-
-										} catch (IOException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										}
 									}
-
-								});
-								try {
-									future.get();
-								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (ExecutionException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
 								}
 							}
-						});
 
-				// here create threads and run
+						}
 
-				// long t1 = System.currentTimeMillis();
-				int totalLength = allSynapses.size();
-				int size = totalLength / numThreads + 1;
+						if (s.getType() == Type.RS || s.getType() == Type.IB) {
+							if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V)) {
 
-				for (int i = 0; i < numThreads; i++) {
-					new Thread(new Worker(allSynapses.subList(i * size, Math.min((i + 1) * size, totalLength)),
-							timeStep, totalTime)).start();
+								voltage[s.getColumn()] += s.getVoltage() / 1000;
+
+								boolean assigned = false;
+								int i = 0;
+								while ((!assigned) && (i < sampleNeurons.length)) {
+									if (s.getNumber() == sampleNeurons[i].getId()) {
+										ipsps[i] = s.getIPSP();
+										epsps[i] = s.getEPSP();
+										assigned = true;
+
+									}
+									i++;
+
+								}
+
+							}
+
+							psp = psp + s.getIPSP() + s.getEPSP();
+							pspPerColumn[neuronColNum] = pspPerColumn[neuronColNum] + s.getIPSP()
+									+ s.getEPSP();
+						}
+
+					}
+					stats.clear();
+
+					/*
+					 * SAVING DATA FOR ONE TIME STEP
+					 */
+					try {
+
+						outFileIPSP.write(MessageFormat.format("{0,number,#.#}", currentTime));
+						outFileEPSP.write(MessageFormat.format("{0,number,#.#}", currentTime));
+						for (int i = 0; i < sampleNeurons.length; i++) {
+							outFileIPSP.write(","
+									+ MessageFormat.format("{0,number,#.######}", ipsps[i]));
+							outFileEPSP.write(","
+									+ MessageFormat.format("{0,number,#.######}", epsps[i]));
+						}
+						outFileIPSP.write("\n");
+						outFileEPSP.write("\n");
+
+						outFileLFP.write(MessageFormat.format("{0,number,#.#}", currentTime));
+						for (int i = 0; i < numOfCols; i++) {
+							seriesLFP[i].add(currentTime, voltage[i]);
+							outFileLFP.write(","
+									+ MessageFormat.format("{0,number,#.#####}", voltage[i]));
+						}
+						outFileLFP.newLine();
+
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 
 				}
-				timeBarrier.await();
 
-				// one more barier
-				timeBarrier.await();
+				/*
+				 * PLOTTING AND SAVING DATA
+				 */
+
 				// long t2 = System.currentTimeMillis();
 				// System.out.println(t2 - t1);
 				XYSeriesCollection[] allDatasetSpikes = new XYSeriesCollection[numOfCols];
@@ -339,7 +254,6 @@ public class ConsoleSimulator {
 				spikeCharts.plotNetwork(numOfCols, allDatasetSpikes, simName, totalTime);
 				spikeCharts.save(pathName);
 
-				// timeBarrier.await();
 				XYSeries seriesReferenceLine = new XYSeries("reference line -75mV");
 				seriesReferenceLine.add(0, -75);
 				seriesReferenceLine.add(totalTime, -75);
@@ -366,7 +280,7 @@ public class ConsoleSimulator {
 						isStimulated = true;
 					}
 					LinePlotChart lfpPlot = new LinePlotChart("Local Field Potential" + " col" + (i + 1) + " "
-							+ simName,
+							+ simName + "s" + ((int) (seed / 100000000)) + "x" + (seed % 10),
 							"lfp" + i);
 					lfpPlot.draw(datasetLFP[i],
 							" Local Field Potential (col " + (i + 1) + ")", true,
