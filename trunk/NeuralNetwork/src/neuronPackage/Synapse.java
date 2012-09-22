@@ -1,6 +1,6 @@
 package neuronPackage;
 
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.LinkedList;
 
 public class Synapse implements NetworkNode { // connects node with neuron
 	private double synapseWeight;
@@ -10,11 +10,11 @@ public class Synapse implements NetworkNode { // connects node with neuron
 	// double ti, trec, tfac, U;
 	private final StpParameters stpParam;
 	// List<SynapseInputPair> inputs = new ArrayList<SynapseInputPair>();
-	private final ConcurrentLinkedQueue<SynapseInputPair> inputs = new ConcurrentLinkedQueue<SynapseInputPair>();
+	private final LinkedList<SynapseInputPair> inputs = new LinkedList<SynapseInputPair>();
 	private final PSPparameters pspParam;
 
-	private volatile double x, y, u;
-	private volatile double lastSpike;
+	private double x, y, u;
+	private double lastSpike;
 
 	public Synapse(double weight, Neuron postSynaptic,
 			StpParameters stpPar, PSPparameters pspParameters) {
@@ -88,9 +88,7 @@ public class Synapse implements NetworkNode { // connects node with neuron
 			// List<SynapseInputPair> tempInputs = new
 			// ArrayList<SynapseInputPair>();
 			boolean toRemove = false;
-			if (inputs == null) {
-				System.out.println("time: " + time + " waga: " + synapseWeight);
-			}
+
 			for (SynapseInputPair curInpt : inputs) {
 
 				double curTime = curInpt.getInputTime();

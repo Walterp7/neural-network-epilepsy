@@ -3,14 +3,14 @@ package neuronPackage;
 import java.util.ArrayList;
 
 public class Neuron implements NetworkNode {
-	private volatile double v;
-	private volatile double u;
+	private double v;
+	private double u;
 	// private volatile double currentInput;
 	// private volatile double nextInput;
-	private volatile double nextIPSP;
-	private volatile double nextEPSP;
-	private volatile double currentIPSP;
-	private volatile double currentEPSP;
+	private double nextIPSP;
+	private double nextEPSP;
+	private double currentIPSP;
+	private double currentEPSP;
 	private final Type type;
 	private final double a, b, c, d;
 	private int neuronId;
