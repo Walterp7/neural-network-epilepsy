@@ -66,7 +66,7 @@ public class SynapseFactory {
 			pspNew = secondaryPspParams.get(preSynaptic.type2String() + postSynaptic.type2String());
 		}
 
-		Synapse newSynapse = new Synapse(weight, postSynaptic, stp, pspNew);
+		Synapse newSynapse = new Synapse(weight, preSynaptic, postSynaptic, stp, pspNew);
 
 		newSynapse.setTimeDelay(delay);
 		preSynaptic.addSynapse(newSynapse);
@@ -79,7 +79,7 @@ public class SynapseFactory {
 		if (stdpParams != null) {
 			stp = stdpParams.get("th2" + postSynaptic.typeLayer2String());
 		}
-		Synapse newSynapse = new Synapse(weight, postSynaptic, stp, thalamicPSP);
+		Synapse newSynapse = new Synapse(weight, null, postSynaptic, stp, thalamicPSP);
 
 		newSynapse.setTimeDelay(delay);
 

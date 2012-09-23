@@ -3,14 +3,14 @@ package neuronPackage;
 import java.util.ArrayList;
 
 public class Neuron implements NetworkNode {
-	private double v;
-	private double u;
+	private volatile double v;
+	private volatile double u;
 	// private volatile double currentInput;
 	// private volatile double nextInput;
-	private double nextIPSP;
-	private double nextEPSP;
-	private double currentIPSP;
-	private double currentEPSP;
+	private volatile double nextIPSP;
+	private volatile double nextEPSP;
+	private volatile double currentIPSP;
+	private volatile double currentEPSP;
 	private final Type type;
 	private final double a, b, c, d;
 	private int neuronId;
@@ -21,7 +21,7 @@ public class Neuron implements NetworkNode {
 
 	private final int[] coordinates = new int[3];
 
-	public Neuron(double[] parameters, Type type, int col, Layer l, double dv) {
+	public Neuron(double[] parameters, Type type, int col, Layer l) {
 
 		v = -65;
 
@@ -156,4 +156,21 @@ public class Neuron implements NetworkNode {
 
 		return str + layer.toString();
 	}
+
+	double getA() {
+		return a;
+	}
+
+	double getB() {
+		return b;
+	}
+
+	double getC() {
+		return c;
+	}
+
+	double getD() {
+		return d;
+	}
+
 }

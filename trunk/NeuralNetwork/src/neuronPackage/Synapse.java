@@ -1,25 +1,27 @@
 package neuronPackage;
 
-import java.util.LinkedList;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 public class Synapse implements NetworkNode { // connects node with neuron
 	private double synapseWeight;
 	private int timeDelay; // in number of timeSteps
 	private final Neuron postSynapticNeuron;
+	private final Neuron preSynapticNeuron;
 	// Neuron preSynapticNeuron;
 	// double ti, trec, tfac, U;
 	private final StpParameters stpParam;
 	// List<SynapseInputPair> inputs = new ArrayList<SynapseInputPair>();
-	private final LinkedList<SynapseInputPair> inputs = new LinkedList<SynapseInputPair>();
+	private final ConcurrentLinkedQueue<SynapseInputPair> inputs = new ConcurrentLinkedQueue<SynapseInputPair>();
 	private final PSPparameters pspParam;
 
-	private double x, y, u;
-	private double lastSpike;
+	private volatile double x, y, u;
+	private volatile double lastSpike;
 
-	public Synapse(double weight, Neuron postSynaptic,
+	public Synapse(double weight, Neuron preSynaptic, Neuron postSynaptic,
 			StpParameters stpPar, PSPparameters pspParameters) {
 		synapseWeight = weight;
 		postSynapticNeuron = postSynaptic;
+		preSynapticNeuron = preSynaptic;
 		timeDelay = 1;
 		stpParam = stpPar;
 		lastSpike = 0;
@@ -48,7 +50,18 @@ public class Synapse implements NetworkNode { // connects node with neuron
 			double trec = stpParam.getTrec();
 			double U = stpParam.getU();
 			double maxY = stpParam.getMaxY();
-
+			// if ((dt < 0.29) && (preSynapticNeuron != null) &&
+			// (!preSynapticNeuron.getType().equals(Type.FS))) {
+			// System.out.println("---------------------------------------------");
+			// System.out.println(" dt =" + dt + "< 1");
+			// System.out.println(" postsynaptic neurID " +
+			// preSynapticNeuron.getId() + " type "
+			// + preSynapticNeuron.getType());
+			// System.out.println("a " + preSynapticNeuron.getA() + " b " +
+			// preSynapticNeuron.getB());
+			// System.out.println("c " + preSynapticNeuron.getC() + " d " +
+			// preSynapticNeuron.getD());
+			// }
 			u = u * Math.exp(-dt / tfac) * (1 - U) + U;
 			double xtmp = (x * Math.exp(-dt / trec) + y * ti * (Math.exp(-dt /
 					trec) - Math.exp(-dt / ti))
@@ -88,7 +101,9 @@ public class Synapse implements NetworkNode { // connects node with neuron
 			// List<SynapseInputPair> tempInputs = new
 			// ArrayList<SynapseInputPair>();
 			boolean toRemove = false;
-
+			if (inputs == null) {
+				System.out.println("time: " + time + " waga: " + synapseWeight);
+			}
 			for (SynapseInputPair curInpt : inputs) {
 
 				double curTime = curInpt.getInputTime();
@@ -131,6 +146,10 @@ public class Synapse implements NetworkNode { // connects node with neuron
 
 	public Neuron getPostSynapticNeuron() {
 		return postSynapticNeuron;
+	}
+
+	public Neuron getPreSynapticNeuron() {
+		return preSynapticNeuron;
 	}
 
 	public void setTimeDelay(int value) {
