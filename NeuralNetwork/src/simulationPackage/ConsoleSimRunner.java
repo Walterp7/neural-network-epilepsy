@@ -28,7 +28,7 @@ public class ConsoleSimRunner {
 			confUnit.addCol2List(colConfigFileName, numOfLayers);
 		}
 
-		String fullSimName = simName + "s" + seed;
+		String fullSimName = simName + "s" + ((int) (seed / 100000000)) + "x" + (seed % 10);
 
 		ConsoleSimulator sim = new ConsoleSimulator(confUnit);
 		String pathName = fullSimName;

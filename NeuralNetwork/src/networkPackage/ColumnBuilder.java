@@ -131,8 +131,8 @@ public class ColumnBuilder {
 					double[] tempParam = neuronParameters.get(Type.RS)
 							.clone();
 					tempParam[2] += typeRandom * 5;
-					tempParam[3] -= typeRandom * 3;
-					newNeuron = new Neuron(tempParam, Type.RS, colID, layerNames[layerNum], generator.nextDouble() * 10);
+					tempParam[3] -= typeRandom * 2;
+					newNeuron = new Neuron(tempParam, Type.RS, colID, layerNames[layerNum]);
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					rsPool.addNeuron(newNeuron);
 
@@ -145,7 +145,7 @@ public class ColumnBuilder {
 							.clone();
 					tempParam[2] -= typeRandom * 5;
 					tempParam[3] += typeRandom * 2;
-					newNeuron = new Neuron(tempParam, Type.IB, colID, layerNames[layerNum], generator.nextDouble() * 10);
+					newNeuron = new Neuron(tempParam, Type.IB, colID, layerNames[layerNum]);
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					ibPool.addNeuron(newNeuron);
 				}
@@ -153,9 +153,9 @@ public class ColumnBuilder {
 				if ((r > p) && (r <= p + proportions[layerNum][2])) {
 					double[] tempParam = neuronParameters.get(Type.FS)
 							.clone();
-					tempParam[0] -= typeRandom * 0.019;
-					tempParam[1] -= typeRandom * 0.025;
-					newNeuron = new Neuron(tempParam, Type.FS, colID, layerNames[layerNum], generator.nextDouble() * 10);
+					tempParam[0] -= typeRandom * 0.01;
+					tempParam[1] -= typeRandom * 0.02;
+					newNeuron = new Neuron(tempParam, Type.FS, colID, layerNames[layerNum]);
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					fsPool.addNeuron(newNeuron);
 				}
@@ -163,10 +163,9 @@ public class ColumnBuilder {
 				if (r > p) {
 					double[] tempParam = neuronParameters.get(Type.LTS)
 							.clone();
-					tempParam[0] -= typeRandom * 0.019;
-					tempParam[1] -= typeRandom * 0.025;
-					newNeuron = new Neuron(tempParam, Type.LTS, colID, layerNames[layerNum],
-							generator.nextDouble() * 10);
+					tempParam[0] -= typeRandom * 0.001;
+					tempParam[1] -= typeRandom * 0.02;
+					newNeuron = new Neuron(tempParam, Type.LTS, colID, layerNames[layerNum]);
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					ltsPool.addNeuron(newNeuron);
 				}
