@@ -178,7 +178,7 @@ public class ConsoleSimulator {
 						if (syn instanceof Synapse) {
 							if (((Synapse) syn).getPreSynapticNeuron() != null) {
 								Neuron pre = ((Synapse) syn).getPreSynapticNeuron();
-								Neuron post = ((Synapse) syn).getPreSynapticNeuron();
+								Neuron post = ((Synapse) syn).getPostSynapticNeuron();
 								outFileConnections.write(pre.getId() + "c" + pre.getColNum() + pre.getType()
 										+ pre.getLayer() + " " + post.getId() + "c" + post.getColNum() + post.getType()
 										+ post.getLayer() + "\n");
