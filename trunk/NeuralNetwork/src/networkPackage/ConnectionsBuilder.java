@@ -13,20 +13,21 @@ public class ConnectionsBuilder {
 	final private double velocity = 0.4; // m/s
 
 	int calculateDelay(int[] pre, int post[], double timestep) {
-		int delay = 0;
+		double delay = 0;
+		int delayInSteps = 0;
 		int n = pre.length;
 		for (int i = 0; i < n; i++) {
 			delay = delay + (pre[i] - post[i]) * (pre[i] - post[i]); // microns
 		}
 		// ms -> how many steps
-		delay = (int) (Math.sqrt(delay) / (1000 * velocity * timestep));
+		delayInSteps = (int) (Math.round(Math.sqrt(delay) / (1000 * velocity * timestep)));
 
-		if (delay <= 0) {
-			// System.out.println(delay);
-			delay++;
+		if (delayInSteps <= 0) {
+			// System.out.println("dist in microns" + delay);
+			delayInSteps++;
 		}
 
-		return delay; // not ms, but the number of timesteps
+		return delayInSteps; // not ms, but the number of timesteps
 	}
 
 	public void setUpConnections(Network net,
@@ -101,5 +102,6 @@ public class ConnectionsBuilder {
 				}
 			}
 		}
+
 	}
 }

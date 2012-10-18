@@ -16,6 +16,7 @@ public class Synapse implements NetworkNode { // connects node with neuron
 
 	private volatile double x, y, u;
 	private volatile double lastSpike;
+	private final boolean noted = false;
 
 	public Synapse(double weight, Neuron preSynaptic, Neuron postSynaptic,
 			StpParameters stpPar, PSPparameters pspParameters) {
@@ -45,21 +46,23 @@ public class Synapse implements NetworkNode { // connects node with neuron
 
 		if ((val > 0) && stpParam != null) {
 			double dt = time - lastSpike;
+			// if (dt > 0.5) {
 			double tfac = stpParam.getTfac();
 			double ti = stpParam.getTi();
 			double trec = stpParam.getTrec();
 			double U = stpParam.getU();
 			double maxY = stpParam.getMaxY();
-			// if ((dt < 0.29) && (preSynapticNeuron != null) &&
+			// if ((!noted) && (dt < 0.29) && (preSynapticNeuron != null) &&
 			// (!preSynapticNeuron.getType().equals(Type.FS))) {
+			// noted = true;
 			// System.out.println("---------------------------------------------");
 			// System.out.println(" dt =" + dt + "< 1");
-			// System.out.println(" postsynaptic neurID " +
+			// System.out.println(" pretsynaptic neurID " +
 			// preSynapticNeuron.getId() + " type "
 			// + preSynapticNeuron.getType());
 			// System.out.println("a " + preSynapticNeuron.getA() + " b " +
-			// preSynapticNeuron.getB());
-			// System.out.println("c " + preSynapticNeuron.getC() + " d " +
+			// preSynapticNeuron.getB() + " c " + preSynapticNeuron.getC() +
+			// " d " +
 			// preSynapticNeuron.getD());
 			// }
 			u = u * Math.exp(-dt / tfac) * (1 - U) + U;
@@ -73,11 +76,15 @@ public class Synapse implements NetworkNode { // connects node with neuron
 
 			inputs.add(new SynapseInputPair(-timeDelay * timeStep, synapseWeight * y * val / maxY));
 			lastSpike = time;
+			// }
 
 		} else {
+			// double dt = time - lastSpike;
 			if (val > 0) {
-
+				// if (dt > 0.5) {
 				inputs.add(new SynapseInputPair(-timeDelay * timeStep, synapseWeight * val));
+				lastSpike = time;
+				// }
 			}
 
 		}

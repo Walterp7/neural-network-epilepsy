@@ -1,9 +1,11 @@
 package simulationPackage;
 
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
@@ -58,8 +60,12 @@ public class ConsoleSimulator {
 
 	ExecutorService executor = Executors.newSingleThreadExecutor();
 
+	HashMap<Integer, FileWriter> neuronFiles = new HashMap<Integer, FileWriter>();
+	int[] neuronIDs = { 1183, 1407, 3726, 1508 };
+
 	public ConsoleSimulator(ConfigurationUnit conf) {
 		configFromFiles = conf;
+
 	}
 
 	class Worker implements Runnable {
@@ -117,6 +123,12 @@ public class ConsoleSimulator {
 		final double timeStep = configFromFiles.getTimeStep();
 
 		final List<String[]> simulations = configFromFiles.getAllSimulations();
+
+		for (int nId : neuronIDs) {
+
+			neuronFiles.put(nId, new FileWriter(new File(pathName + "/neuron" + nId + ".txt")));
+
+		}
 
 		// final int tenPercent = (int) (totalTime / (10 * timeStep));
 
@@ -231,6 +243,19 @@ public class ConsoleSimulator {
 
 											int totalNeuronsPerColumn = 764;
 
+											if (neuronFiles.containsKey(s.getNumber())) {
+												try {
+													neuronFiles.get(s.getNumber()).write(
+															"" + s.getTime() + "," + s.getVoltage() + ","
+																	+ (s.fired() ? "1" : "0") + "," + s.getEPSP() + ","
+																	+ s.getIPSP() + "\r\n");
+												} catch (IOException e) {
+													// TODO Auto-generated catch
+													// block
+													e.printStackTrace();
+												}
+											}
+
 											if (s.fired()) {
 
 												if (s.getType() == Type.RS) {
@@ -334,7 +359,7 @@ public class ConsoleSimulator {
 				// long t1 = System.currentTimeMillis();
 				int totalLength = allSynapses.size();
 				int size = totalLength / numThreads + 1;
-
+				System.out.println("Simulationg");
 				for (int i = 0; i < numThreads; i++) {
 					new Thread(new Worker(allSynapses.subList(i * size, Math.min((i + 1) * size, totalLength)),
 							timeStep, totalTime)).start();
@@ -402,7 +427,9 @@ public class ConsoleSimulator {
 				outFileLFP.close();
 				outFileIPSP.close();
 				outFileEPSP.close();
-
+				for (int neurId : neuronIDs) {
+					neuronFiles.get(neurId).close();
+				}
 			} catch (Throwable e) {
 
 				e.printStackTrace();
@@ -427,4 +454,5 @@ public class ConsoleSimulator {
 		}
 
 	}
+
 }
