@@ -132,7 +132,7 @@ public class ColumnBuilder {
 							.clone();
 					tempParam[2] += typeRandom * 5;
 					tempParam[3] -= typeRandom * 2;
-					newNeuron = new Neuron(tempParam, Type.RS, colID, layerNames[layerNum]);
+					newNeuron = new Neuron(tempParam, Type.RS, colID, layerNames[layerNum], 6.25);
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					rsPool.addNeuron(newNeuron);
 
@@ -145,7 +145,7 @@ public class ColumnBuilder {
 							.clone();
 					tempParam[2] -= typeRandom * 5;
 					tempParam[3] += typeRandom * 2;
-					newNeuron = new Neuron(tempParam, Type.IB, colID, layerNames[layerNum]);
+					newNeuron = new Neuron(tempParam, Type.IB, colID, layerNames[layerNum], 3.33);
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					ibPool.addNeuron(newNeuron);
 				}
@@ -155,7 +155,7 @@ public class ColumnBuilder {
 							.clone();
 					tempParam[0] -= typeRandom * 0.01;
 					tempParam[1] -= typeRandom * 0.02;
-					newNeuron = new Neuron(tempParam, Type.FS, colID, layerNames[layerNum]);
+					newNeuron = new Neuron(tempParam, Type.FS, colID, layerNames[layerNum], 2.85);
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					fsPool.addNeuron(newNeuron);
 				}
@@ -165,7 +165,7 @@ public class ColumnBuilder {
 							.clone();
 					tempParam[0] -= typeRandom * 0.001;
 					tempParam[1] -= typeRandom * 0.02;
-					newNeuron = new Neuron(tempParam, Type.LTS, colID, layerNames[layerNum]);
+					newNeuron = new Neuron(tempParam, Type.LTS, colID, layerNames[layerNum], 4.71);
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					ltsPool.addNeuron(newNeuron);
 				}

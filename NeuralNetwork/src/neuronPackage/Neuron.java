@@ -16,12 +16,15 @@ public class Neuron implements NetworkNode {
 	private int neuronId;
 	private final Layer layer;
 	private final ArrayList<Synapse> neuronConnections = new ArrayList<Synapse>();
+	private final double minDt;
 	// boolean wasPositiveInput = false;
 	private final int colNum;
 
+	double lastFiring = 0;
+
 	private final int[] coordinates = new int[3];
 
-	public Neuron(double[] parameters, Type type, int col, Layer l) {
+	public Neuron(double[] parameters, Type type, int col, Layer l, double minDt) {
 
 		v = -65;
 
@@ -39,6 +42,7 @@ public class Neuron implements NetworkNode {
 		u = b * v;
 		layer = l;
 		colNum = col;
+		this.minDt = minDt;
 	}
 
 	@Override
@@ -72,20 +76,34 @@ public class Neuron implements NetworkNode {
 	@Override
 	public Status advance(double timeStep, double timeofSimulation) {
 
-		boolean isFiring = (v >= 30);
+		double dt = 0.0;
 
 		Status stat = null;
+
+		boolean isFiring = (v >= 30);
+
 		if (isFiring) {
-			v = c;
-			u = u + d;
+
+			dt = timeofSimulation - lastFiring;
+
+			if (dt < minDt) {
+				v = 30;
+				isFiring = false;
+			} else {
+				v = c;
+				u = u + d;
+				lastFiring = timeofSimulation;
+			}
 		}
 		v = v + timeStep * (0.04 * v * v + 5 * v + 140 - u + currentEPSP + currentIPSP);
 		u = u + timeStep * a * (b * v - u);
 
-		if (isFiring) {
+		if ((isFiring)) {
+
 			for (Synapse s : neuronConnections) {
 				s.addInput(1, timeStep, timeofSimulation);
 			}
+
 		}
 
 		stat = new Status(isFiring, neuronId, timeofSimulation, v, type, currentIPSP, currentEPSP, colNum, layer);
