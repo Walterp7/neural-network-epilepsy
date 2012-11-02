@@ -38,7 +38,9 @@ public class ConsoleSimulator {
 	FileWriter outFileLFP;
 	FileWriter outFileIPSP;
 	FileWriter outFileEPSP;
+	FileWriter outFileEEG;
 	XYSeries[] seriesLFP;
+	XYSeries seriesPSP = new XYSeries("Simulated EEG");
 
 	double timeOfSimulation = 0;
 
@@ -144,7 +146,7 @@ public class ConsoleSimulator {
 			Network net;
 
 			int numOfColsS = 5;
-
+			long t1 = System.currentTimeMillis();
 			try {
 				synchronized (ConsoleSimulator.class) {
 					// outFileEEG = new FileWriter(pathName + "/eeg" + simName +
@@ -152,26 +154,12 @@ public class ConsoleSimulator {
 					/*
 					 * opening files to be saved
 					 */
-					outFileLFP = new FileWriter(pathName + "/lfp_" + simName + ".csv");
-					outFileIPSP = new FileWriter(pathName + "/ipsp_" + simName + ".csv");
-					outFileEPSP = new FileWriter(pathName + "/epsp_" + simName + ".csv");
-
-					seriesLFP = new XYSeries[numOfColsS];
-
-					for (int i = 0; i < numOfColsS; i++) {
-						XYSeries[] newDataSeries = new XYSeries[4];
-						newDataSeries[0] = new XYSeries("RS neurons");
-						newDataSeries[1] = new XYSeries("FS neurons");
-						newDataSeries[2] = new XYSeries("LTS neurons");
-						newDataSeries[3] = new XYSeries("IB neurons");
-
-						dataSeries.add(newDataSeries);
-						seriesLFP[i] = new XYSeries("Local Field Potential (col " + (i + 1) + ")");
-					}
+					initializeFiles(pathName, simName, numOfColsS);
 
 					/*
-					 * creation if the network
+					 * creation of the network
 					 */
+
 					net = mag.createNetwork(simDir[0], seed, configFromFiles, timeStep, totalTime, inDescriptor);
 					net.initialize(timeStep, 300);
 					mag.modifyWeights(net);
@@ -185,19 +173,7 @@ public class ConsoleSimulator {
 					/*
 					 * saving connections to a file
 					 */
-					FileWriter outFileConnections = new FileWriter(pathName + "/connections_" + simName + ".txt");
-					for (NetworkNode syn : allSynapses) {
-						if (syn instanceof Synapse) {
-							if (((Synapse) syn).getPreSynapticNeuron() != null) {
-								Neuron pre = ((Synapse) syn).getPreSynapticNeuron();
-								Neuron post = ((Synapse) syn).getPostSynapticNeuron();
-								outFileConnections.write(pre.getId() + "c" + pre.getColNum() + pre.getType()
-										+ pre.getLayer() + " " + post.getId() + "c" + post.getColNum() + post.getType()
-										+ post.getLayer() + "\n");
-							}
-						}
-					}
-					outFileConnections.close();
+					saveConnections(pathName, simName);
 				}
 				final int numOfCols = numOfColsS;
 
@@ -226,119 +202,9 @@ public class ConsoleSimulator {
 
 										}
 
-										double psp = 0;
-										double[] voltage = new double[numOfCols]; // for
-																					// local
-																					// field
-										// potential
-										double[] ipsps = new double[sampleNeurons.length];
-										double[] epsps = new double[sampleNeurons.length];
-
-										double[] pspPerColumn = new double[numOfCols];
-										// int counter = 0;
-
-										for (Status s : stats) {
-
-											int neuronColNum = s.getColumn();
-
-											int totalNeuronsPerColumn = 764;
-
-											if (neuronFiles.containsKey(s.getNumber())) {
-												try {
-													neuronFiles.get(s.getNumber()).write(
-															"" + s.getTime() + "," + s.getVoltage() + ","
-																	+ (s.fired() ? "1" : "0") + "," + s.getEPSP() + ","
-																	+ s.getIPSP() + "\r\n");
-												} catch (IOException e) {
-													// TODO Auto-generated catch
-													// block
-													e.printStackTrace();
-												}
-											}
-
-											if (s.fired()) {
-
-												if (s.getType() == Type.RS) {
-													dataSeries.get(neuronColNum)[0].add(s.getTime(),
-															(s.getNumber() - neuronColNum
-																	* totalNeuronsPerColumn));
-
-												} else {
-													if (s.getType() == Type.FS) {
-														dataSeries.get(neuronColNum)[1].add(s.getTime(),
-																(s.getNumber() - neuronColNum
-																		* totalNeuronsPerColumn));
-
-													} else {
-														if (s.getType() == Type.LTS) {
-															dataSeries.get(neuronColNum)[2].add(s.getTime(),
-																	(s.getNumber() - neuronColNum
-																			* totalNeuronsPerColumn));
-
-														} else {
-															dataSeries.get(neuronColNum)[3].add(s.getTime(),
-																	(s.getNumber() - neuronColNum
-																			* totalNeuronsPerColumn));
-
-														}
-													}
-												}
-
-											}
-
-											if (s.getType() == Type.RS || s.getType() == Type.IB) {
-												if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V)) {
-
-													voltage[s.getColumn()] += s.getVoltage() / 1000;
-
-													boolean assigned = false;
-													int i = 0;
-													while ((!assigned) && (i < sampleNeurons.length)) {
-														if (s.getNumber() == sampleNeurons[i].getId()) {
-															ipsps[i] = s.getIPSP();
-															epsps[i] = s.getEPSP();
-															assigned = true;
-
-														}
-														i++;
-
-													}
-
-												}
-
-												psp = psp + s.getIPSP() + s.getEPSP();
-												pspPerColumn[neuronColNum] = pspPerColumn[neuronColNum] + s.getIPSP()
-														+ s.getEPSP();
-											}
-
-										}
+										saveStats(stats, numOfCols);
 										stats.clear();
 
-										try {
-
-											outFileIPSP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
-											outFileEPSP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
-											for (int i = 0; i < sampleNeurons.length; i++) {
-												outFileIPSP.write(","
-														+ MessageFormat.format("{0,number,#.######}", ipsps[i]));
-												outFileEPSP.write(","
-														+ MessageFormat.format("{0,number,#.######}", epsps[i]));
-											}
-											outFileIPSP.write("\n");
-											outFileEPSP.write("\n");
-
-											outFileLFP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
-											for (int i = 0; i < 5; i++) {
-												seriesLFP[i].add(timeOfSimulation, voltage[i]);
-												outFileLFP.write(","
-														+ MessageFormat.format("{0,number,#.#####}", voltage[i]));
-											}
-											outFileLFP.write("\n");
-
-										} catch (IOException e) {
-											// TODO Auto-generated catch block
-											e.printStackTrace();
-										}
 									}
 
 								});
@@ -356,10 +222,10 @@ public class ConsoleSimulator {
 
 				// here create threads and run
 
-				// long t1 = System.currentTimeMillis();
+				long t2 = System.currentTimeMillis();
 				int totalLength = allSynapses.size();
 				int size = totalLength / numThreads + 1;
-				System.out.println("Simulationg");
+				System.out.println("Simulating");
 				for (int i = 0; i < numThreads; i++) {
 					new Thread(new Worker(allSynapses.subList(i * size, Math.min((i + 1) * size, totalLength)),
 							timeStep, totalTime)).start();
@@ -369,8 +235,9 @@ public class ConsoleSimulator {
 
 				// one more barier
 				timeBarrier.await();
-				// long t2 = System.currentTimeMillis();
-				// System.out.println(t2 - t1);
+				long t3 = System.currentTimeMillis();
+				// System.out.println("Initialization " + (t2 - t1) +
+				// " Simulation " + (t3 - t2));
 				XYSeriesCollection[] allDatasetSpikes = new XYSeriesCollection[numOfCols];
 
 				int count = 0;
@@ -423,10 +290,17 @@ public class ConsoleSimulator {
 					lfpPlot.save(pathName);
 				}
 
-				// outFileEEG.close();
+				final XYSeriesCollection datasetEEG = new XYSeriesCollection();
+				datasetEEG.addSeries(seriesPSP);
+				LinePlotChart eegPlot = new LinePlotChart("EEG", "eeg");
+				eegPlot.draw(datasetEEG, " EEG", false,
+						minLFPplot, maxLFPplot, false, false);
+				eegPlot.save(pathName);
+
 				outFileLFP.close();
 				outFileIPSP.close();
 				outFileEPSP.close();
+				outFileEEG.close();
 				for (int neurId : neuronIDs) {
 					neuronFiles.get(neurId).close();
 				}
@@ -439,6 +313,160 @@ public class ConsoleSimulator {
 		System.out.println(pathName + " done");
 
 		System.exit(0);
+
+	}
+
+	private void initializeFiles(String pathName, String simName, int numOfColsS) throws IOException {
+		outFileLFP = new FileWriter(pathName + "/lfp_" + simName + ".csv");
+		outFileIPSP = new FileWriter(pathName + "/ipsp_" + simName + ".csv");
+		outFileEPSP = new FileWriter(pathName + "/epsp_" + simName + ".csv");
+		outFileEEG = new FileWriter(pathName + "/eeg_" + simName + ".csv");
+
+		seriesLFP = new XYSeries[numOfColsS];
+
+		for (int i = 0; i < numOfColsS; i++) {
+			XYSeries[] newDataSeries = new XYSeries[4];
+			newDataSeries[0] = new XYSeries("RS neurons");
+			newDataSeries[1] = new XYSeries("FS neurons");
+			newDataSeries[2] = new XYSeries("LTS neurons");
+			newDataSeries[3] = new XYSeries("IB neurons");
+
+			dataSeries.add(newDataSeries);
+			seriesLFP[i] = new XYSeries("Local Field Potential (col " + (i + 1) + ")");
+		}
+
+	}
+
+	private void saveConnections(String pathName, String simName) throws IOException {
+		FileWriter outFileConnections = new FileWriter(pathName + "/connections_" + simName + ".txt");
+		for (NetworkNode syn : allSynapses) {
+			if (syn instanceof Synapse) {
+				if (((Synapse) syn).getPreSynapticNeuron() != null) {
+					Neuron pre = ((Synapse) syn).getPreSynapticNeuron();
+					Neuron post = ((Synapse) syn).getPostSynapticNeuron();
+					outFileConnections.write(pre.getId() + "c" + pre.getColNum() + pre.getType()
+							+ pre.getLayer() + " " + post.getId() + "c" + post.getColNum() + post.getType()
+							+ post.getLayer() + "\n");
+				}
+			}
+		}
+		outFileConnections.close();
+
+	}
+
+	private void saveStats(List<Status> stats, int numOfCols) {
+		double psp = 0;
+		double[] voltage = new double[numOfCols]; // for
+													// local
+													// field
+		// potential
+		double[] ipsps = new double[sampleNeurons.length];
+		double[] epsps = new double[sampleNeurons.length];
+
+		double[] pspPerColumn = new double[numOfCols];
+
+		for (Status s : stats) {
+
+			int neuronColNum = s.getColumn();
+
+			int totalNeuronsPerColumn = 764;
+
+			if (neuronFiles.containsKey(s.getNumber())) {
+				try {
+					neuronFiles.get(s.getNumber()).write(
+							"" + s.getTime() + "," + s.getVoltage() + ","
+									+ (s.fired() ? "1" : "0") + "," + s.getEPSP() + ","
+									+ s.getIPSP() + "\r\n");
+				} catch (IOException e) {
+					// TODO Auto-generated catch
+					// block
+					e.printStackTrace();
+				}
+			}
+
+			if (s.fired()) {
+
+				if (s.getType() == Type.RS) {
+					dataSeries.get(neuronColNum)[0].add(s.getTime(),
+							(s.getNumber() - neuronColNum
+									* totalNeuronsPerColumn));
+
+				} else {
+					if (s.getType() == Type.FS) {
+						dataSeries.get(neuronColNum)[1].add(s.getTime(),
+								(s.getNumber() - neuronColNum
+										* totalNeuronsPerColumn));
+
+					} else {
+						if (s.getType() == Type.LTS) {
+							dataSeries.get(neuronColNum)[2].add(s.getTime(),
+									(s.getNumber() - neuronColNum
+											* totalNeuronsPerColumn));
+
+						} else {
+							dataSeries.get(neuronColNum)[3].add(s.getTime(),
+									(s.getNumber() - neuronColNum
+											* totalNeuronsPerColumn));
+
+						}
+					}
+				}
+
+			}
+
+			if (s.getType() == Type.RS || s.getType() == Type.IB) {
+				if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V)) {
+
+					voltage[s.getColumn()] += s.getVoltage() / 1000;
+
+					boolean assigned = false;
+					int i = 0;
+					while ((!assigned) && (i < sampleNeurons.length)) {
+						if (s.getNumber() == sampleNeurons[i].getId()) {
+							ipsps[i] = s.getIPSP();
+							epsps[i] = s.getEPSP();
+							assigned = true;
+
+						}
+						i++;
+
+					}
+
+				}
+
+				psp = psp + s.getIPSP() + s.getEPSP();
+				pspPerColumn[neuronColNum] = pspPerColumn[neuronColNum] + s.getIPSP()
+						+ s.getEPSP();
+			}
+		}
+		seriesPSP.add(timeOfSimulation, psp);
+		try {
+
+			outFileIPSP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
+			outFileEPSP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
+			outFileEEG.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation) + ", "
+					+ psp + "\r\n");
+			for (int i = 0; i < sampleNeurons.length; i++) {
+				outFileIPSP.write(","
+						+ MessageFormat.format("{0,number,#.######}", ipsps[i]));
+				outFileEPSP.write(","
+						+ MessageFormat.format("{0,number,#.######}", epsps[i]));
+			}
+			outFileIPSP.write("\n");
+			outFileEPSP.write("\n");
+
+			outFileLFP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
+			for (int i = 0; i < 5; i++) {
+				seriesLFP[i].add(timeOfSimulation, voltage[i]);
+				outFileLFP.write(","
+						+ MessageFormat.format("{0,number,#.#####}", voltage[i]));
+			}
+			outFileLFP.write("\n");
+
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 
 	}
 
