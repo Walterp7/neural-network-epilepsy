@@ -16,7 +16,7 @@ import neuronPackage.Type;
 class AnalyseNetwork {
 
 	void exportConnections(Network n) throws IOException {
-		FileWriter outFile = new FileWriter("network-nodes.txt");
+		FileWriter outFile = new FileWriter("network-nodes-11-09-2012.txt");
 		for (NeuronPool pool : n.getColumn(0).getPools()) {
 			for (Neuron neur : pool.getNeurons()) {
 

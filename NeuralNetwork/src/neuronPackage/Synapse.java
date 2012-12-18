@@ -30,6 +30,15 @@ public class Synapse implements NetworkNode { // connects node with neuron
 		y = 0;
 		u = 0;
 		pspParam = pspParameters;
+		if (((preSynaptic == null) || (preSynaptic.getType() == Type.RS
+				&& preSynaptic.getLayer() == Layer.IV))
+				&& postSynaptic.getType() == Type.RS
+				&& postSynaptic.getLayer() == Layer.V) {
+			System.out
+					.println("" + preSynaptic.getColNum() + " " + postSynaptic.getType()
+							+ " "
+							+ postSynaptic.getLayer() + " " + postSynaptic.getColNum());
+		}
 
 	}
 

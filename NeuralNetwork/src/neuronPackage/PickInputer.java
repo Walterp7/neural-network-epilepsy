@@ -13,6 +13,8 @@ public class PickInputer extends Inputer {
 	protected final ArrayList<Synapse> inputConnections = new ArrayList<Synapse>();
 	SynapseFactory synFact = null;
 
+	boolean flag = false;
+
 	public PickInputer(int interTime, int signalTime, double value, HashMap<String, StpParameters> stpParams,
 			HashMap<String, PSPparameters> pspParams,
 			HashMap<String, PSPparameters> secondaryPspParams) {
@@ -33,8 +35,8 @@ public class PickInputer extends Inputer {
 
 	@Override
 	public Status advance(double timeStep, double timeofSimulation) {
-		if ((timeofSimulation <= startTime) && (startTime < timeofSimulation + timeStep)) {
-
+		if ((timeofSimulation <= startTime) && (startTime < timeofSimulation + timeStep) && (!flag)) {
+			flag = true;
 			for (Synapse n : inputConnections) {
 				n.addInput(value, timeStep, timeofSimulation);
 			}

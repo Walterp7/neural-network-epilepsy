@@ -64,7 +64,9 @@ public class InputBuilder {
 								double value = Double
 										.parseDouble(parsedLine[wordIndex++]);
 								String typeString = parsedLine[wordIndex++];
-								newInput = new ConstantInputer(value, stringToType(typeString));
+								String layerString = parsedLine[wordIndex++];
+
+								newInput = new ConstantInputer(value, stringToType(typeString), layerString);
 							} else {
 								throw new IOException();
 							}
