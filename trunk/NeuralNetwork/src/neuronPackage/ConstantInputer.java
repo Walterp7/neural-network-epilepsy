@@ -8,7 +8,8 @@ public class ConstantInputer extends Inputer {
 	private final double value;
 
 	protected final ArrayList<Neuron> inputConnections = new ArrayList<Neuron>();
-	Type type;
+	private final Type type;
+	private final String layer;
 
 	@Override
 	public void addConnection(Neuron n, Network net, double strength) {
@@ -18,9 +19,10 @@ public class ConstantInputer extends Inputer {
 
 	}
 
-	public ConstantInputer(double v, Type type) {
+	public ConstantInputer(double v, Type type, String layer) {
 		value = v;
 		this.type = type;
+		this.layer = layer;
 	}
 
 	@Override
@@ -38,16 +40,13 @@ public class ConstantInputer extends Inputer {
 	public void connect(int colNum, Network network) {
 
 		for (Neuron neur : network.getAllNeurons()) {
-			if (neur.getType() == type) {
-				if (type == Type.RS) {
-					// if (neur.getLayer() == Layer.IV) {
-					addConnection(neur, network, 1);
-					// }
-				} else {
-					addConnection(neur, network, 1);
+			if ((colNum == -1) || (neur.getColNum() == colNum)) {
+				if (neur.getType() == type) {
+					if ((layer.equals("-1")) || (neur.getLayer().toString().equals(layer))) {
+						addConnection(neur, network, 1);
+					}
 				}
 			}
-
 		}
 
 	}

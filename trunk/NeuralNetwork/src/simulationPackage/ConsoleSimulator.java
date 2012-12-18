@@ -36,11 +36,14 @@ public class ConsoleSimulator {
 
 	// FileWriter outFileEEG;
 	FileWriter outFileLFP;
+	FileWriter outFileLFP_psp;
 	FileWriter outFileIPSP;
 	FileWriter outFileEPSP;
 	FileWriter outFileEEG;
 	XYSeries[] seriesLFP;
+	XYSeries[] seriesLFP_psp;
 	XYSeries seriesPSP = new XYSeries("Simulated EEG");
+	XYSeries seriesPSPAll = new XYSeries("Simulated EEG");
 
 	double timeOfSimulation = 0;
 
@@ -161,7 +164,8 @@ public class ConsoleSimulator {
 					 */
 
 					net = mag.createNetwork(simDir[0], seed, configFromFiles, timeStep, totalTime, inDescriptor);
-					net.initialize(timeStep, 300);
+					// net.initialize(timeStep, 300);
+					net.setInputs();
 					mag.modifyWeights(net);
 
 					allSynapses = net.getAllSynapses();
@@ -260,18 +264,33 @@ public class ConsoleSimulator {
 				seriesReferenceLine.add(totalTime, -75);
 
 				final XYSeriesCollection[] datasetLFP = new XYSeriesCollection[numOfCols];
+				final XYSeriesCollection[] datasetLFP_psp = new XYSeriesCollection[numOfCols];
 				double maxLFPplot = -1000000;
 				double minLFPplot = 30;
+				double maxLFPPspPlot = -1000000;
+				double minLFPPspPlot = 30;
+
 				for (int i = 0; i < numOfCols; i++) {
 
 					datasetLFP[i] = new XYSeriesCollection();
 					datasetLFP[i].addSeries(seriesReferenceLine);
 					datasetLFP[i].addSeries(seriesLFP[i]);
+					datasetLFP_psp[i] = new XYSeriesCollection();
+					datasetLFP_psp[i].addSeries(seriesReferenceLine);
+					datasetLFP_psp[i].addSeries(seriesLFP_psp[i]);
+
 					if (seriesLFP[i].getMaxY() > maxLFPplot) {
 						maxLFPplot = seriesLFP[i].getMaxY();
 					}
 					if (minLFPplot > seriesLFP[i].getMinY()) {
 						minLFPplot = seriesLFP[i].getMinY();
+					}
+
+					if (seriesLFP_psp[i].getMaxY() > maxLFPPspPlot) {
+						maxLFPPspPlot = seriesLFP_psp[i].getMaxY();
+					}
+					if (minLFPPspPlot > seriesLFP_psp[i].getMinY()) {
+						minLFPPspPlot = seriesLFP_psp[i].getMinY();
 					}
 				}
 
@@ -288,6 +307,15 @@ public class ConsoleSimulator {
 							minLFPplot,
 							maxLFPplot, true, isStimulated);
 					lfpPlot.save(pathName);
+
+					LinePlotChart lfpPspPlot = new LinePlotChart("Local Field Potential- PSP" + " col" + (i + 1) + " "
+							+ simName,
+							"lfp_psp" + i);
+					lfpPspPlot.draw(datasetLFP_psp[i],
+							" Local Field Potential - PSP (col " + (i + 1) + ")", true,
+							minLFPPspPlot,
+							maxLFPPspPlot, true, isStimulated);
+					lfpPspPlot.save(pathName);
 				}
 
 				final XYSeriesCollection datasetEEG = new XYSeriesCollection();
@@ -297,7 +325,15 @@ public class ConsoleSimulator {
 						minLFPplot, maxLFPplot, false, false);
 				eegPlot.save(pathName);
 
+				final XYSeriesCollection datasetEEGAll = new XYSeriesCollection();
+				datasetEEGAll.addSeries(seriesPSPAll);
+				LinePlotChart eegPlotAll = new LinePlotChart("EEG-All", "eegAll");
+				eegPlotAll.draw(datasetEEGAll, " EEGAll", false,
+						minLFPplot, maxLFPplot, false, false);
+				eegPlotAll.save(pathName);
+
 				outFileLFP.close();
+				outFileLFP_psp.close();
 				outFileIPSP.close();
 				outFileEPSP.close();
 				outFileEEG.close();
@@ -318,11 +354,13 @@ public class ConsoleSimulator {
 
 	private void initializeFiles(String pathName, String simName, int numOfColsS) throws IOException {
 		outFileLFP = new FileWriter(pathName + "/lfp_" + simName + ".csv");
+		outFileLFP_psp = new FileWriter(pathName + "/lfp_psp_" + simName + ".csv");
 		outFileIPSP = new FileWriter(pathName + "/ipsp_" + simName + ".csv");
 		outFileEPSP = new FileWriter(pathName + "/epsp_" + simName + ".csv");
 		outFileEEG = new FileWriter(pathName + "/eeg_" + simName + ".csv");
 
 		seriesLFP = new XYSeries[numOfColsS];
+		seriesLFP_psp = new XYSeries[numOfColsS];
 
 		for (int i = 0; i < numOfColsS; i++) {
 			XYSeries[] newDataSeries = new XYSeries[4];
@@ -333,6 +371,7 @@ public class ConsoleSimulator {
 
 			dataSeries.add(newDataSeries);
 			seriesLFP[i] = new XYSeries("Local Field Potential (col " + (i + 1) + ")");
+			seriesLFP_psp[i] = new XYSeries("Local Field Potential - PSP (col " + (i + 1) + ")");
 		}
 
 	}
@@ -364,6 +403,7 @@ public class ConsoleSimulator {
 		double[] epsps = new double[sampleNeurons.length];
 
 		double[] pspPerColumn = new double[numOfCols];
+		double pspAll = 0;
 
 		for (Status s : stats) {
 
@@ -418,6 +458,8 @@ public class ConsoleSimulator {
 				if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V)) {
 
 					voltage[s.getColumn()] += s.getVoltage() / 1000;
+					pspPerColumn[s.getColumn()] = pspPerColumn[s.getColumn()]
+							+ s.getIPSP() / 1000 + s.getEPSP() / 1000;
 
 					boolean assigned = false;
 					int i = 0;
@@ -431,15 +473,18 @@ public class ConsoleSimulator {
 						i++;
 
 					}
+					psp = psp + s.getIPSP() + s.getEPSP();
 
 				}
 
-				psp = psp + s.getIPSP() + s.getEPSP();
-				pspPerColumn[neuronColNum] = pspPerColumn[neuronColNum] + s.getIPSP()
-						+ s.getEPSP();
+				if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V) || (s.getLayer() == Layer.VI)) {
+					pspAll = pspAll + s.getEPSP() + s.getIPSP();
+				}
 			}
+
 		}
-		seriesPSP.add(timeOfSimulation, psp);
+		seriesPSP.add(timeOfSimulation, psp / 1000);
+		seriesPSPAll.add(timeOfSimulation, pspAll / 4000);
 		try {
 
 			outFileIPSP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
@@ -458,10 +503,14 @@ public class ConsoleSimulator {
 			outFileLFP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
 			for (int i = 0; i < 5; i++) {
 				seriesLFP[i].add(timeOfSimulation, voltage[i]);
+				seriesLFP_psp[i].add(timeOfSimulation, pspPerColumn[i]);
 				outFileLFP.write(","
 						+ MessageFormat.format("{0,number,#.#####}", voltage[i]));
+				outFileLFP_psp.write(","
+						+ MessageFormat.format("{0,number,#.#####}", pspPerColumn[i]));
 			}
 			outFileLFP.write("\n");
+			outFileLFP_psp.write("\n");
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

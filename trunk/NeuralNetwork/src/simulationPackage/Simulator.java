@@ -39,6 +39,7 @@ public class Simulator {
 	FileWriter outFileEEG;
 	FileWriter outFileLFP;
 	FileWriter outFileIPSP;
+	FileWriter outFileActivity;
 
 	double timeOfSimulation = 0;
 
@@ -130,10 +131,13 @@ public class Simulator {
 					outFileLFP = new FileWriter("data_" + simName + ".csv");
 					outFileIPSP = new FileWriter("ipsp_" + simName + ".csv");
 
+					outFileActivity = new FileWriter("activity_" + simName + "11-28-12.txt");
+
 					net = mag.createNetwork(simDir[0], 391781649, configFromGUI, timeStep, totalTime, inDescriptor);
 
-					// net.saveToFile("neurons" + simName + ".txt");
-					net.initialize(timeStep, 300);
+					net.saveToFile("neurons" + simName + "11-09-12.txt");
+					// net.initialize(timeStep, 300);
+					net.setInputs();
 					mag.modifyWeights(net);
 
 					allSynapses = net.getAllSynapses();
@@ -201,7 +205,14 @@ public class Simulator {
 									int totalNeuronsPerColumn = 764;
 									// int totalNeuronsPerColumn = 568;
 									if (s.fired()) {
-
+										try {
+											outFileActivity.write(MessageFormat.format("{0,number,#.#}",
+													timeOfSimulation)
+													+ " " + s.getNumber() + "\r\n");
+										} catch (IOException e) {
+											// TODO Auto-generated catch block
+											e.printStackTrace();
+										}
 										if (s.getType() == Type.RS) {
 											dataSeries.get(neuronColNum)[0].add(s.getTime(),
 													(s.getNumber() - neuronColNum
@@ -258,6 +269,7 @@ public class Simulator {
 									}
 
 								}
+
 								stats.clear();
 								seriesPSP.add(timeOfSimulation, psp); // for
 																		// eeg
@@ -369,7 +381,8 @@ public class Simulator {
 					if (i == 1) {
 						isStimulated = true;
 					}
-					LinePlotFrame lfpPlot = new LinePlotFrame("Local Field Potential" + " col" + (i + 1) + " " + simName,
+					LinePlotFrame lfpPlot = new LinePlotFrame("Local Field Potential" + " col" + (i + 1) + " "
+							+ simName,
 							"lfp" + i);
 					lfpPlot.draw(datasetLFP[i],
 							" Local Field Potential (col " + (i + 1) + ")", true,
@@ -391,6 +404,7 @@ public class Simulator {
 				outFileEEG.close();
 				outFileLFP.close();
 				outFileIPSP.close();
+				outFileActivity.close();
 
 			} catch (Exception e) {
 
