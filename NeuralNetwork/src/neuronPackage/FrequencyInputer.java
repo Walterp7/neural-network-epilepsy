@@ -37,7 +37,7 @@ public class FrequencyInputer extends Inputer {
 		int w = ((int) ((timeofSimulation + 1) / timeStep)) % (int) (interTime / timeStep);
 
 		if (w < timeStep) {
-			System.out.println(w + "-------->" + timeofSimulation);
+
 			for (Synapse n : inputConnections) {
 
 				n.addInput(value, timeStep, timeofSimulation);

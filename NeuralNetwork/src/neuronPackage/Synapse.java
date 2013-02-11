@@ -16,7 +16,6 @@ public class Synapse implements NetworkNode { // connects node with neuron
 
 	private volatile double x, y, u;
 	private volatile double lastSpike;
-	private final boolean noted = false;
 
 	public Synapse(double weight, Neuron preSynaptic, Neuron postSynaptic,
 			StpParameters stpPar, PSPparameters pspParameters) {
@@ -30,15 +29,15 @@ public class Synapse implements NetworkNode { // connects node with neuron
 		y = 0;
 		u = 0;
 		pspParam = pspParameters;
-		if (((preSynaptic == null) || (preSynaptic.getType() == Type.RS
-				&& preSynaptic.getLayer() == Layer.IV))
-				&& postSynaptic.getType() == Type.RS
-				&& postSynaptic.getLayer() == Layer.V) {
-			System.out
-					.println("" + preSynaptic.getColNum() + " " + postSynaptic.getType()
-							+ " "
-							+ postSynaptic.getLayer() + " " + postSynaptic.getColNum());
-		}
+		// if (((preSynaptic == null) || (preSynaptic.getType() == Type.RS
+		// && preSynaptic.getLayer() == Layer.IV))
+		// && postSynaptic.getType() == Type.RS
+		// && postSynaptic.getLayer() == Layer.V) {
+		// System.out
+		// .println("" + preSynaptic.getColNum() + " " + postSynaptic.getType()
+		// + " "
+		// + postSynaptic.getLayer() + " " + postSynaptic.getColNum());
+		// }
 
 	}
 
@@ -117,9 +116,9 @@ public class Synapse implements NetworkNode { // connects node with neuron
 			// List<SynapseInputPair> tempInputs = new
 			// ArrayList<SynapseInputPair>();
 			boolean toRemove = false;
-			if (inputs == null) {
-				System.out.println("time: " + time + " waga: " + synapseWeight);
-			}
+			// if (inputs == null) {
+			// System.out.println("time: " + time + " waga: " + synapseWeight);
+			// }
 			for (SynapseInputPair curInpt : inputs) {
 
 				double curTime = curInpt.getInputTime();
