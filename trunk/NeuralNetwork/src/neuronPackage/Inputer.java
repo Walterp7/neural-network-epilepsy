@@ -29,7 +29,7 @@ public abstract class Inputer implements NetworkNode {
 	private void setUpConnections(Network network, int colNum, Layer layer, Type type, double strength,
 			double probability) {
 		Random gen = new Random(438965135);
-		System.out.println(layer + " " + type);
+		// System.out.println(layer + " " + type);
 		if (network.getColumn(colNum).getPool(layer) != null) {
 			if (network.getColumn(colNum).getPool(layer).getTypePool(type) != null) {
 				ArrayList<Neuron> listNeuron = network.getColumn(colNum).getPool(layer)
