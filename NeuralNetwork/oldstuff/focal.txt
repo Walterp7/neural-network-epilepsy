@@ -1,0 +1,16 @@
+%config file
+%all connection multiplier  inhibitory connection multiplier
+ALL 1
+%input configuration
+% Gaussian 0 3 * -1 -1
+% Step interTime SignalTime value * -1 -1
+% 6hz 155 10 5
+% 20Hz 40 10 5
+%
+Gaussian 0 8 -1 0 1
+Pick 100 2 8 1 1
+%Pick 150 20 10 RS 1 1
+%Pick 150 20 10 FS 1 1
+%Step 10 5 10 FS 1 1
+%Step 10 5 10 RS 1 1
+%

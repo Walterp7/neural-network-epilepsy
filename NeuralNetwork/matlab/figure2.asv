@@ -1,0 +1,187 @@
+%fig3-3
+set(0,'DefaultAxesFontName', 'Arial');
+set(0,'DefaultAxesFontSize', 12);
+
+% Change default text fonts.
+set(0,'DefaultTextFontname', 'Arial');
+set(0,'DefaultTextFontSize', 12);
+
+%spikes
+spikes_data = load('activity_short__focal.csv');
+
+min_time = 100;
+max_time =150;
+start_index = find (spikes_data(:,1)>=min_time,1, 'first');
+end_index = find (spikes_data(:,1)< max_time,1, 'last');
+spikes = spikes_data(start_index:end_index,:);
+col_number = 3;
+figure;
+for col = 1:col_number 
+
+    spikes_temp = spikes(spikes(:,3)== (col-1),:);
+    subplot(6,3, [(6*(col-1) +1) (6*(col-1) +4) ]);
+    scatter(spikes_temp(spikes_temp(:,4)==1, 1), spikes_temp(spikes_temp(:,4)==1, 2), '.r');
+    hold on;
+    scatter(spikes_temp(spikes_temp(:,4)==2, 1), spikes_temp(spikes_temp(:,4)==2, 2), '.b');
+     hold on;
+    scatter(spikes_temp(spikes_temp(:,4)==4, 1), spikes_temp(spikes_temp(:,4)==4, 2),'Marker', '.', 'MarkerEdgeColor',[0,0.6,0.2]);
+    hold on;
+    scatter(spikes_temp(spikes_temp(:,4)==3, 1), spikes_temp(spikes_temp(:,4)==3, 2), '.g');
+  
+    %layer markings
+    VItop = max(spikes_temp(spikes_temp(:,5) == 6,2));
+    Vtop = max(spikes_temp(spikes_temp(:,5) == 5,2));
+    IVtop = max(spikes_temp(spikes_temp(:,5) == 4,2));
+    IIItop = max(spikes_temp(spikes_temp(:,5) == 3,2));
+
+    
+    minCol = min( spikes_data(spikes_data(:,3)== (col-1),2));
+    maxCol = max( spikes_data(spikes_data(:,3)== (col-1),2));
+    set(gca,'YTick', [(VItop-minCol)/2 + minCol , (Vtop - VItop)/2 + VItop , (IVtop-Vtop)/2+ Vtop, (IIItop-IVtop)/2+ IVtop])
+    set(gca,'YTickLabel',{'VI','V','IV','II/III'})
+     line( [min_time max_time], [ VItop,  VItop], 'LineStyle',':', 'Color', [0.5,0.5,0.5])
+     line( [min_time max_time], [ Vtop,  Vtop], 'LineStyle',':', 'Color', [0.5,0.5,0.5])
+     line( [min_time max_time], [ IVtop,  IVtop], 'LineStyle',':', 'Color', [0.5,0.5,0.5])
+     line( [min_time max_time], [ IIItop,  IIItop], 'LineStyle',':', 'Color', [0.5,0.5,0.5])
+    %axes labels
+     xlabel('time [ms]');
+    ylabel(['Column ', int2str(col)]);
+    
+    xlim([min_time max_time]) ;
+    ylim( [minCol, maxCol]);
+       if col == 1
+            legend('LTS', 'FS',  'IB','RS')
+       end;
+    
+    hold off;
+   
+end;
+
+%%%% COMPUTATIONAl
+lfp_data1 = load('lfp_short__focal_7.csv');
+lfp_data2 = load('lfp_ampl3_focal.csv');
+min_time = 110;
+max_time =160;
+start_index = find (lfp_data1(:,1)>=min_time,1, 'first');
+end_index = find (lfp_data1(:,1)<= max_time,1, 'last');
+lfp1 = lfp_data1(start_index:end_index,:);
+lfp2 = lfp_data2(start_index:end_index,:);
+col_number = 3;
+lfp1(:,2:(col_number+1)) = lfp1(:,2:(col_number+1)) +20; 
+ 
+lfp2(:,2:(col_number+1)) = lfp2(:,2:(col_number+1)) +20; 
+ 
+ymin = min(min([lfp1(:, 2:(col_number+1)); lfp2(:, 2:(col_number+1))]))
+ymax = max(max([lfp1(:, 2:(col_number+1)); lfp2(:, 2:(col_number+1))]))
+
+
+% input1 = 7*epsp( lfp1(:,1) - 100);
+% input2 = 15*epsp( lfp2(:,1) - 100);
+% 
+% subplot(6,2,2); 
+% plot(lfp1(:,1), input1,  'k', 'LineWidth', 1,  'LineSmoothing','on')
+% hold on;
+% plot(lfp2(:,1), input2, 'Color', [0.5,0,1], 'LineWidth', 1,  'LineSmoothing','on')
+% xlabel('time [ms]')   
+% ylabel( 'Input')
+% set(gca,'Box','off')
+% hold off;
+
+for col = 2:col_number 
+ 
+subplot(6,3, 3*(col-2) + 2); 
+plot((lfp1(:,1)-110), lfp1(:,col+1), 'k', 'LineWidth', 1,  'LineSmoothing','on')
+hold on;
+plot((lfp2(:,1)-110), lfp2(:,col+1), 'Color', [0.5,0,1], 'LineWidth', 1,  'LineSmoothing','on')
+hold off;
+ylim([ymin, ymax])
+xlim([min_time-110 max_time-110])
+set(gca,'Box','off')
+set(gca,'YDir','reverse')
+xlabel('time [ms]')   
+end;
+
+% figure;
+% for col = 1:col_number 
+%  
+% subplot(2,1,col); 
+% plot(lfp1(:,1), lfp1(:,col+1), 'k', 'LineWidth', 1,  'LineSmoothing','on')
+% hold on;
+% plot(lfp2(:,1), lfp2(:,col+1), 'Color', [0.5,0,1], 'LineWidth', 1,  'LineSmoothing','on')
+% hold off;
+% ylim([ymin, ymax])
+% ylabel('LFP' )
+% set(gca,'Box','off')
+% set(gca,'YDir','reverse')
+% xlabel('time [ms]')   
+% end;
+%%%% BIOLOGY
+lfp_data_adj = load('Fig3B adj col.csv');
+lfp_data_stim = load('Fig3B stim col.csv');
+min_time =0;
+max_time =50;
+start_index = find (lfp_data_adj(:,1)>=min_time,1, 'first');
+end_index = find (lfp_data_adj(:,1)<= max_time,1, 'last');
+lfp1 = [lfp_data_stim(start_index:end_index,1:2) , lfp_data_adj(start_index:end_index,2)]
+
+%lfp1( (lfp1(:,1)> 9.9 & lfp1(:,1)<10.2 ),3 ) =0;
+%lfp1( (lfp1(:,1)> 9.9 & lfp1(:,1)<10.1 ),2 ) =0;
+
+lfp2 = [lfp_data_stim(start_index:end_index,1),lfp_data_stim(start_index:end_index,3) , lfp_data_adj(start_index:end_index,3)]
+col_number = 2;
+%lfp2( (lfp2(:,1)> 9.9 & lfp1(:,1)<10.2 ),3 ) =0;
+%lfp2( (lfp2(:,1)> 9.9 & lfp1(:,1)<10.1 ),2 ) =0;
+
+ymin = min(min([lfp1(:, 2:(col_number+1)); lfp2(:, 2:(col_number+1))]))
+ymax = max(max([lfp1(:, 2:(col_number+1)); lfp2(:, 2:(col_number+1))]))
+
+
+
+
+
+for col = 1:col_number 
+ 
+subplot(6,3, 9 - 3*col); 
+plot(lfp2(:,1), lfp2(:,col+1), 'k', 'LineWidth', 1,  'LineSmoothing','on')
+hold on;
+plot(lfp1(:,1), lfp1(:,col+1), 'Color', [0.5,0,1], 'LineWidth', 1,  'LineSmoothing','on')
+hold off;
+ylim([-1, 0.4])
+ylabel('[mV]')
+set(gca,'Box','off')
+xlim([min_time max_time])
+xlabel('time [ms]')   
+end;
+
+figure;
+peak_data = load('Fig3C mV.csv')
+for i = 2
+    %subplot(6,3, [i+6  i+9])
+    subplot(1,2,1)
+   plot(peak_data(:,1), peak_data(:,i),'-rs','LineWidth',1,'MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',10);
+   hold on;
+   plot(peak_data(:,1), peak_data(:,i+1),'--bd','LineWidth',1,'MarkerEdgeColor','b','MarkerFaceColor','b','MarkerSize',10);
+   hold off;
+   ylabel('Peak Neg [mV]')
+   xlabel('Stimulus intensity level')
+   title('Biological data')
+end;
+subplot(1,2,2);
+peak_data = load('Fig3C mV.csv')
+
+    %subplot(6,3, [i+6  i+9])
+    subplot(1,2,1)
+   plot(peak_data(:,1), peak_data(:,i),'-rs','LineWidth',1,'MarkerEdgeColor','r','MarkerFaceColor','r','MarkerSize',10);
+   hold on;
+   plot(peak_data(:,1), peak_data(:,i+1),'--bd','LineWidth',1,'MarkerEdgeColor','b','MarkerFaceColor','b','MarkerSize',10);
+   hold off;
+   ylabel('Peak Neg [mV]')
+   xlabel('Stimulus intensity level')
+   title('Compuatio data');
+legend;
+
+
+
+
+
+
