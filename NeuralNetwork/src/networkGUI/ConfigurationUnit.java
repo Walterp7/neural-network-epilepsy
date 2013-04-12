@@ -12,10 +12,10 @@ public class ConfigurationUnit {
 
 	List<ColDescr> colConfList = new ArrayList<ColDescr>();
 
-	List<String[]> simConfList = new ArrayList<String[]>(); // pairs, first one
-															// is the file,
-															// second is the
-															// simulation name
+	String[] simConfTriad = new String[3]; // pairs, first one
+											// is the config file file,
+											// second is the synapse file
+											// third simulation name
 
 	// List<String> simulNames = new ArrayList<String>();
 
@@ -36,8 +36,8 @@ public class ConfigurationUnit {
 	}
 
 	public ConfigurationUnit() {
-		numColumns = 5;
-		numSim = 2;
+		numColumns = 0;
+		numSim = 0;
 	}
 
 	public int getNumColumns() {
@@ -61,21 +61,17 @@ public class ConfigurationUnit {
 
 	}
 
-	public void clearSimLists() {
-		simConfList.clear();
-		// simulNames.clear();
-	}
-
 	public void addCol2List(String str, int num) {
 		ColDescr newDescr = new ColDescr(str, num);
 		colConfList.add(newDescr);
 	}
 
-	public void addSim2List(String strSim, String strName) {
-		String[] newSimConf = new String[2];
+	public void addSim2List(String strSim, String synConfig, String strName) {
+		String[] newSimConf = new String[3];
 		newSimConf[0] = strSim;
-		newSimConf[1] = strName;
-		simConfList.add(newSimConf);
+		newSimConf[1] = synConfig;
+		newSimConf[2] = strName;
+		simConfTriad = newSimConf;
 		// simulNames.add(strName);
 	}
 
@@ -83,9 +79,9 @@ public class ConfigurationUnit {
 	// simulNames.add(name);
 	// }
 
-	public boolean isSimConfigured() {
-		return !simConfList.isEmpty();
-	}
+	// public boolean isSimConfigured() {
+	// return !simConfList.isEmpty();
+	// }
 
 	public boolean isColumnConfigured() {
 		return !colConfList.isEmpty();
@@ -122,12 +118,20 @@ public class ConfigurationUnit {
 		return colConfList.get(i).getColConfDir();
 	}
 
-	public String getSimConf(int i) {
-		return simConfList.get(i)[0];
+	// public String getSimConf(int i) {
+	// return simConfList.get(i)[0];
+	// }
+
+	public String getSimName() {
+		return simConfTriad[2];
 	}
 
-	public String getSimName(int index) {
-		return simConfList.get(index)[1];
+	public String getSimConfFilename() {
+		return simConfTriad[0];
+	}
+
+	public String getSynapseConfFilename() {
+		return simConfTriad[1];
 	}
 
 	public int getLayNum(int i) {
@@ -142,7 +146,7 @@ public class ConfigurationUnit {
 		return colConfList;
 	}
 
-	public List<String[]> getAllSimulations() {
-		return simConfList;
+	public String[] getSimulation() {
+		return simConfTriad;
 	}
 }

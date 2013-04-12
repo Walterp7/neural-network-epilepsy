@@ -91,7 +91,7 @@ public class Network {
 
 	public void addConnection(NetworkNode newSynapse) {
 
-		allNodes.add(newSynapse);
+		// allNodes.add(newSynapse);
 		allSynapses.add(newSynapse);
 
 	}
@@ -133,6 +133,9 @@ public class Network {
 					}
 				}
 			}
+		}
+		for (NetworkNode syn : allSynapses) {
+			allNodes.add(syn);
 		}
 		// System.out.println("total number of neurons " + neurNum);
 		// for (NetworkNode inp : allInputs) {
@@ -228,5 +231,18 @@ public class Network {
 			outNeurons.write("\r\n");
 		}
 		outNeurons.close();
+	}
+
+	public void removeNeuron(Neuron neur) {
+		allNeurons.remove(neur);
+		allNodes.remove(neur);
+		for (Synapse syn : neur.getNeuronConnections()) {
+			allNodes.remove(syn);
+		}
+	}
+
+	public void removeSynapse(Synapse syn) {
+		allNodes.remove(syn);
+		allSynapses.remove(syn);
 	}
 }

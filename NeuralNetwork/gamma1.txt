@@ -1,6 +1,8 @@
 %config file
 %all connection multiplier  inhibitory connection multiplier
 All 1
+%lessions colnum layer
+FALSE
 %input configuration
 % Gaussian 0 3 * -1 -1
 % Step interTime SignalTime value * -1 -1
@@ -9,11 +11,14 @@ All 1
 %Step 48 2 20 RS 1 1
 %Step 48 2 20 FS 1 1
 %Pick 100 2 5 1 1
-%Gaussian 0 20 -1 0 1
-Constant 3 LTS -1 -1
-Constant 3 IB -1 -1
-Constant 4 FS -1 -1
-Constant 8 RS -1 -1
+Gaussian 0 8 -1 0 1
+Constant 3 LTS -1 1
+Constant 3 IB -1 1
+Constant 4 FS -1 1
+Constant 6 RS VI 1
+Constant 4 RS V 1
+Constant 2 RS IV 1
+Constant 2 RS III 1
 %Pick 50 10 10 RS -1 IV
 %Pick 50 10 10 FS -1 IV
 %Pick 50 7 7 RS -1 V

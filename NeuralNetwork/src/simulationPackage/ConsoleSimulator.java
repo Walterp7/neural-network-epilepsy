@@ -40,6 +40,8 @@ public class ConsoleSimulator {
 	FileWriter outFileIPSP;
 	FileWriter outFileEPSP;
 	FileWriter outFileEEG;
+	FileWriter outFileActivity;
+
 	XYSeries[] seriesLFP;
 	XYSeries[] seriesLFP_psp;
 	XYSeries seriesPSP = new XYSeries("Simulated EEG");
@@ -48,7 +50,7 @@ public class ConsoleSimulator {
 	double timeOfSimulation = 0;
 
 	private List<NetworkNode> allSynapses = new ArrayList<NetworkNode>(); // plus
-	// inputs
+																			// inputs
 	private List<Neuron> allNeurons = new ArrayList<Neuron>();
 
 	private Neuron[] sampleNeurons = null;
@@ -127,225 +129,223 @@ public class ConsoleSimulator {
 		final int totalTime = configFromFiles.getTotalTime();// 1000;
 		final double timeStep = configFromFiles.getTimeStep();
 
-		final List<String[]> simulations = configFromFiles.getAllSimulations();
-
 		for (int nId : neuronIDs) {
 
 			neuronFiles.put(nId, new FileWriter(new File(pathName + "/neuron" + nId + ".txt")));
 
 		}
 
-		// final int tenPercent = (int) (totalTime / (10 * timeStep));
+		String simName = configFromFiles.getSimName();
+		System.out.println(simName + " starting");
+		InputDescriptor inDescriptor = new InputDescriptor();
 
-		for (final String[] simDir : simulations) {
+		NetworkBuilder netBuilder = new NetworkBuilder();
 
-			String simName = simDir[1];
+		Network net;
 
-			System.out.println(simName + " starting");
-			InputDescriptor inDescriptor = new InputDescriptor();
+		int numOfColsS = configFromFiles.getColListSize();
 
-			NetworkBuilder mag = new NetworkBuilder();
+		long t1 = System.currentTimeMillis();
 
-			Network net;
+		try {
+			synchronized (ConsoleSimulator.class) {
 
-			int numOfColsS = 5;
-			long t1 = System.currentTimeMillis();
-			try {
-				synchronized (ConsoleSimulator.class) {
-					// outFileEEG = new FileWriter(pathName + "/eeg" + simName +
-					// ".txt");
-					/*
-					 * opening files to be saved
-					 */
-					initializeFiles(pathName, simName, numOfColsS);
+				/*
+				 * opening files to be saved
+				 */
+				initializeFiles(pathName, simName, numOfColsS);
 
-					/*
-					 * creation of the network
-					 */
+				/*
+				 * creation of the network
+				 */
 
-					net = mag.createNetwork(simDir[0], seed, configFromFiles, timeStep, totalTime, inDescriptor);
-					// net.initialize(timeStep, 300);
-					net.setInputs();
-					mag.modifyWeights(net);
+				net = netBuilder.createNetwork(configFromFiles.getSimConfFilename(),
+						configFromFiles.getSynapseConfFilename(), seed, configFromFiles, timeStep, totalTime,
+						inDescriptor);
+				// net.initialize(timeStep, 300);
+				net.setInputs();
+				netBuilder.modifyWeights(net);
+				System.out.println("Network built");
+				allSynapses = net.getAllSynapses();
+				allNeurons = net.getAllNeurons();
+				System.out.println(allNeurons.size());
+				System.out.println(allSynapses.size());
+				ArrayList<Integer> numOfNeuronsInColumn = net.getNumberOfNeuronsInColumn();
 
-					allSynapses = net.getAllSynapses();
-					allNeurons = net.getAllNeurons();
+				numOfColsS = numOfNeuronsInColumn.size();
+				System.out.println(numOfColsS);
+				/*
+				 * saving connections to a file
+				 */
+				// saveConnections(pathName, simName);
+			}
+			final int numOfCols = numOfColsS;
 
-					ArrayList<Integer> numOfNeuronsInColumn = net.getNumberOfNeuronsInColumn();
+			initializeSampleNeurons(2, numOfCols, net);
 
-					numOfColsS = numOfNeuronsInColumn.size();
-					/*
-					 * saving connections to a file
-					 */
-					saveConnections(pathName, simName);
-				}
-				final int numOfCols = numOfColsS;
+			final int numThreads = 4;
 
-				initializeSampleNeurons(2, numOfCols, net);
+			timeBarrier = new CyclicBarrier(numThreads + 1);
+			statsCreationBarrier = new CyclicBarrier(numThreads,
+					new Runnable() {
 
-				final int numThreads = 4;
+						@Override
+						public void run() {
+							Future future = executor.submit(new Runnable() {
 
-				timeBarrier = new CyclicBarrier(numThreads + 1);
-				statsCreationBarrier = new CyclicBarrier(numThreads,
-						new Runnable() {
+								@Override
+								public void run() {
 
-							@Override
-							public void run() {
-								Future future = executor.submit(new Runnable() {
-
-									@Override
-									public void run() {
-
-										for (Neuron nod : allNeurons) {
-											Status newStat = null;
-											newStat = nod.advance(timeStep, timeOfSimulation);
-											if (newStat != null) {
-												stats.add(newStat);
-											}
-											nod.setCurrentInput();
-
+									for (Neuron nod : allNeurons) {
+										Status newStat = null;
+										newStat = nod.advance(timeStep, timeOfSimulation);
+										if (newStat != null) {
+											stats.add(newStat);
 										}
-
-										saveStats(stats, numOfCols);
-										stats.clear();
+										nod.setCurrentInput();
 
 									}
 
-								});
-								try {
-									future.get();
-								} catch (InterruptedException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
-								} catch (ExecutionException e) {
-									// TODO Auto-generated catch block
-									e.printStackTrace();
+									saveStats(stats, numOfCols);
+									stats.clear();
+
 								}
+
+							});
+							try {
+								future.get();
+							} catch (InterruptedException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
+							} catch (ExecutionException e) {
+								// TODO Auto-generated catch block
+								e.printStackTrace();
 							}
-						});
+						}
+					});
 
-				// here create threads and run
+			// here create threads and run
 
-				long t2 = System.currentTimeMillis();
-				int totalLength = allSynapses.size();
-				int size = totalLength / numThreads + 1;
-				System.out.println("Simulating");
-				for (int i = 0; i < numThreads; i++) {
-					new Thread(new Worker(allSynapses.subList(i * size, Math.min((i + 1) * size, totalLength)),
-							timeStep, totalTime)).start();
+			long t2 = System.currentTimeMillis();
+			int totalLength = allSynapses.size();
+			int size = totalLength / numThreads + 1;
+			System.out.println("Simulating");
+			for (int i = 0; i < numThreads; i++) {
+				new Thread(new Worker(allSynapses.subList(i * size, Math.min((i + 1) * size, totalLength)),
+						timeStep, totalTime)).start();
 
+			}
+			timeBarrier.await();
+
+			// one more barier
+			timeBarrier.await();
+			long t3 = System.currentTimeMillis();
+			System.out.println(simName + "  Initialization " + (t2 - t1) +
+					" Simulation " + (t3 - t2));
+			XYSeriesCollection[] allDatasetSpikes = new XYSeriesCollection[numOfCols];
+			System.out.println(numOfCols);
+			int count = 0;
+			for (XYSeries[] data : dataSeries) {
+				final XYSeriesCollection datasetSpikes = new XYSeriesCollection();
+				datasetSpikes.addSeries(data[3]); // lts
+				datasetSpikes.addSeries(data[0]); // fs
+				datasetSpikes.addSeries(data[1]); // rs
+				datasetSpikes.addSeries(data[2]); // ib
+				allDatasetSpikes[count] = datasetSpikes;
+				count++;
+			}
+			SpikeChartCollection spikeCharts = new SpikeChartCollection();
+			spikeCharts.plotNetwork(numOfCols, allDatasetSpikes, simName, totalTime);
+			spikeCharts.save(pathName);
+
+			// timeBarrier.await();
+			XYSeries seriesReferenceLine = new XYSeries("reference line -75mV");
+			seriesReferenceLine.add(0, -75);
+			seriesReferenceLine.add(totalTime, -75);
+
+			final XYSeriesCollection[] datasetLFP = new XYSeriesCollection[numOfCols];
+			final XYSeriesCollection[] datasetLFP_psp = new XYSeriesCollection[numOfCols];
+			double maxLFPplot = -1000000;
+			double minLFPplot = 30;
+			double maxLFPPspPlot = -1000000;
+			double minLFPPspPlot = 30;
+
+			for (int i = 0; i < numOfCols; i++) {
+
+				datasetLFP[i] = new XYSeriesCollection();
+				datasetLFP[i].addSeries(seriesReferenceLine);
+				datasetLFP[i].addSeries(seriesLFP[i]);
+				datasetLFP_psp[i] = new XYSeriesCollection();
+				datasetLFP_psp[i].addSeries(seriesReferenceLine);
+				datasetLFP_psp[i].addSeries(seriesLFP_psp[i]);
+
+				if (seriesLFP[i].getMaxY() > maxLFPplot) {
+					maxLFPplot = seriesLFP[i].getMaxY();
 				}
-				timeBarrier.await();
-
-				// one more barier
-				timeBarrier.await();
-				long t3 = System.currentTimeMillis();
-				// System.out.println("Initialization " + (t2 - t1) +
-				// " Simulation " + (t3 - t2));
-				XYSeriesCollection[] allDatasetSpikes = new XYSeriesCollection[numOfCols];
-
-				int count = 0;
-				for (XYSeries[] data : dataSeries) {
-					final XYSeriesCollection datasetSpikes = new XYSeriesCollection();
-					datasetSpikes.addSeries(data[3]); // lts
-					datasetSpikes.addSeries(data[0]); // fs
-					datasetSpikes.addSeries(data[1]); // rs
-					datasetSpikes.addSeries(data[2]); // ib
-					allDatasetSpikes[count] = datasetSpikes;
-					count++;
-				}
-				SpikeChartCollection spikeCharts = new SpikeChartCollection();
-				spikeCharts.plotNetwork(numOfCols, allDatasetSpikes, simName, totalTime);
-				spikeCharts.save(pathName);
-
-				// timeBarrier.await();
-				XYSeries seriesReferenceLine = new XYSeries("reference line -75mV");
-				seriesReferenceLine.add(0, -75);
-				seriesReferenceLine.add(totalTime, -75);
-
-				final XYSeriesCollection[] datasetLFP = new XYSeriesCollection[numOfCols];
-				final XYSeriesCollection[] datasetLFP_psp = new XYSeriesCollection[numOfCols];
-				double maxLFPplot = -1000000;
-				double minLFPplot = 30;
-				double maxLFPPspPlot = -1000000;
-				double minLFPPspPlot = 30;
-
-				for (int i = 0; i < numOfCols; i++) {
-
-					datasetLFP[i] = new XYSeriesCollection();
-					datasetLFP[i].addSeries(seriesReferenceLine);
-					datasetLFP[i].addSeries(seriesLFP[i]);
-					datasetLFP_psp[i] = new XYSeriesCollection();
-					datasetLFP_psp[i].addSeries(seriesReferenceLine);
-					datasetLFP_psp[i].addSeries(seriesLFP_psp[i]);
-
-					if (seriesLFP[i].getMaxY() > maxLFPplot) {
-						maxLFPplot = seriesLFP[i].getMaxY();
-					}
-					if (minLFPplot > seriesLFP[i].getMinY()) {
-						minLFPplot = seriesLFP[i].getMinY();
-					}
-
-					if (seriesLFP_psp[i].getMaxY() > maxLFPPspPlot) {
-						maxLFPPspPlot = seriesLFP_psp[i].getMaxY();
-					}
-					if (minLFPPspPlot > seriesLFP_psp[i].getMinY()) {
-						minLFPPspPlot = seriesLFP_psp[i].getMinY();
-					}
+				if (minLFPplot > seriesLFP[i].getMinY()) {
+					minLFPplot = seriesLFP[i].getMinY();
 				}
 
-				for (int i = 0; i < numOfCols; i++) {
-					boolean isStimulated = false;
-					if (i == 1) {
-						isStimulated = true;
-					}
-					LinePlotChart lfpPlot = new LinePlotChart("Local Field Potential" + " col" + (i + 1) + " "
-							+ simName,
-							"lfp" + i);
-					lfpPlot.draw(datasetLFP[i],
-							" Local Field Potential (col " + (i + 1) + ")", true,
-							minLFPplot,
-							maxLFPplot, true, isStimulated);
-					lfpPlot.save(pathName);
-
-					LinePlotChart lfpPspPlot = new LinePlotChart("Local Field Potential- PSP" + " col" + (i + 1) + " "
-							+ simName,
-							"lfp_psp" + i);
-					lfpPspPlot.draw(datasetLFP_psp[i],
-							" Local Field Potential - PSP (col " + (i + 1) + ")", true,
-							minLFPPspPlot,
-							maxLFPPspPlot, true, isStimulated);
-					lfpPspPlot.save(pathName);
+				if (seriesLFP_psp[i].getMaxY() > maxLFPPspPlot) {
+					maxLFPPspPlot = seriesLFP_psp[i].getMaxY();
 				}
-
-				final XYSeriesCollection datasetEEG = new XYSeriesCollection();
-				datasetEEG.addSeries(seriesPSP);
-				LinePlotChart eegPlot = new LinePlotChart("EEG", "eeg");
-				eegPlot.draw(datasetEEG, " EEG", false,
-						minLFPplot, maxLFPplot, false, false);
-				eegPlot.save(pathName);
-
-				final XYSeriesCollection datasetEEGAll = new XYSeriesCollection();
-				datasetEEGAll.addSeries(seriesPSPAll);
-				LinePlotChart eegPlotAll = new LinePlotChart("EEG-All", "eegAll");
-				eegPlotAll.draw(datasetEEGAll, " EEGAll", false,
-						minLFPplot, maxLFPplot, false, false);
-				eegPlotAll.save(pathName);
-
-				outFileLFP.close();
-				outFileLFP_psp.close();
-				outFileIPSP.close();
-				outFileEPSP.close();
-				outFileEEG.close();
-				for (int neurId : neuronIDs) {
-					neuronFiles.get(neurId).close();
+				if (minLFPPspPlot > seriesLFP_psp[i].getMinY()) {
+					minLFPPspPlot = seriesLFP_psp[i].getMinY();
 				}
-			} catch (Throwable e) {
-
-				e.printStackTrace();
 			}
 
+			for (int i = 0; i < numOfCols; i++) {
+				boolean isStimulated = false;
+				if (i == 1) {
+					isStimulated = true;
+				}
+				LinePlotChart lfpPlot = new LinePlotChart("Local Field Potential" + " col" + (i + 1) + " "
+						+ simName,
+						"lfp" + i);
+				lfpPlot.draw(datasetLFP[i],
+						" Local Field Potential (col " + (i + 1) + ")", true,
+						minLFPplot,
+						maxLFPplot, true, isStimulated);
+				lfpPlot.save(pathName);
+
+				LinePlotChart lfpPspPlot = new LinePlotChart("Local Field Potential- PSP" + " col" + (i + 1) + " "
+						+ simName,
+						"lfp_psp" + i);
+				lfpPspPlot.draw(datasetLFP_psp[i],
+						" Local Field Potential - PSP (col " + (i + 1) + ")", true,
+						minLFPPspPlot,
+						maxLFPPspPlot, true, isStimulated);
+				lfpPspPlot.save(pathName);
+			}
+
+			final XYSeriesCollection datasetEEG = new XYSeriesCollection();
+			datasetEEG.addSeries(seriesPSP);
+			LinePlotChart eegPlot = new LinePlotChart("EEG", "eeg");
+			eegPlot.draw(datasetEEG, " EEG", false,
+					minLFPplot, maxLFPplot, false, false);
+			eegPlot.save(pathName);
+
+			final XYSeriesCollection datasetEEGAll = new XYSeriesCollection();
+			datasetEEGAll.addSeries(seriesPSPAll);
+			LinePlotChart eegPlotAll = new LinePlotChart("EEG-All", "eegAll");
+			eegPlotAll.draw(datasetEEGAll, " EEGAll", false,
+					minLFPplot, maxLFPplot, false, false);
+			eegPlotAll.save(pathName);
+
+			outFileLFP.close();
+			outFileLFP_psp.close();
+			outFileIPSP.close();
+			outFileEPSP.close();
+			outFileEEG.close();
+			outFileActivity.close();
+			for (int neurId : neuronIDs) {
+				neuronFiles.get(neurId).close();
+			}
+		} catch (Throwable e) {
+
+			e.printStackTrace();
 		}
+
 		System.out.println(pathName + " done");
 
 		System.exit(0);
@@ -358,6 +358,7 @@ public class ConsoleSimulator {
 		outFileIPSP = new FileWriter(pathName + "/ipsp_" + simName + ".csv");
 		outFileEPSP = new FileWriter(pathName + "/epsp_" + simName + ".csv");
 		outFileEEG = new FileWriter(pathName + "/eeg_" + simName + ".csv");
+		outFileActivity = new FileWriter(pathName + "/activity_" + simName + ".csv");
 
 		seriesLFP = new XYSeries[numOfColsS];
 		seriesLFP_psp = new XYSeries[numOfColsS];
@@ -425,7 +426,17 @@ public class ConsoleSimulator {
 			}
 
 			if (s.fired()) {
+				try {
 
+					outFileActivity.write(MessageFormat.format("{0,number,#.#}",
+							timeOfSimulation)
+							+ ", " + s.getNumber() + ", " + s.getColumn() + ", " + s.getType() + ", " + s.getLayer()
+							+ "\r\n");
+
+				} catch (IOException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				if (s.getType() == Type.RS) {
 					dataSeries.get(neuronColNum)[0].add(s.getTime(),
 							(s.getNumber() - neuronColNum
@@ -501,7 +512,7 @@ public class ConsoleSimulator {
 			outFileEPSP.write("\n");
 
 			outFileLFP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < numOfCols; i++) {
 				seriesLFP[i].add(timeOfSimulation, voltage[i]);
 				seriesLFP_psp[i].add(timeOfSimulation, pspPerColumn[i]);
 				outFileLFP.write(","

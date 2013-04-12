@@ -1,0 +1,17 @@
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 2354125789 gamma1.txt 4 control.txt
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 2354125789 gamma2.txt 4 control.txt
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 2354125789 gamma3.txt 4 control.txt
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 2354125789 gamma4.txt 4 control.txt
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 2354125789 gamma5.txt 4 control.txt
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 2354125789 gamma6.txt 4 control.txt
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 2354125789 gamma7.txt 4 control.txt
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 2354125789 gamma8.txt 4 control.txt
+
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 391781649 gamma1.txt 4 control.txt
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 391781649 gamma2.txt 4 control.txt
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 391781649 gamma3.txt 4 control.txt
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 391781649 gamma4.txt 4 control.txt
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 391781649 gamma5.txt 4 control.txt
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 391781649 gamma6.txt 4 control.txt
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 391781649 gamma7.txt 4 control.txt
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar TestInh4T.jar 391781649 gamma8.txt 4 control.txt

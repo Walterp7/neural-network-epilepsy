@@ -12,7 +12,7 @@ All 1
 %Gaussian 0 20 -1 0 1
 Constant 3 LTS -1 -1
 Constant 3 IB -1 -1
-Constant 4 FS -1 -1
+Constant 2 FS -1 -1
 Constant 8 RS -1 -1
 %Pick 50 10 10 RS -1 IV
 %Pick 50 10 10 FS -1 IV

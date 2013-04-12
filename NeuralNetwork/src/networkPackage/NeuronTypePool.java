@@ -1,6 +1,7 @@
 package networkPackage;
 
 import java.util.ArrayList;
+import java.util.Random;
 
 import neuronPackage.Neuron;
 import neuronPackage.Type;
@@ -43,4 +44,7 @@ public class NeuronTypePool {
 		this.type = type;
 	}
 
+	public Neuron getRandomNeuron(Random gen) {
+		return neurons.get(gen.nextInt(neurons.size()));
+	}
 }

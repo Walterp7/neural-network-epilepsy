@@ -1,8 +1,8 @@
 %config file
 %all connection multiplier  inhibitory connection multiplier
 ALL 1
-FS * 0.5
-LTS * 0.5
+FS * 0.2
+LTS * 0.2
 %input configuration
 % Gaussian 0 3 * -1 -1
 % Step interTime SignalTime value * -1 -1
@@ -12,6 +12,9 @@ LTS * 0.5
 %Step 48 2 20 FS 1 1
 Gaussian 0 6 -1 0 1
 Pick 100 2 8 1 1
+Pick 300 2 8 1 1
+Pick 500 2 8 1 1
+Pick 800 2 8 1 1
 %Pick 100 20 10 RS 1 1
 %Pick 100 20 10 FS 1 1
 %Step 10 5 10 FS 1 1

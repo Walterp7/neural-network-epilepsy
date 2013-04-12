@@ -58,24 +58,27 @@ public abstract class Inputer implements NetworkNode {
 			// setUpConnections(network, colNum, Layer.V, Type.RS, 0.5, 0.5);
 			setUpConnections(network, colNum, Layer.V, Type.FS, 0.9, 1);
 			// setUpConnections(network, colNum, Layer.V, Type.IB, 0.9, 1);
-			// setUpConnections(network, colNum, Layer.V, Type.IB, 0.5, 0.5);
+			setUpConnections(network, colNum, Layer.V, Type.IB, 0.2, 0.5);
+			setUpConnections(network, colNum, Layer.V, Type.RS, 0.2, 0.5);
 			// column to the left
 			if (colNum - 1 >= 0) {
-				setUpConnections(network, colNum - 1, Layer.IV, Type.RS, 0.05, 0.2);
-				setUpConnections(network, colNum - 1, Layer.IV, Type.FS, 0.96, 0.8);
+				setUpConnections(network, colNum - 1, Layer.IV, Type.RS, 0.5, 0.5);
+				// setUpConnections(network, colNum - 1, Layer.IV, Type.FS, 0.0,
+				// 0.5);
 
 			}
 			if (colNum + 1 <= totalNumCol - 1) {
-				setUpConnections(network, colNum + 1, Layer.IV, Type.RS, 0.05, 0.2);
-				setUpConnections(network, colNum + 1, Layer.IV, Type.FS, 0.96, 0.8);
+				setUpConnections(network, colNum + 1, Layer.IV, Type.RS, 0.5, 0.5);
+				// setUpConnections(network, colNum + 1, Layer.IV, Type.FS, 0.0,
+				// 0.5);
 			}
 
 			if (colNum - 2 >= 0) {
-				setUpConnections(network, colNum - 2, Layer.IV, Type.FS, 0.77, 0.6);
+				setUpConnections(network, colNum - 2, Layer.IV, Type.FS, 0.2, 0.3);
 
 			}
 			if (colNum + 2 <= totalNumCol) {
-				setUpConnections(network, colNum + 2, Layer.IV, Type.FS, 0.77, 0.6);
+				setUpConnections(network, colNum + 2, Layer.IV, Type.FS, 0.2, 0.3);
 
 			}
 		} else { // all columns

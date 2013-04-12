@@ -12,19 +12,21 @@ public class ConsoleSimRunner {
 		String simConfigFileName = args[1];
 		int numOfLayers = Integer.parseInt(args[2]);
 		String colConfigFileName = args[3];
-		String simUserName = args[4];
+		String synapseConfigFileName = args[4];
+		String simUserName = args[5];
 
 		String simName = simUserName + "_" + simConfigFileName.substring(0, simConfigFileName.length() - 4);
 
 		ConfigurationUnit confUnit = new ConfigurationUnit();
 
+		int colNum = 5;
 		confUnit.setNumSim(1);
-		confUnit.setNumColumns(5);
+		confUnit.setNumColumns(colNum);
 		confUnit.setTimeStep(0.1);
-		confUnit.setTotalTime(1500);
+		confUnit.setTotalTime(1000);
 
-		confUnit.addSim2List(simConfigFileName, simName);
-		for (int i = 0; i < 5; i++) {
+		confUnit.addSim2List(simConfigFileName, synapseConfigFileName, simName);
+		for (int i = 0; i < colNum; i++) {
 			confUnit.addCol2List(colConfigFileName, numOfLayers);
 		}
 

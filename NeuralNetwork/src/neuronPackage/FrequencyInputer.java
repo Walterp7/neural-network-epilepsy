@@ -10,15 +10,20 @@ public class FrequencyInputer extends Inputer {
 
 	int interTime;
 	int signalTime;
+	Type type;
+	Layer layer = null;
 
 	public final ArrayList<Synapse> inputConnections = new ArrayList<Synapse>();
 	public SynapseFactory synFact = null;
 
-	public FrequencyInputer(int interTime, double value, HashMap<String, StpParameters> stpParams,
+	public FrequencyInputer(int interTime, double value, Type type, Layer layer,
+			HashMap<String, StpParameters> stpParams,
 			HashMap<String, PSPparameters> pspParams,
 			HashMap<String, PSPparameters> secondaryPspParams) {
 		this.value = value;
 		this.interTime = interTime;
+		this.type = type;
+		this.layer = layer;
 		// this.signalTime = signalTime;
 		synFact = new SynapseFactory(stpParams, pspParams, secondaryPspParams);
 	}
@@ -50,6 +55,30 @@ public class FrequencyInputer extends Inputer {
 	@Override
 	public void addInput(double val, double time, double timeStep) {
 		// TODO Auto-generated method stub
+
+	}
+
+	@Override
+	public void connect(int colNum, Network network) {
+
+		for (Neuron neur : network.getAllNeurons()) {
+			if ((colNum == -1) || (neur.getColNum() == colNum)) {
+				if (neur.getType() == type) {
+
+					if (layer != null) {
+
+						if (neur.getLayer() == layer) {
+							addConnection(neur, network, 1);
+
+						}
+					} else {
+
+						addConnection(neur, network, 1);
+					}
+
+				}
+			}
+		}
 
 	}
 
