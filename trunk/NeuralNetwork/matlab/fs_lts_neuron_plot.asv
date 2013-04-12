@@ -1,0 +1,51 @@
+neuron_pos =  load('neurons.csv');
+fs_con =  load('FSconnections.csv');
+fs_neuron = fs_con(1,1);
+FS_coeffs = [ neuron_pos(  neuron_pos(:,1) ==fs_neuron,3), neuron_pos(  neuron_pos(:,1) == fs_neuron, 4), neuron_pos(  neuron_pos(:,1) == fs_neuron, 5)];
+fs_con = fs_con(2:size(fs_con,1));
+
+lts_con =  load('LTSconnections.csv');
+lts_neuron = lts_con(1,1);
+LTS_coeffs = [ neuron_pos(  neuron_pos(:,1) ==lts_neuron,3), neuron_pos(  neuron_pos(:,1) == lts_neuron, 4), neuron_pos(  neuron_pos(:,1) == lts_neuron, 5)];
+lts_con = lts_con(2:size(lts_con,1));
+FS_connect = [];
+LTS_connect = [];
+
+for indx = 1:size(fs_con,1)
+    neur = fs_con(indx,1);
+    new_entry = [ neuron_pos(  neuron_pos(:,1) == neur,3), neuron_pos(  neuron_pos(:,1) == neur, 4), neuron_pos(  neuron_pos(:,1) == neur, 5)];
+    FS_connect = [FS_connect ;new_entry  ];
+end;
+
+for indx = 1:size(lts_con,1)
+    neur = lts_con(indx,1);
+    new_entry = [ neuron_pos(  neuron_pos(:,1) == neur,3), neuron_pos(  neuron_pos(:,1) == neur, 4), neuron_pos(  neuron_pos(:,1) == neur, 5)];
+    LTS_connect = [LTS_connect ;new_entry  ];
+end;
+
+figure;
+%colorcode according to types
+scatter3(neuron_pos(:,3),neuron_pos(:,4), neuron_pos(:,5), '.b' )
+xlabel('X (width)')
+ylabel('Y (depth)')
+zlabel('Z (height)')
+set(gca,'ZDir','reverse')
+%line plot for sample FS and LTS
+figure;
+line = 
+plot3
+
+%scatter plots for sample FS and LTS
+figure;
+scatter3(FS_connect(:,1),FS_connect(:,2), FS_connect(:,3), '.b' )
+hold on;
+scatter3(LTS_connect(:,1),LTS_connect(:,2), LTS_connect(:,3), '.r' )
+hold on;
+scatter3(FS_coeffs(:,1),FS_coeffs(:,2), FS_coeffs(:,3), 'b' )
+hold on;
+scatter3(LTS_coeffs(:,1),LTS_coeffs(:,2), LTS_coeffs(:,3), 'r' )
+xlabel('X (width)')
+ylabel('Y (depth)')
+zlabel('Z (hight)')
+set(gca,'ZDir','reverse')
+hold off;

@@ -1,0 +1,5 @@
+1500_focal starting
+Network built
+Simulating
+1500_focal  Initialization 859 Simulation 487655
+1500_focals2354125789 done

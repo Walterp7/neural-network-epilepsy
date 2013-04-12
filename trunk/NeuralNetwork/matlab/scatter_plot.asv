@@ -1,0 +1,40 @@
+%data: time, neuron, column, type, layer
+start_index = find (spikes_data(:,1)>=100,1, 'first')
+end_index = find (spikes_data(:,1)< 150,1, 'last')
+spikes = spikes_data(start_index:end_index,:);
+col_number = 3;
+for col = 1:col_number 
+
+    spikes_temp = spikes(spikes(:,3)== (col-1),:);
+    subplot(col_number,1,col);
+    scatter(spikes_temp(spikes_temp(:,4)==1, 1), spikes_temp(spikes_temp(:,4)==1, 2), '.r');
+    hold on;
+    scatter(spikes_temp(spikes_temp(:,4)==2, 1), spikes_temp(spikes_temp(:,4)==2, 2), '.b');
+     hold on;
+    scatter(spikes_temp(spikes_temp(:,4)==4, 1), spikes_temp(spikes_temp(:,4)==4, 2),'Marker', '.', 'MarkerEdgeColor',[0,0.6,0.2]);
+    hold on;
+    scatter(spikes_temp(spikes_temp(:,4)==3, 1), spikes_temp(spikes_temp(:,4)==3, 2), '.g');
+  
+    %layer markings
+    VItop = spikes_temp(find( spikes_temp(:,5) == 6, 1, 'last'), 2)
+    Vtop = spikes_temp(find( spikes_temp(:,5) == 5, 1, 'last'), 2)
+    IVtop = spikes_temp(find( spikes_temp(:,5) == 4, 1, 'last'), 2)
+    IIItop = spikes_temp(find( spikes_temp(:,5) == 3, 1, 'last'), 2)
+    
+    minCol = min( spikes_temp(:,2));
+    set(gca,'YTick', [(VItop-minCol)/2 + minCol , (Vtop - VItop)/2 + VItop , (IVtop-Vtop)/2+ Vtop, (IIItop-IVtop)/2+ IVtop])
+    set(gca,'YTickLabel',{'VI','V','IV','II/III'})
+    line( [100, 150], [ VItop,  VItop], 'LineStyle',':', 'Color', [0.5,0.5,0.5])
+    line( [100, 150], [ Vtop,  Vtop], 'LineStyle',':', 'Color', [0.5,0.5,0.5])
+    line( [100, 150], [ IVtop,  IVtop], 'LineStyle',':', 'Color', [0.5,0.5,0.5])
+    line( [100, 150], [ IIItop,  IIItop], 'LineStyle',':', 'Color', [0.5,0.5,0.5])
+    %axes labels
+     xlabel('time [ms]');
+    ylabel(['Column ', int2str(col)]);
+    legend('LTS', 'FS',  'IB','RS')
+    xlim([100 150]) 
+
+    
+    
+    hold off;
+end;

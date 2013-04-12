@@ -1,0 +1,8 @@
+function [ x ] = epsp( dt)
+td = 2;
+td = 
+x = exp(-dt
+
+
+end
+
