@@ -5,7 +5,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 public class Synapse implements NetworkNode { // connects node with neuron
 	private double synapseWeight;
 	private int timeDelay; // in number of timeSteps
-	private final Neuron postSynapticNeuron;
+	private Neuron postSynapticNeuron;
 	private final Neuron preSynapticNeuron;
 	// Neuron preSynapticNeuron;
 	// double ti, trec, tfac, U;
@@ -161,6 +161,10 @@ public class Synapse implements NetworkNode { // connects node with neuron
 
 	public Neuron getPostSynapticNeuron() {
 		return postSynapticNeuron;
+	}
+
+	public void setPostSynapticNeuron(Neuron n) {
+		postSynapticNeuron = n;
 	}
 
 	public Neuron getPreSynapticNeuron() {

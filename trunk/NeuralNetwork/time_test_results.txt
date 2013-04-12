@@ -1,0 +1,19 @@
+
+time_noise5  Initialization 3799 Simulation 572659
+time_noise5  Initialization 3250 Simulation 691401
+time_noise5  Initialization 2770 Simulation 893142
+time_noise10  Initialization 3815 Simulation 1520455
+time_noise10  Initialization 3050 Simulation 1817311
+time_noise10  Initialization 7724 Simulation 2979491
+time_noise15  Initialization 3642 Simulation 4764860
+time_noise15  Initialization 3977 Simulation 5935738
+time_noise15  Initialization 5235 Simulation 6979979
+time_noise20  Initialization 3612 Simulation 7157353
+time_noise25  Initialization 7517 Simulation 7654701
+time_noise20  Initialization 3087 Simulation 7811773
+time_noise20  Initialization 5263 Simulation 7846473
+time_noise25  Initialization 4238 Simulation 8664136
+time_noise25  Initialization 5318 Simulation 9973382
+time_noise30  Initialization 5316 Simulation 10322325
+time_noise30  Initialization 3609 Simulation 10810533
+time_noise30  Initialization 5977 Simulation 11656044

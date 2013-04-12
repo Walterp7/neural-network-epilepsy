@@ -20,6 +20,8 @@ public class ColumnBuilder {
 
 	HashMap<Type, double[]> neuronParameters = new HashMap<Type, double[]>();
 
+	HashMap<Type, Double> maxFiringRates = new HashMap<Type, Double>();
+
 	double[][] proportions;
 	Layer[] layerNames;
 	int[] totalNeuronsInPool = new int[4];
@@ -58,6 +60,11 @@ public class ColumnBuilder {
 		newLine = in.readLine();
 
 		while ((newLine.charAt(0) == '%')) {
+			newLine = in.readLine();
+		}
+		while (!newLine.startsWith("%Connections")) {
+			parsedLine = newLine.split("\\s+");
+			maxFiringRates.put(stringToType(parsedLine[0]), Double.parseDouble(parsedLine[1]));
 			newLine = in.readLine();
 		}
 
@@ -132,7 +139,8 @@ public class ColumnBuilder {
 							.clone();
 					tempParam[2] += typeRandom * 5;
 					tempParam[3] -= typeRandom * 2;
-					newNeuron = new Neuron(tempParam, Type.RS, colID, layerNames[layerNum], 6.25);
+					newNeuron = new Neuron(tempParam, Type.RS, colID, layerNames[layerNum],
+							1000.0 / maxFiringRates.get(Type.RS));
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					rsPool.addNeuron(newNeuron);
 
@@ -145,7 +153,8 @@ public class ColumnBuilder {
 							.clone();
 					tempParam[2] -= typeRandom * 5;
 					tempParam[3] += typeRandom * 2;
-					newNeuron = new Neuron(tempParam, Type.IB, colID, layerNames[layerNum], 3.33);
+					newNeuron = new Neuron(tempParam, Type.IB, colID, layerNames[layerNum],
+							1000.0 / maxFiringRates.get(Type.IB));
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					ibPool.addNeuron(newNeuron);
 				}
@@ -155,7 +164,8 @@ public class ColumnBuilder {
 							.clone();
 					tempParam[0] -= typeRandom * 0.01;
 					tempParam[1] -= typeRandom * 0.02;
-					newNeuron = new Neuron(tempParam, Type.FS, colID, layerNames[layerNum], 2.85);
+					newNeuron = new Neuron(tempParam, Type.FS, colID, layerNames[layerNum],
+							1000.0 / maxFiringRates.get(Type.FS));
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					fsPool.addNeuron(newNeuron);
 				}
@@ -165,7 +175,8 @@ public class ColumnBuilder {
 							.clone();
 					tempParam[0] -= typeRandom * 0.001;
 					tempParam[1] -= typeRandom * 0.02;
-					newNeuron = new Neuron(tempParam, Type.LTS, colID, layerNames[layerNum], 4.71);
+					newNeuron = new Neuron(tempParam, Type.LTS, colID, layerNames[layerNum],
+							1000.0 / maxFiringRates.get(Type.LTS));
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					ltsPool.addNeuron(newNeuron);
 				}
@@ -209,6 +220,7 @@ public class ColumnBuilder {
 		if (s.equals("LTS")) {
 			return Type.LTS;
 		} else {
+			System.out.println(s);
 			throw new IOException();
 		}
 	}

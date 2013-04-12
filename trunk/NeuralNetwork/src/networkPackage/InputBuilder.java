@@ -35,7 +35,7 @@ public class InputBuilder {
 					newInput = new GaussianInputer(mean, deviation);
 
 				} else {
-					inDescriptor.addInputer(newLine, totalTime);
+					// inDescriptor.addInputer(newLine, totalTime);
 					if (parsedLine[wordIndex].equals("Step")) {
 						wordIndex++;
 						int interTime = Integer
@@ -44,8 +44,20 @@ public class InputBuilder {
 								.parseInt(parsedLine[wordIndex++]);
 						double value = Double
 								.parseDouble(parsedLine[wordIndex++]);
+						String typeString = parsedLine[wordIndex++];
+						Type type = null;
+						if (!typeString.equals("*")) {
+							type = Type.valueOf(typeString);
+						}
+						String layerString = parsedLine[wordIndex++];
+						Layer layer = null;
+						if (!layerString.equals("*")) {
+							layer = Layer.valueOf(layerString);
+						}
+
 						System.out.println("inter " + interTime + " signal " + signalTime + " value " + value);
-						newInput = new FrequencyInputer(interTime, value, stpParams, pspParams, secondaryPspParams);
+						newInput = new FrequencyInputer(interTime, value, type, layer, stpParams, pspParams,
+								secondaryPspParams);
 					} else {
 						if (parsedLine[wordIndex].equals("Pick")) {
 							wordIndex++;

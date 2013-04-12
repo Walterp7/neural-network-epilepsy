@@ -1,0 +1,20 @@
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  391781649 noise12.txt 4 column_config.txt synapse_config.txt time
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  391781649 noise6.txt 4 column_config.txt synapse_config.txt time
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  391781649 noise7.txt 4 column_config.txt synapse_config.txt time
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  391781649 noise8.txt 4 column_config.txt synapse_config.txt time
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  391781649 noise9.txt 4 column_config.txt synapse_config.txt time
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  391781649 noise11.txt 4 column_config.txt synapse_config.txt time
+
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  2348721690 noise6.txt 4 column_config.txt synapse_config.txt time
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  2348721690 noise7.txt 4 column_config.txt synapse_config.txt time
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  2348721690 noise8.txt 4 column_config.txt synapse_config.txt time
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  2348721690 noise9.txt 4 column_config.txt synapse_config.txt time
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  2348721690 noise11.txt 4 column_config.txt synapse_config.txt time
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  2348721690 noise12.txt 4 column_config.txt synapse_config.txt time
+
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  6783257431 noise6.txt 4 column_config.txt synapse_config.txt time
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  6783257431 noise7.txt 4 column_config.txt synapse_config.txt time
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  6783257431 noise8.txt 4 column_config.txt synapse_config.txt time
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  6783257431 noise9.txt 4 column_config.txt synapse_config.txt time
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  6783257431 noise11.txt 4 column_config.txt synapse_config.txt time
+hostname;  cd networkExp/expForPaper/;  java   -Xms256m  -Xmx60024m -jar Simulator1T-time-test.jar  6783257431 noise12.txt 4 column_config.txt synapse_config.txt time

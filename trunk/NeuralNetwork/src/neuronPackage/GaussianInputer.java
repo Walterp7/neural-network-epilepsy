@@ -10,14 +10,13 @@ public class GaussianInputer extends Inputer {
 
 	// Random generator = new Random(12364579);
 	// Random generator = new Random(123645711);
-	Random generator = new Random(978645711);
-	// Random generator = new Random(978649719);
+	// Random generator = new Random(978645711);
+	Random generator = new Random(978649719);
 
 	protected final ArrayList<Neuron> inputConnections = new ArrayList<Neuron>();
 
 	@Override
 	public void addConnection(Neuron n, Network net, double strength) {
-		// inputConnections.add(n);
 
 		inputConnections.add(n);
 
@@ -51,9 +50,11 @@ public class GaussianInputer extends Inputer {
 
 		for (Neuron n : inputConnections) {
 			double input = mu + sigma * generator.nextGaussian();
-
-			n.addInput(input, timeStep, timeofSimulation);
-
+			if (n.getType() == Type.LTS) {
+				n.addInput(0.5 * input, timeStep, timeofSimulation);
+			} else {
+				n.addInput(input, timeStep, timeofSimulation);
+			}
 		}
 
 		return null;
