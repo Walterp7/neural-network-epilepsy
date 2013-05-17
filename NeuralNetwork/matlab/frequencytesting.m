@@ -44,6 +44,8 @@ U = [];
 %Itotal =[];
 lastSpike= 1;
 resultRS2RS = zeros(1, totaltime/dt);
+timestep = dt;
+
 for t=range            % simulation of 1000 ms
  %I=  random('Normal',0,15,1,1);%10*[0;0;0;0]*heaviside(t-400);%*heaviside(250-time(t)); 
  %I = 10*(exp(-t*dt/20)-exp(-t*dt/0.1));

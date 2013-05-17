@@ -139,8 +139,10 @@ public class ColumnBuilder {
 							.clone();
 					tempParam[2] += typeRandom * 5;
 					tempParam[3] -= typeRandom * 2;
+					double maxRate = (1000.0) / maxFiringRates.get(Type.RS);
+					maxRate += maxRate * (generator.nextDouble() - 0.5) * 0.2;
 					newNeuron = new Neuron(tempParam, Type.RS, colID, layerNames[layerNum],
-							1000.0 / maxFiringRates.get(Type.RS));
+							maxRate);
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					rsPool.addNeuron(newNeuron);
 
@@ -153,8 +155,10 @@ public class ColumnBuilder {
 							.clone();
 					tempParam[2] -= typeRandom * 5;
 					tempParam[3] += typeRandom * 2;
+					double maxRate = 1000.0 / maxFiringRates.get(Type.IB);
+					maxRate += maxRate * (generator.nextDouble() - 0.5) * 0.2;
 					newNeuron = new Neuron(tempParam, Type.IB, colID, layerNames[layerNum],
-							1000.0 / maxFiringRates.get(Type.IB));
+							maxRate);
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					ibPool.addNeuron(newNeuron);
 				}
@@ -164,8 +168,10 @@ public class ColumnBuilder {
 							.clone();
 					tempParam[0] -= typeRandom * 0.01;
 					tempParam[1] -= typeRandom * 0.02;
+					double maxRate = 1000.0 / maxFiringRates.get(Type.FS);
+					maxRate += maxRate * (generator.nextDouble() - 0.5) * 0.2;
 					newNeuron = new Neuron(tempParam, Type.FS, colID, layerNames[layerNum],
-							1000.0 / maxFiringRates.get(Type.FS));
+							maxRate);
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					fsPool.addNeuron(newNeuron);
 				}
@@ -175,8 +181,10 @@ public class ColumnBuilder {
 							.clone();
 					tempParam[0] -= typeRandom * 0.001;
 					tempParam[1] -= typeRandom * 0.02;
+					double maxRate = 1000.0 / maxFiringRates.get(Type.LTS);
+					maxRate += maxRate * (generator.nextDouble() - 0.5) * 0.2;
 					newNeuron = new Neuron(tempParam, Type.LTS, colID, layerNames[layerNum],
-							1000.0 / maxFiringRates.get(Type.LTS));
+							maxRate);
 					newNeuron.setCoordinates(getCoordinates(colID, layerNames[layerNum]));
 					ltsPool.addNeuron(newNeuron);
 				}

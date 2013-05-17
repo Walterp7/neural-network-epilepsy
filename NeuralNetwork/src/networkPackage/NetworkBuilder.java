@@ -240,13 +240,20 @@ public class NetworkBuilder {
 													// removed
 							// rewire
 							if (percentRewired > 0) {
-
-								Type type = preSynNeuron.getType();
-								int colToConnect = preSynNeuron.getColNum();
-								Layer layer = preSynNeuron.getLayer();
-								Neuron newPostSynNeuron = net.getColumn(colToConnect).getPool(layer).getTypePool(type)
-										.getRandomNeuron(gen);
-								((Synapse) syn).setPostSynapticNeuron(newPostSynNeuron);
+								int randomNumber = gen.nextInt(101);
+								if (randomNumber <= percentRewired * 100) {
+									// System.out.println("rewire");
+									Type type = preSynNeuron.getType();
+									int colToConnect = preSynNeuron.getColNum();
+									Layer layer = preSynNeuron.getLayer();
+									Neuron newPostSynNeuron = net.getColumn(colToConnect).getPool(layer)
+											.getTypePool(type)
+											.getRandomNeuron(gen);
+									((Synapse) syn).setPostSynapticNeuron(newPostSynNeuron);
+								} else {
+									// System.out.println("not rewire");
+									synapsesToRemove.add((Synapse) syn);
+								}
 
 							} else {
 								// or not

@@ -9,6 +9,7 @@ import neuronPackage.FrequencyInputer;
 import neuronPackage.GaussianInputer;
 import neuronPackage.Inputer;
 import neuronPackage.Layer;
+import neuronPackage.LocalizedInputer;
 import neuronPackage.PSPparameters;
 import neuronPackage.PickInputer;
 import neuronPackage.StpParameters;
@@ -38,6 +39,8 @@ public class InputBuilder {
 					// inDescriptor.addInputer(newLine, totalTime);
 					if (parsedLine[wordIndex].equals("Step")) {
 						wordIndex++;
+						int startTime = Integer
+								.parseInt(parsedLine[wordIndex++]);
 						int interTime = Integer
 								.parseInt(parsedLine[wordIndex++]);
 						int signalTime = Integer
@@ -56,7 +59,7 @@ public class InputBuilder {
 						}
 
 						System.out.println("inter " + interTime + " signal " + signalTime + " value " + value);
-						newInput = new FrequencyInputer(interTime, value, type, layer, stpParams, pspParams,
+						newInput = new FrequencyInputer(startTime, interTime, value, type, layer, stpParams, pspParams,
 								secondaryPspParams);
 					} else {
 						if (parsedLine[wordIndex].equals("Pick")) {
@@ -80,7 +83,37 @@ public class InputBuilder {
 
 								newInput = new ConstantInputer(value, stringToType(typeString), layerString);
 							} else {
-								throw new IOException();
+								if (parsedLine[wordIndex].equals("Localized")) {
+
+									wordIndex++;
+									int startTime = Integer
+											.parseInt(parsedLine[wordIndex++]);
+									int duration = Integer
+											.parseInt(parsedLine[wordIndex++]);
+									double value = Double
+											.parseDouble(parsedLine[wordIndex++]);
+									double radius = Double
+											.parseDouble(parsedLine[wordIndex++]);
+									String typeString = parsedLine[wordIndex++];
+									Type type = null;
+									if (!typeString.equals("*")) {
+										type = Type.valueOf(typeString);
+									}
+									String layerString = parsedLine[wordIndex++];
+									Layer layer = null;
+									if (!layerString.equals("*")) {
+										layer = Layer.valueOf(layerString);
+									}
+
+									// System.out.println("inter " + duration +
+									// " signal " + signalTime + " value "
+									// + value);
+									newInput = new LocalizedInputer(startTime, duration, value, radius, type, layer,
+											stpParams, pspParams,
+											secondaryPspParams);
+								} else {
+									throw new IOException();
+								}
 							}
 						}
 					}

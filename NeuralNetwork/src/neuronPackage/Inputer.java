@@ -62,23 +62,21 @@ public abstract class Inputer implements NetworkNode {
 			setUpConnections(network, colNum, Layer.V, Type.RS, 0.2, 0.5);
 			// column to the left
 			if (colNum - 1 >= 0) {
-				setUpConnections(network, colNum - 1, Layer.IV, Type.RS, 0.5, 0.5);
-				// setUpConnections(network, colNum - 1, Layer.IV, Type.FS, 0.0,
-				// 0.5);
+				setUpConnections(network, colNum - 1, Layer.IV, Type.RS, 0.2, 0.05);
+				setUpConnections(network, colNum - 1, Layer.IV, Type.FS, 0.8, 0.8);
 
 			}
 			if (colNum + 1 <= totalNumCol - 1) {
-				setUpConnections(network, colNum + 1, Layer.IV, Type.RS, 0.5, 0.5);
-				// setUpConnections(network, colNum + 1, Layer.IV, Type.FS, 0.0,
-				// 0.5);
+				setUpConnections(network, colNum + 1, Layer.IV, Type.RS, 0.2, 0.05);
+				setUpConnections(network, colNum + 1, Layer.IV, Type.FS, 0.8, 0.8);
 			}
 
 			if (colNum - 2 >= 0) {
-				setUpConnections(network, colNum - 2, Layer.IV, Type.FS, 0.2, 0.3);
+				setUpConnections(network, colNum - 2, Layer.IV, Type.FS, 0.2, 0.2);
 
 			}
 			if (colNum + 2 <= totalNumCol) {
-				setUpConnections(network, colNum + 2, Layer.IV, Type.FS, 0.2, 0.3);
+				setUpConnections(network, colNum + 2, Layer.IV, Type.FS, 0.2, 0.2);
 
 			}
 		} else { // all columns

@@ -466,7 +466,8 @@ public class ConsoleSimulator {
 			}
 
 			if (s.getType() == Type.RS || s.getType() == Type.IB) {
-				if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V)) {
+				if ((s.getLayer() == Layer.III) || (s.getLayer() == Layer.V))
+				{
 
 					voltage[s.getColumn()] += s.getVoltage() / 1000;
 					pspPerColumn[s.getColumn()] = pspPerColumn[s.getColumn()]
