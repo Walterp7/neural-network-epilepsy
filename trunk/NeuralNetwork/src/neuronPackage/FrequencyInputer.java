@@ -9,14 +9,14 @@ import networkPackage.SynapseFactory;
 public class FrequencyInputer extends Inputer {
 
 	int interTime;
-	int signalTime;
+	int startTime;
 	Type type;
 	Layer layer = null;
 
 	public final ArrayList<Synapse> inputConnections = new ArrayList<Synapse>();
 	public SynapseFactory synFact = null;
 
-	public FrequencyInputer(int interTime, double value, Type type, Layer layer,
+	public FrequencyInputer(int start, int interTime, double value, Type type, Layer layer,
 			HashMap<String, StpParameters> stpParams,
 			HashMap<String, PSPparameters> pspParams,
 			HashMap<String, PSPparameters> secondaryPspParams) {
@@ -24,6 +24,7 @@ public class FrequencyInputer extends Inputer {
 		this.interTime = interTime;
 		this.type = type;
 		this.layer = layer;
+		this.startTime = start;
 		// this.signalTime = signalTime;
 		synFact = new SynapseFactory(stpParams, pspParams, secondaryPspParams);
 	}
@@ -39,9 +40,9 @@ public class FrequencyInputer extends Inputer {
 
 	@Override
 	public Status advance(double timeStep, double timeofSimulation) {
-		int w = ((int) ((timeofSimulation + 1) / timeStep)) % (int) (interTime / timeStep);
+		int w = ((int) ((timeofSimulation + 1 - startTime) / timeStep)) % (int) (interTime / timeStep);
 
-		if (w < timeStep) {
+		if ((w < timeStep) && (w >= 0)) {
 
 			for (Synapse n : inputConnections) {
 

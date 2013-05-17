@@ -1,0 +1,70 @@
+intensities = [1,5,10,15];
+dt = 0.1;
+
+%RS IB FS LTS
+a = [0.02;0.02;0.1;0.02];
+b = [0.2;0.2;0.2;0.25];
+c = [-65;-65;-55;-65];
+d = [8;4;2;2];
+
+results = zeros(4,size(intensities,2));
+results2 = zeros(4,size(intensities,2));
+maxRate = [1000/160;1000/300;1000/350;100
+for i = 1: size(intensities,2)
+    
+v2=-65*ones(4,1); % Initial values of v
+u2=b.*v2; % Initial values of u
+%firings2=[]; % spike timings
+timings = -10*ones(4,1);
+
+v=-65*ones(4,1); % Initial values of v
+u=b.*v; % Initial values of u
+%firings=[]; % spike timings
+I=intensities(1,i)*ones(4,1); % thalamic input
+for t=1:1000 % simulation of 1000 ms
+  
+    fired=find(v>=30); % indices of spikes
+    %firings=[firings; t+0*fired,fired];
+    results(fired,i) = results(fired,i)+1;
+    v(fired)=c(fired);
+    u(fired)=u(fired)+d(fired);
+    I1=I;
+    v=v+0.5*(0.04*v.^2+5*v+140-u+I1); % step 0.5 ms
+    v=v+0.5*(0.04*v.^2+5*v+140-u+I1); % for numerical
+    u=u+a.*(b.*v-u); % stability
+
+
+    currentTime = t*ones(4,1);
+    fired2=find((v2>=30) & (( currentTime - timings )> maxRate)); % indices of spikes
+    results2(fired2,i) = results2(fired2,i)+1;
+    timings(fired2) =  currentTime(fired2);
+    prefired = find(v2>=30);
+    v2(prefired) = reset(prefired);
+    %firings2=[firings2; t+0*fired2,fired2];
+    v2(fired2)=c(fired2);
+    u2(fired2)=u2(fired2)+d(fired2);
+    I2=I;
+    v2=v2+0.5*(0.04*v2.^2+5*v2+140-u2+I2); % step 0.5 ms
+    v2=v2+0.5*(0.04*v2.^2+5*v2+140-u2+I2); % for numerical
+    u2=u2+a.*(b.*v2-u2); % stability
+end;
+end;
+figure;
+subplot(2,1,1)
+plot(intensities, results(:,1))
+hold on;
+plot(intensities, results(:,2))
+hold on;
+plot(intensities, results(:,3))
+hold on;
+plot(intensities, results(:,4))
+hold off;
+subplot(2,1,2)
+plot(intensities, results2(:,1))
+hold on;
+plot(intensities, results2(:,2))
+hold on;
+plot(intensities, results2(:,3))
+hold on;
+plot(intensities, results2(:,4))
+hold off;

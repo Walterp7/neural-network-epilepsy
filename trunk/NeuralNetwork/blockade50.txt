@@ -1,8 +1,8 @@
 %config file
 %all connection multiplier  inhibitory connection multiplier
 ALL 1
-LTS * * 0.55
-FS * * 0.55
+LTS * * 0.50
+FS * * 0.50
 %lesions
 FALSE
 %input configuration

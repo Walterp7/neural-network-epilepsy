@@ -1,0 +1,38 @@
+%config file
+%all connection multiplier  inhibitory connection multiplier
+ALL 1
+LTS * * 0.8
+FS * * 0.8
+%lesions
+TRUE
+0
+0 VI
+0 V
+1 VI
+1 V
+2 VI
+2 V
+3 VI
+3 V
+4 VI
+4 V
+0 IV
+1 IV
+2 IV
+3 IV
+4 IV
+%input configuration
+% Gaussian 0 3 * -1 -1
+% Step interTime SignalTime value * -1 -1
+% 6hz 155 10 5
+% 20Hz 40 10 5
+%Step 48 2 20 RS 1 1
+%Step 48 2 20 FS 1 1
+Gaussian 0 8 -1 0 1
+Localized 300 2 10 300 RS III 1 1
+%Step 300 1000 2 10 RS * 1 1
+%Pick 100 20 10 RS 1 1
+%Pick 100 20 10 FS 1 1
+%Step 10 5 10 FS 1 1
+%Step 10 5 10 RS 1 1
+%
