@@ -1,0 +1,47 @@
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 314213571 blockade80-onlyV.txt 4 column_config.txt synapse_config.txt  bl80V
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 614283521 blockade80-onlyV.txt 4 column_config.txt synapse_config.txt  bl80V
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 493572345 blockade80-onlyV.txt 4 column_config.txt synapse_config.txt  bl80V
+
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 314213571 blockade80-onlyIII.txt 4 column_config.txt synapse_config.txt  bl80III
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 614283521 blockade80-onlyIII.txt 4 column_config.txt synapse_config.txt  bl80III
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 493572345 blockade80-onlyIII.txt 4 column_config.txt synapse_config.txt  bl80III
+
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 314213571 blockade80-onlyIV.txt 4 column_config.txt synapse_config.txt  bl80IV
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 614283521 blockade80-onlyIV.txt 4 column_config.txt synapse_config.txt  bl80IV
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 493572345 blockade80-onlyIV.txt 4 column_config.txt synapse_config.txt  bl80IV
+
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 314213571 blockade70-onlyV.txt 4 column_config.txt synapse_config.txt  bl70V
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 614283521 blockade70-onlyV.txt 4 column_config.txt synapse_config.txt  bl70V
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 493572345 blockade70-onlyV.txt 4 column_config.txt synapse_config.txt  bl70V
+
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 314213571 blockade70-onlyIII.txt 4 column_config.txt synapse_config.txt  bl70III
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 614283521 blockade70-onlyIII.txt 4 column_config.txt synapse_config.txt  bl70III
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 493572345 blockade70-onlyIII.txt 4 column_config.txt synapse_config.txt  bl70III
+
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 314213571 blockade70-onlyIV.txt 4 column_config.txt synapse_config.txt  bl70IV
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 614283521 blockade70-onlyIV.txt 4 column_config.txt synapse_config.txt  bl70IV
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 493572345 blockade70-onlyIV.txt 4 column_config.txt synapse_config.txt  bl70IV
+
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 314213571 blockade60-onlyV.txt 4 column_config.txt synapse_config.txt  bl60V
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 614283521 blockade60-onlyV.txt 4 column_config.txt synapse_config.txt  bl60V
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 493572345 blockade60-onlyV.txt 4 column_config.txt synapse_config.txt  bl60V
+
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 314213571 blockade60-onlyIII.txt 4 column_config.txt synapse_config.txt  bl60III
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 614283521 blockade60-onlyIII.txt 4 column_config.txt synapse_config.txt  bl60III
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 493572345 blockade60-onlyIII.txt 4 column_config.txt synapse_config.txt  bl60III
+
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 314213571 blockade60-onlyIV.txt 4 column_config.txt synapse_config.txt  bl60IV
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 614283521 blockade60-onlyIV.txt 4 column_config.txt synapse_config.txt  bl60IV
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 493572345 blockade60-onlyIV.txt 4 column_config.txt synapse_config.txt  bl60IV
+
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 314213571 blockade90-onlyV.txt 4 column_config.txt synapse_config.txt  bl90V
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 614283521 blockade90-onlyV.txt 4 column_config.txt synapse_config.txt  bl90V
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 493572345 blockade90-onlyV.txt 4 column_config.txt synapse_config.txt  bl90V
+
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 314213571 blockade90-onlyIII.txt 4 column_config.txt synapse_config.txt  bl90III
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 614283521 blockade90-onlyIII.txt 4 column_config.txt synapse_config.txt  bl90III
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 493572345 blockade90-onlyIII.txt 4 column_config.txt synapse_config.txt  bl90III
+
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 314213571 blockade90-onlyIV.txt 4 column_config.txt synapse_config.txt  bl90IV
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 614283521 blockade90-onlyIV.txt 4 column_config.txt synapse_config.txt  bl90IV
+hostname; cd networkExp/expForPaper/; java   -Xms256m  -Xmx10024m -jar Simulator4T.jar 493572345 blockade90-onlyIV.txt 4 column_config.txt synapse_config.txt  bl90IV
