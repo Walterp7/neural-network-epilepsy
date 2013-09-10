@@ -231,21 +231,24 @@ public class NetworkBuilder {
 				Neuron postSynNeuron = ((Synapse) syn).getPostSynapticNeuron();
 				Neuron preSynNeuron = ((Synapse) syn).getPreSynapticNeuron();
 				if (layersToRemove.containsKey(postSynNeuron.getColNum())) {
-					int colNum = postSynNeuron.getColNum();
-					if (layersToRemove.get(colNum).contains(postSynNeuron.getLayer())) {
+					int removedColNum = postSynNeuron.getColNum();
+					if (layersToRemove.get(removedColNum).contains(postSynNeuron.getLayer())) {
 
-						if (!((preSynNeuron.getColNum() == colNum) && (preSynNeuron.getLayer() == postSynNeuron
+						if (!((preSynNeuron.getColNum() == removedColNum) && (preSynNeuron.getLayer() == postSynNeuron
 								.getLayer()))) { // if the presynaptic neuron
 													// isn't in the layer to be
 													// removed
-							// rewire
-							if (percentRewired > 0) {
+							// rewire (but only excitatory connections)
+							if ((percentRewired > 0)
+									&& (preSynNeuron.getType().equals(Type.RS) || preSynNeuron.getType()
+											.equals(Type.IB))) {
 								int randomNumber = gen.nextInt(101);
 								if (randomNumber <= percentRewired * 100) {
 									// System.out.println("rewire");
-									Type type = preSynNeuron.getType();
-									int colToConnect = preSynNeuron.getColNum();
-									Layer layer = preSynNeuron.getLayer();
+									Type type = postSynNeuron.getType();
+									int colToConnect = removedColNum + 2 * gen.nextInt(2) - 1;
+									// System.out.println(colToConnect);
+									Layer layer = postSynNeuron.getLayer();
 									Neuron newPostSynNeuron = net.getColumn(colToConnect).getPool(layer)
 											.getTypePool(type)
 											.getRandomNeuron(gen);
