@@ -58,7 +58,8 @@ public class InputBuilder {
 							layer = Layer.valueOf(layerString);
 						}
 
-						System.out.println("inter " + interTime + " signal " + signalTime + " value " + value);
+						// System.out.println("inter " + interTime + " signal "
+						// + signalTime + " value " + value);
 						newInput = new FrequencyInputer(startTime, interTime, value, type, layer, stpParams, pspParams,
 								secondaryPspParams);
 					} else {
@@ -72,6 +73,7 @@ public class InputBuilder {
 									.parseDouble(parsedLine[wordIndex++]);
 							newInput = new PickInputer(startTime, signalTime,
 									value, stpParams, pspParams, secondaryPspParams);
+
 						} else {
 							if (parsedLine[wordIndex].equals("Constant")) {
 								wordIndex++;
@@ -120,7 +122,8 @@ public class InputBuilder {
 				}
 
 				int colNum = Integer.parseInt(parsedLine[wordIndex++]);
-
+				System.out.println("input connected to: ");
+				System.out.println(colNum);
 				newInput.connect(colNum, net);
 
 				net.addInput(newInput);
