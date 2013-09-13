@@ -23,13 +23,14 @@ public class NetworkBuilder {
 
 	private int totalColumnNumber = 0;
 	List<Integer> layersInColumn = new ArrayList<Integer>();
-	private double weightMultiplier = 1;
-	private double fsInhMultiplier = 1;
-	private double ltsInhMultiplier = 1;
-	private Layer layerToMultiplyFS = null;
-	private Layer layerToMultiplyLTS = null;
-	private int colNumFS = -1;
-	private int colNumLTS = -1;
+	// private double weightMultiplier = 1;
+	// private double fsInhMultiplier = 1;
+	// private double ltsInhMultiplier = 1;
+	// private Layer layerToMultiplyFS = null;
+	// private Layer layerToMultiplyLTS = null;
+	// private int colNumFS = -1;
+	// private int colNumLTS = -1;
+	List<ModifyWeightPair> modifDescriptions = new ArrayList<NetworkBuilder.ModifyWeightPair>();
 	private double percentRewired;
 
 	// List<ColLayerPair> layersToRemove = new ArrayList<ColLayerPair>();
@@ -65,31 +66,22 @@ public class NetworkBuilder {
 		while ((newLine.charAt(0) != '%')) {
 
 			parsedLine = newLine.trim().split("\\s+");
+			ModifyWeightPair newPair = new ModifyWeightPair();
 			if (parsedLine[0].equals("ALL")) {
-				weightMultiplier = Double.parseDouble(parsedLine[1]);
+				newPair.multiplyer = Double.parseDouble(parsedLine[1]);
 			} else {
-				if (parsedLine[0].equals("FS")) {
-					fsInhMultiplier = Double.parseDouble(parsedLine[3]);
-					if (!parsedLine[1].equals("*")) {
-						colNumFS = Integer.parseInt(parsedLine[1]);
-					}
+				newPair.type = Type.valueOf(parsedLine[0]);
 
-					if (!parsedLine[2].equals("*")) {
-						layerToMultiplyFS = Layer.valueOf(parsedLine[2]);
-					}
-				} else {
-					if (parsedLine[0].equals("LTS")) {
-						ltsInhMultiplier = Double.parseDouble(parsedLine[3]);
-						if (!parsedLine[1].equals("*")) {
-							colNumLTS = Integer.parseInt(parsedLine[1]);
-						}
-						if (!parsedLine[2].equals("*")) {
-							layerToMultiplyLTS = Layer.valueOf(parsedLine[2]);
-						}
-					}
-
+				if (!parsedLine[1].equals("*")) {
+					newPair.colNum = Integer.parseInt(parsedLine[1]);
 				}
+
+				if (!parsedLine[2].equals("*")) {
+					newPair.layer = Layer.valueOf(parsedLine[2]);
+				}
+
 			}
+			modifDescriptions.add(newPair);
 			newLine = inSimConf.readLine();
 		}
 
@@ -174,51 +166,67 @@ public class NetworkBuilder {
 	}
 
 	public void modifyWeights(Network net) {
-		// System.out.println("modifying weights");
-		if ((weightMultiplier != 1) || (fsInhMultiplier != 1) || (ltsInhMultiplier != 1)) {
-			for (Neuron neuron : net.getAllNeurons()) {
-				double multiplier = weightMultiplier;
-				if ((fsInhMultiplier != 1) && (neuron.getType() == Type.FS)) {
-					int colToMultiply = colNumFS;
-					Layer layerToMultiply = layerToMultiplyFS;
-					if (colNumFS == -1) {
-						colToMultiply = neuron.getColNum();
-					}
-					if (layerToMultiplyFS == null) {
-						layerToMultiply = neuron.getLayer();
 
-					}
+		for (ModifyWeightPair desc : modifDescriptions) {
+			if (desc.type != null) {
+				System.out.println("modifying weights");
+				List<NeuronTypePool> poolsToModify = new ArrayList<NeuronTypePool>();
+				if (desc.colNum > -1) {
+					System.out.println("column " + desc.colNum);
+					if (desc.layer != null) {
+						poolsToModify.add(net.getColumn(desc.colNum).getPool(desc.layer).getTypePool(desc.type));
+					} else {
+						for (NeuronPool nPool : net.getColumn(desc.colNum).getPools()) {
 
-					if ((neuron.getColNum() == colToMultiply) && (neuron.getLayer() == layerToMultiply)) {
-						multiplier = multiplier * fsInhMultiplier;
+							poolsToModify.add(nPool.getTypePool(desc.type));
+						}
+					}
+					for (NeuronTypePool tPool : poolsToModify) {
+						for (Neuron neur : tPool.getNeurons()) {
+							for (Synapse syn : neur.getNeuronConnections()) {
+								syn.multiplyWeight(desc.multiplyer);
+
+							}
+						}
+					}
+				} else {
+					for (int colNum = 0; colNum < net.getNumberOfColumns(); colNum++) {
+						System.out.println("column " + colNum);
+						if (desc.layer != null) {
+							poolsToModify.add(net.getColumn(colNum).getPool(desc.layer).getTypePool(desc.type));
+						} else {
+							for (NeuronPool nPool : net.getColumn(colNum).getPools()) {
+
+								poolsToModify.add(nPool.getTypePool(desc.type));
+							}
+						}
+						for (NeuronTypePool tPool : poolsToModify) {
+							for (Neuron neur : tPool.getNeurons()) {
+								for (Synapse syn : neur.getNeuronConnections()) {
+									syn.multiplyWeight(desc.multiplyer);
+
+								}
+							}
+						}
+
 					}
 
 				}
-				if ((ltsInhMultiplier != 1) && (neuron.getType() == Type.LTS)) {
 
-					int colToMultiply = colNumLTS;
-					Layer layerToMultiply = layerToMultiplyLTS;
-					if (colNumLTS == -1) {
-						colToMultiply = neuron.getColNum();
-					}
-					if (layerToMultiplyLTS == null) {
-						layerToMultiply = neuron.getLayer();
+			} else {
+				if (desc.multiplyer != 1) {
+					List<Neuron> allNeurons = net.getAllNeurons();
+					for (Neuron neur : allNeurons) {
+						for (Synapse syn : neur.getNeuronConnections()) {
+							syn.multiplyWeight(desc.multiplyer);
 
-					}
-
-					if ((neuron.getColNum() == colToMultiply) && (neuron.getLayer() == layerToMultiply)) {
-						multiplier = multiplier * ltsInhMultiplier;
-					}
-
-				}
-				if (multiplier != 1) {
-					for (Synapse syn : neuron.getNeuronConnections()) {
-						syn.multiplyWeight(multiplier);
-
+						}
 					}
 				}
 			}
+
 		}
+
 	}
 
 	private void makeLessions(Network net) {
@@ -321,6 +329,13 @@ public class NetworkBuilder {
 		inBuild.setInputs(inputs, stpParams, pspParams, secondaryPspParams, net, inDescriptor, totalTime);
 
 		return net;
+	}
+
+	class ModifyWeightPair {
+		int colNum = -1;
+		Layer layer = null;
+		Type type = null;
+		double multiplyer;
 	}
 
 }

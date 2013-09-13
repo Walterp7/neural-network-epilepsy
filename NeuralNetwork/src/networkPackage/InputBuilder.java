@@ -122,8 +122,7 @@ public class InputBuilder {
 				}
 
 				int colNum = Integer.parseInt(parsedLine[wordIndex++]);
-				System.out.println("input connected to: ");
-				System.out.println(colNum);
+
 				newInput.connect(colNum, net);
 
 				net.addInput(newInput);
