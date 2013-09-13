@@ -69,7 +69,6 @@ public class ConsoleSimRunner {
 		}
 		if (cmd.hasOption("2col")) {
 			colConfigs.put(2, cmd.getOptionValue("2col"));
-			System.out.println("2");
 
 		}
 		if (cmd.hasOption("3col")) {
