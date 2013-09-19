@@ -97,13 +97,6 @@ public class ColumnBuilder {
 				double newWeight = Double.parseDouble(parsedLine[6]);
 				double std = Double.parseDouble(parsedLine[7]);
 
-				// if ((type == Type.LTS)) {
-				// newWeight = newWeight * ltsMultiplier;
-				// }
-				//
-				// if ((type == Type.LTS) || (type == Type.FS)) {
-				// newWeight = newWeight * fsMultiplier;
-				// }
 				descr.setDescription(targetColNum, layerName, targetLayer, type,
 						targetType, newWeight, std, prob);
 

@@ -29,15 +29,6 @@ public class Synapse implements NetworkNode { // connects node with neuron
 		y = 0;
 		u = 0;
 		pspParam = pspParameters;
-		// if (((preSynaptic == null) || (preSynaptic.getType() == Type.RS
-		// && preSynaptic.getLayer() == Layer.IV))
-		// && postSynaptic.getType() == Type.RS
-		// && postSynaptic.getLayer() == Layer.V) {
-		// System.out
-		// .println("" + preSynaptic.getColNum() + " " + postSynaptic.getType()
-		// + " "
-		// + postSynaptic.getLayer() + " " + postSynaptic.getColNum());
-		// }
 
 	}
 
@@ -60,19 +51,7 @@ public class Synapse implements NetworkNode { // connects node with neuron
 			double trec = stpParam.getTrec();
 			double U = stpParam.getU();
 			double maxY = stpParam.getMaxY();
-			// if ((!noted) && (dt < 0.29) && (preSynapticNeuron != null) &&
-			// (!preSynapticNeuron.getType().equals(Type.FS))) {
-			// noted = true;
-			// System.out.println("---------------------------------------------");
-			// System.out.println(" dt =" + dt + "< 1");
-			// System.out.println(" pretsynaptic neurID " +
-			// preSynapticNeuron.getId() + " type "
-			// + preSynapticNeuron.getType());
-			// System.out.println("a " + preSynapticNeuron.getA() + " b " +
-			// preSynapticNeuron.getB() + " c " + preSynapticNeuron.getC() +
-			// " d " +
-			// preSynapticNeuron.getD());
-			// }
+
 			u = u * Math.exp(-dt / tfac) * (1 - U) + U;
 			double xtmp = (x * Math.exp(-dt / trec) + y * ti * (Math.exp(-dt /
 					trec) - Math.exp(-dt / ti))
@@ -191,4 +170,11 @@ public class Synapse implements NetworkNode { // connects node with neuron
 		synapseWeight = synapseWeight * value;
 	}
 
+	public StpParameters getSTP() {
+		return stpParam;
+	}
+
+	public PSPparameters getPSP() {
+		return pspParam;
+	}
 }

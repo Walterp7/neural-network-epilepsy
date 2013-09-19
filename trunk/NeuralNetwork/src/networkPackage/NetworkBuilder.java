@@ -22,24 +22,19 @@ import neuronPackage.Type;
 public class NetworkBuilder {
 
 	private int totalColumnNumber = 0;
-	List<Integer> layersInColumn = new ArrayList<Integer>();
-	// private double weightMultiplier = 1;
-	// private double fsInhMultiplier = 1;
-	// private double ltsInhMultiplier = 1;
-	// private Layer layerToMultiplyFS = null;
-	// private Layer layerToMultiplyLTS = null;
-	// private int colNumFS = -1;
-	// private int colNumLTS = -1;
-	List<ModifyWeightPair> modifDescriptions = new ArrayList<NetworkBuilder.ModifyWeightPair>();
+	private final List<Integer> layersInColumn = new ArrayList<Integer>();
+	private final List<ModifyWeightPair> modifDescriptions = new ArrayList<NetworkBuilder.ModifyWeightPair>();
 	private double percentRewired;
+	private double multiplyerRewired;
+	private boolean increaseExcitation = false;
 
 	// List<ColLayerPair> layersToRemove = new ArrayList<ColLayerPair>();
-	HashMap<Integer, List> layersToRemove = new HashMap<Integer, List>();
+	private final HashMap<Integer, List> layersToRemove = new HashMap<Integer, List>();
 
-	List<String> inputs = new ArrayList<String>();
-	HashMap<String, StpParameters> stpParams = new HashMap<String, StpParameters>();
-	HashMap<String, PSPparameters> pspParams = new HashMap<String, PSPparameters>();
-	HashMap<String, PSPparameters> secondaryPspParams = new HashMap<String, PSPparameters>();
+	private final List<String> inputs = new ArrayList<String>();
+	private final HashMap<String, StpParameters> stpParams = new HashMap<String, StpParameters>();
+	private final HashMap<String, PSPparameters> pspParams = new HashMap<String, PSPparameters>();
+	private final HashMap<String, PSPparameters> secondaryPspParams = new HashMap<String, PSPparameters>();
 
 	void loadSimulationConfig(String simConfigPath, String synapseConfigPath, ConfigurationUnit config)
 			throws IOException {
@@ -93,7 +88,9 @@ public class NetworkBuilder {
 		if (!newLine.startsWith("FALSE")) {
 
 			newLine = inSimConf.readLine();
-			percentRewired = Double.parseDouble(newLine);
+			parsedLine = newLine.split("\\s+");
+			percentRewired = Double.parseDouble(parsedLine[0]);
+			multiplyerRewired = Double.parseDouble(parsedLine[0]);
 			newLine = inSimConf.readLine();
 			while ((newLine.charAt(0) != '%')) {
 				parsedLine = newLine.trim().split("\\s+");
@@ -113,6 +110,12 @@ public class NetworkBuilder {
 			newLine = inSimConf.readLine();
 
 		}
+		if (!newLine.startsWith("FALSE")) {
+
+			increaseExcitation = true;
+
+		}
+		newLine = inSimConf.readLine();
 		// lines with description of inputs
 		while ((newLine != null)) {
 			if (!(newLine.charAt(0) == '%')) {
@@ -261,8 +264,10 @@ public class NetworkBuilder {
 											.getTypePool(type)
 											.getRandomNeuron(gen);
 									((Synapse) syn).setPostSynapticNeuron(newPostSynNeuron);
+									((Synapse) syn).multiplyWeight(multiplyerRewired);
+
 								} else {
-									// System.out.println("not rewire");
+									System.out.println("not rewire");
 									synapsesToRemove.add((Synapse) syn);
 								}
 
@@ -300,6 +305,32 @@ public class NetworkBuilder {
 
 	}
 
+	private void increaseExcitation(Network net) {
+		System.out.println("Inside");
+		Random gen = new Random();
+		List<NetworkNode> allSynapses = new ArrayList<NetworkNode>(net.getAllSynapses());
+
+		for (NetworkNode synapse : allSynapses) {
+			Synapse syn = (Synapse) synapse;
+			if ((syn.getPreSynapticNeuron().getType() == Type.RS)
+					|| (syn.getPreSynapticNeuron().getType() == Type.IB)) {
+				int colNum = syn.getPostSynapticNeuron().getColNum();
+				if ((colNum > 0) && (colNum < 4) && (!syn.getPostSynapticNeuron().getLayer().equals(Layer.III))) {
+					if (gen.nextDouble() > 0.5) {
+						Synapse newSynapse = new Synapse(syn.getWeight(), syn.getPreSynapticNeuron(),
+								syn.getPostSynapticNeuron(), syn.getSTP(), syn.getPSP());
+						newSynapse.setTimeDelay(syn.getTimeDelay() + gen.nextInt(syn.getTimeDelay() / 2 + 1)
+								+ 1);
+
+						syn.getPreSynapticNeuron().addSynapse(newSynapse);
+						net.addConnection(newSynapse);
+					}
+				}
+			}
+
+		}
+	}
+
 	public Network createNetwork(String simConfigFile, String synapseConfigFile, long seed, ConfigurationUnit config,
 			double timestep,
 			double totalTime,
@@ -323,7 +354,9 @@ public class NetworkBuilder {
 		}
 		net.setAllNodes();
 		makeLessions(net);
-
+		if (increaseExcitation) {
+			increaseExcitation(net);
+		}
 		InputBuilder inBuild = new InputBuilder();
 
 		inBuild.setInputs(inputs, stpParams, pspParams, secondaryPspParams, net, inDescriptor, totalTime);
