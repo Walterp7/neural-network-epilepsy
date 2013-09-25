@@ -27,7 +27,7 @@ public class NetworkBuilder {
 	private double percentRewired;
 	private double multiplyerRewired;
 	private boolean increaseExcitation = false;
-
+	private boolean increaseExcitation2Lts = false;
 	// List<ColLayerPair> layersToRemove = new ArrayList<ColLayerPair>();
 	private final HashMap<Integer, List> layersToRemove = new HashMap<Integer, List>();
 
@@ -113,6 +113,16 @@ public class NetworkBuilder {
 		if (!newLine.startsWith("FALSE")) {
 
 			increaseExcitation = true;
+
+		}
+		newLine = inSimConf.readLine();
+		while ((newLine.charAt(0) == '%')) {
+			newLine = inSimConf.readLine();
+
+		}
+		if (!newLine.startsWith("FALSE")) {
+
+			increaseExcitation2Lts = true;
 
 		}
 		newLine = inSimConf.readLine();
@@ -232,27 +242,32 @@ public class NetworkBuilder {
 
 	}
 
-	private void makeLessions(Network net) {
+	private void makeLessions(Network net, Random gen) {
 		if (!layersToRemove.isEmpty()) {
 			List<Neuron> neuronsToRemove = new LinkedList<Neuron>();
 			List<Synapse> synapsesToRemove = new LinkedList<Synapse>();
 			System.out.println("makeLessions");
-			Random gen = new Random(2984336201l);
+
 			for (NetworkNode syn : net.getAllSynapses()) {
 				Neuron postSynNeuron = ((Synapse) syn).getPostSynapticNeuron();
 				Neuron preSynNeuron = ((Synapse) syn).getPreSynapticNeuron();
 				if (layersToRemove.containsKey(postSynNeuron.getColNum())) {
 					int removedColNum = postSynNeuron.getColNum();
-					if (layersToRemove.get(removedColNum).contains(postSynNeuron.getLayer())) {
+					Layer postLayer = postSynNeuron.getLayer();
+					if (layersToRemove.get(removedColNum).contains(postLayer)) {
 
-						if (!((preSynNeuron.getColNum() == removedColNum) && (preSynNeuron.getLayer() == postSynNeuron
-								.getLayer()))) { // if the presynaptic neuron
-													// isn't in the layer to be
-													// removed
+						boolean isPreNeurNotToBeRemoved = (preSynNeuron == null)
+								|| (!((preSynNeuron.getColNum() == removedColNum) && (preSynNeuron.getLayer() == postLayer)));
+
+						if (isPreNeurNotToBeRemoved) { // if
+														// the
+														// presynaptic
+														// neuron
+							// isn't in the layer to be
+							// removed
 							// rewire (but only excitatory connections)
 							if ((percentRewired > 0)
-									&& (preSynNeuron.getType().equals(Type.RS) || preSynNeuron.getType()
-											.equals(Type.IB))) {
+									&& (((Synapse) syn).getWeight() > 0)) {
 								int randomNumber = gen.nextInt(101);
 								if (randomNumber <= percentRewired * 100) {
 									// System.out.println("rewire");
@@ -267,7 +282,7 @@ public class NetworkBuilder {
 									((Synapse) syn).multiplyWeight(multiplyerRewired);
 
 								} else {
-									System.out.println("not rewire");
+
 									synapsesToRemove.add((Synapse) syn);
 								}
 
@@ -300,20 +315,19 @@ public class NetworkBuilder {
 			for (Synapse syn : synapsesToRemove) {
 				net.removeSynapse(syn);
 			}
-
+			System.out.println("lesions done");
 		}
 
 	}
 
-	private void increaseExcitation(Network net) {
-		System.out.println("Inside");
-		Random gen = new Random();
+	private void increaseExcitation(Network net, Random gen) {
+		System.out.println("increasing excitation");
+
 		List<NetworkNode> allSynapses = new ArrayList<NetworkNode>(net.getAllSynapses());
 
 		for (NetworkNode synapse : allSynapses) {
 			Synapse syn = (Synapse) synapse;
-			if ((syn.getPreSynapticNeuron().getType() == Type.RS)
-					|| (syn.getPreSynapticNeuron().getType() == Type.IB)) {
+			if (syn.getWeight() > 0) {
 				int colNum = syn.getPostSynapticNeuron().getColNum();
 				if ((colNum > 0) && (colNum < 4) && (!syn.getPostSynapticNeuron().getLayer().equals(Layer.III))) {
 					if (gen.nextDouble() > 0.5) {
@@ -321,10 +335,37 @@ public class NetworkBuilder {
 								syn.getPostSynapticNeuron(), syn.getSTP(), syn.getPSP());
 						newSynapse.setTimeDelay(syn.getTimeDelay() + gen.nextInt(syn.getTimeDelay() / 2 + 1)
 								+ 1);
+						if (!(syn.getPreSynapticNeuron() == null)) {
+							syn.getPreSynapticNeuron().addSynapse(newSynapse);
+							net.addConnection(newSynapse);
+						}
 
-						syn.getPreSynapticNeuron().addSynapse(newSynapse);
-						net.addConnection(newSynapse);
 					}
+				}
+			}
+
+		}
+	}
+
+	private void increaseExcitation2Lts(Network net, Random gen) {
+		System.out.println("increasing lts excitation");
+
+		List<NetworkNode> allSynapses = new ArrayList<NetworkNode>(net.getAllSynapses());
+
+		for (NetworkNode synapse : allSynapses) {
+			Synapse syn = (Synapse) synapse;
+			if ((syn.getWeight() > 0) && (syn.getPostSynapticNeuron().getType() == Type.LTS)) {
+				int colNum = syn.getPostSynapticNeuron().getColNum();
+				if ((colNum > 0) && (colNum < 4) && (!syn.getPostSynapticNeuron().getLayer().equals(Layer.III))) {
+
+					Synapse newSynapse = new Synapse(syn.getWeight(), syn.getPreSynapticNeuron(),
+							syn.getPostSynapticNeuron(), syn.getSTP(), syn.getPSP());
+					newSynapse.setTimeDelay(syn.getTimeDelay() + gen.nextInt(syn.getTimeDelay() / 2 + 1)
+							+ 1);
+
+					syn.getPreSynapticNeuron().addSynapse(newSynapse);
+					net.addConnection(newSynapse);
+
 				}
 			}
 
@@ -353,13 +394,19 @@ public class NetworkBuilder {
 			colBuilder.connectNetwork(net, stpParams, pspParams, secondaryPspParams, timestep);
 		}
 		net.setAllNodes();
-		makeLessions(net);
-		if (increaseExcitation) {
-			increaseExcitation(net);
-		}
+
 		InputBuilder inBuild = new InputBuilder();
 
 		inBuild.setInputs(inputs, stpParams, pspParams, secondaryPspParams, net, inDescriptor, totalTime);
+		Random gen = new Random(seed);
+		makeLessions(net, gen);
+		if (increaseExcitation) {
+			increaseExcitation(net, gen);
+		}
+
+		if (increaseExcitation2Lts) {
+			increaseExcitation2Lts(net, gen);
+		}
 
 		return net;
 	}
