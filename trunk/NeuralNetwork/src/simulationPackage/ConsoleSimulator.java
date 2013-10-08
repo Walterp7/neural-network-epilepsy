@@ -36,14 +36,14 @@ public class ConsoleSimulator {
 
 	// FileWriter outFileEEG;
 	FileWriter outFileLFP;
-	FileWriter outFileLFP_psp;
+
 	FileWriter outFileIPSP;
 	FileWriter outFileEPSP;
 	FileWriter outFileEEG;
 	FileWriter outFileActivity;
 
 	XYSeries[] seriesLFP;
-	XYSeries[] seriesLFP_psp;
+
 	XYSeries seriesPSP = new XYSeries("Simulated EEG");
 	XYSeries seriesPSPAll = new XYSeries("Simulated EEG");
 
@@ -168,8 +168,8 @@ public class ConsoleSimulator {
 				System.out.println("Network built");
 				allSynapses = net.getAllSynapses();
 				allNeurons = net.getAllNeurons();
-				System.out.println(allNeurons.size());
-				System.out.println(allSynapses.size());
+				// System.out.println(allNeurons.size());
+				// System.out.println(allSynapses.size());
 				ArrayList<Integer> numOfNeuronsInColumn = net.getNumberOfNeuronsInColumn();
 
 				numOfColsS = numOfNeuronsInColumn.size();
@@ -264,20 +264,15 @@ public class ConsoleSimulator {
 			seriesReferenceLine.add(totalTime, -75);
 
 			final XYSeriesCollection[] datasetLFP = new XYSeriesCollection[numOfCols];
-			final XYSeriesCollection[] datasetLFP_psp = new XYSeriesCollection[numOfCols];
+
 			double maxLFPplot = -1000000;
 			double minLFPplot = 30;
-			double maxLFPPspPlot = -1000000;
-			double minLFPPspPlot = 30;
 
 			for (int i = 0; i < numOfCols; i++) {
 
 				datasetLFP[i] = new XYSeriesCollection();
 				datasetLFP[i].addSeries(seriesReferenceLine);
 				datasetLFP[i].addSeries(seriesLFP[i]);
-				datasetLFP_psp[i] = new XYSeriesCollection();
-				datasetLFP_psp[i].addSeries(seriesReferenceLine);
-				datasetLFP_psp[i].addSeries(seriesLFP_psp[i]);
 
 				if (seriesLFP[i].getMaxY() > maxLFPplot) {
 					maxLFPplot = seriesLFP[i].getMaxY();
@@ -286,12 +281,6 @@ public class ConsoleSimulator {
 					minLFPplot = seriesLFP[i].getMinY();
 				}
 
-				if (seriesLFP_psp[i].getMaxY() > maxLFPPspPlot) {
-					maxLFPPspPlot = seriesLFP_psp[i].getMaxY();
-				}
-				if (minLFPPspPlot > seriesLFP_psp[i].getMinY()) {
-					minLFPPspPlot = seriesLFP_psp[i].getMinY();
-				}
 			}
 
 			for (int i = 0; i < numOfCols; i++) {
@@ -308,14 +297,6 @@ public class ConsoleSimulator {
 						maxLFPplot, true, isStimulated);
 				lfpPlot.save(pathName);
 
-				LinePlotChart lfpPspPlot = new LinePlotChart("Local Field Potential- PSP" + " col" + (i + 1) + " "
-						+ simName,
-						"lfp_psp" + i);
-				lfpPspPlot.draw(datasetLFP_psp[i],
-						" Local Field Potential - PSP (col " + (i + 1) + ")", true,
-						minLFPPspPlot,
-						maxLFPPspPlot, true, isStimulated);
-				lfpPspPlot.save(pathName);
 			}
 
 			final XYSeriesCollection datasetEEG = new XYSeriesCollection();
@@ -333,7 +314,7 @@ public class ConsoleSimulator {
 			eegPlotAll.save(pathName);
 
 			outFileLFP.close();
-			outFileLFP_psp.close();
+
 			outFileIPSP.close();
 			outFileEPSP.close();
 			outFileEEG.close();
@@ -354,14 +335,13 @@ public class ConsoleSimulator {
 
 	private void initializeFiles(String pathName, String simName, int numOfColsS) throws IOException {
 		outFileLFP = new FileWriter(pathName + "/lfp_" + simName + ".csv");
-		outFileLFP_psp = new FileWriter(pathName + "/lfp_psp_" + simName + ".csv");
+
 		outFileIPSP = new FileWriter(pathName + "/ipsp_" + simName + ".csv");
 		outFileEPSP = new FileWriter(pathName + "/epsp_" + simName + ".csv");
 		outFileEEG = new FileWriter(pathName + "/eeg_" + simName + ".csv");
 		outFileActivity = new FileWriter(pathName + "/activity_" + simName + ".csv");
 
 		seriesLFP = new XYSeries[numOfColsS];
-		seriesLFP_psp = new XYSeries[numOfColsS];
 
 		for (int i = 0; i < numOfColsS; i++) {
 			XYSeries[] newDataSeries = new XYSeries[4];
@@ -372,7 +352,7 @@ public class ConsoleSimulator {
 
 			dataSeries.add(newDataSeries);
 			seriesLFP[i] = new XYSeries("Local Field Potential (col " + (i + 1) + ")");
-			seriesLFP_psp[i] = new XYSeries("Local Field Potential - PSP (col " + (i + 1) + ")");
+
 		}
 
 	}
@@ -515,14 +495,12 @@ public class ConsoleSimulator {
 			outFileLFP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
 			for (int i = 0; i < numOfCols; i++) {
 				seriesLFP[i].add(timeOfSimulation, voltage[i]);
-				seriesLFP_psp[i].add(timeOfSimulation, pspPerColumn[i]);
+
 				outFileLFP.write(","
 						+ MessageFormat.format("{0,number,#.#####}", voltage[i]));
-				outFileLFP_psp.write(","
-						+ MessageFormat.format("{0,number,#.#####}", pspPerColumn[i]));
+
 			}
 			outFileLFP.write("\n");
-			outFileLFP_psp.write("\n");
 
 		} catch (IOException e) {
 			// TODO Auto-generated catch block

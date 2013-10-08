@@ -1,19 +1,17 @@
 package neuronPackage;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import networkPackage.Network;
 import networkPackage.SynapseFactory;
 
-public class FrequencyInputer extends Inputer {
+public class FrequencyInputer extends ThalamicInputer {
 
 	int interTime;
 	int startTime;
 	Type type;
 	Layer layer = null;
 
-	public final ArrayList<Synapse> inputConnections = new ArrayList<Synapse>();
 	public SynapseFactory synFact = null;
 
 	public FrequencyInputer(int start, int interTime, double value, Type type, Layer layer,
