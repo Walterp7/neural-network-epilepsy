@@ -1,16 +1,15 @@
 package neuronPackage;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 import networkPackage.Network;
 import networkPackage.SynapseFactory;
 
-public class PickInputer extends Inputer {
+public class PickInputer extends ThalamicInputer {
 
 	int startTime;
 	int signalTime;
-	protected final ArrayList<Synapse> inputConnections = new ArrayList<Synapse>();
+
 	SynapseFactory synFact = null;
 
 	boolean flag = false;

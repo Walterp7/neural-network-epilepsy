@@ -57,25 +57,6 @@ public class Network {
 		}
 	}
 
-	/*
-	 * public List<Status> nextStep(double timStep, double timeofSimulation)
-	 * throws InterruptedException, BrokenBarrierException { stats.clear(); int
-	 * numThreads = 4;
-	 * 
-	 * barrier = new CyclicBarrier(numThreads, new Runnable() {
-	 * 
-	 * @Override public void run() { for (Neuron nod : allNeurons) {
-	 * 
-	 * nod.setCurrentInput();
-	 * 
-	 * } } });
-	 * 
-	 * int totalLength = allNodes.size(); int size = totalLength / numThreads +
-	 * 1; for (int i = 0; i < numThreads; i++) { new Thread(new
-	 * Worker(allNodes.subList(i * size, Math.min((i + 1) * size, totalLength -
-	 * 1)), timStep, timeofSimulation)).start(); } // waitUntilDone();
-	 * barrier.await(); return stats; }
-	 */
 	void addNeuron(Neuron newNode) {
 		allNodes.add(newNode);
 	}
@@ -91,7 +72,6 @@ public class Network {
 
 	public void addConnection(NetworkNode newSynapse) {
 
-		// allNodes.add(newSynapse);
 		allSynapses.add(newSynapse);
 
 	}
@@ -102,6 +82,10 @@ public class Network {
 
 	public List<Neuron> getAllNeurons() {
 		return allNeurons;
+	}
+
+	public List<Inputer> getAllInputs() {
+		return allInputs;
 	}
 
 	public List<NetworkNode> getAllNodes() {

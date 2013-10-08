@@ -11,12 +11,14 @@ import java.util.Random;
 
 import networkGUI.ColDescr;
 import networkGUI.ConfigurationUnit;
+import neuronPackage.Inputer;
 import neuronPackage.Layer;
 import neuronPackage.NetworkNode;
 import neuronPackage.Neuron;
 import neuronPackage.PSPparameters;
 import neuronPackage.StpParameters;
 import neuronPackage.Synapse;
+import neuronPackage.ThalamicInputer;
 import neuronPackage.Type;
 
 public class NetworkBuilder {
@@ -35,6 +37,8 @@ public class NetworkBuilder {
 	private final HashMap<String, StpParameters> stpParams = new HashMap<String, StpParameters>();
 	private final HashMap<String, PSPparameters> pspParams = new HashMap<String, PSPparameters>();
 	private final HashMap<String, PSPparameters> secondaryPspParams = new HashMap<String, PSPparameters>();
+
+	private double timeStep = 0.1;
 
 	void loadSimulationConfig(String simConfigPath, String synapseConfigPath, ConfigurationUnit config)
 			throws IOException {
@@ -182,7 +186,7 @@ public class NetworkBuilder {
 
 		for (ModifyWeightPair desc : modifDescriptions) {
 			if (desc.type != null) {
-				System.out.println("modifying weights");
+				// System.out.println("modifying weights");
 				List<NeuronTypePool> poolsToModify = new ArrayList<NeuronTypePool>();
 				if (desc.colNum > -1) {
 					System.out.println("column " + desc.colNum);
@@ -278,6 +282,16 @@ public class NetworkBuilder {
 									Neuron newPostSynNeuron = net.getColumn(colToConnect).getPool(layer)
 											.getTypePool(type)
 											.getRandomNeuron(gen);
+
+									int dt;
+
+									if (preSynNeuron == null) {
+										dt = ((Synapse) syn).getTimeDelay();
+									} else {
+										dt = calculateDelay(newPostSynNeuron.getCoordinates(),
+												preSynNeuron.getCoordinates(), timeStep);
+									}
+									((Synapse) syn).setTimeDelay(dt);
 									((Synapse) syn).setPostSynapticNeuron(newPostSynNeuron);
 									((Synapse) syn).multiplyWeight(multiplyerRewired);
 
@@ -315,19 +329,43 @@ public class NetworkBuilder {
 			for (Synapse syn : synapsesToRemove) {
 				net.removeSynapse(syn);
 			}
-			System.out.println("lesions done");
+			// System.out.println("lesions done");
 		}
 
 	}
 
 	private void increaseExcitation(Network net, Random gen) {
-		System.out.println("increasing excitation");
+		// System.out.println("increasing excitation");
 
 		List<NetworkNode> allSynapses = new ArrayList<NetworkNode>(net.getAllSynapses());
 
+		for (Inputer in : net.getAllInputs()) {
+			List<Synapse> newSynapses = new ArrayList<Synapse>();
+			if (in instanceof ThalamicInputer) {
+				for (Synapse syn : ((ThalamicInputer) in).getConnections()) {
+					int colNum = syn.getPostSynapticNeuron().getColNum();
+					if ((colNum > 0) && (colNum < 4) && (!syn.getPostSynapticNeuron().getLayer().equals(Layer.III))) {
+						if (gen.nextDouble() > 0.5) {
+							Synapse newSynapse = new Synapse(syn.getWeight(), null,
+									syn.getPostSynapticNeuron(), syn.getSTP(), syn.getPSP());
+							newSynapse.setTimeDelay(syn.getTimeDelay() + gen.nextInt(syn.getTimeDelay() / 2 + 1)
+									+ 1);
+							newSynapses.add(newSynapse);
+
+							net.addConnection(newSynapse);
+
+						}
+					}
+				}
+				for (Synapse s : newSynapses) {
+					((ThalamicInputer) in).getConnections().add(s);
+				}
+			}
+		}
+
 		for (NetworkNode synapse : allSynapses) {
 			Synapse syn = (Synapse) synapse;
-			if (syn.getWeight() > 0) {
+			if ((syn.getWeight() > 0) && !(syn.getPreSynapticNeuron() == null)) {
 				int colNum = syn.getPostSynapticNeuron().getColNum();
 				if ((colNum > 0) && (colNum < 4) && (!syn.getPostSynapticNeuron().getLayer().equals(Layer.III))) {
 					if (gen.nextDouble() > 0.5) {
@@ -335,10 +373,9 @@ public class NetworkBuilder {
 								syn.getPostSynapticNeuron(), syn.getSTP(), syn.getPSP());
 						newSynapse.setTimeDelay(syn.getTimeDelay() + gen.nextInt(syn.getTimeDelay() / 2 + 1)
 								+ 1);
-						if (!(syn.getPreSynapticNeuron() == null)) {
-							syn.getPreSynapticNeuron().addSynapse(newSynapse);
-							net.addConnection(newSynapse);
-						}
+
+						syn.getPreSynapticNeuron().addSynapse(newSynapse);
+						net.addConnection(newSynapse);
 
 					}
 				}
@@ -348,7 +385,7 @@ public class NetworkBuilder {
 	}
 
 	private void increaseExcitation2Lts(Network net, Random gen) {
-		System.out.println("increasing lts excitation");
+		// System.out.println("increasing lts excitation");
 
 		List<NetworkNode> allSynapses = new ArrayList<NetworkNode>(net.getAllSynapses());
 
@@ -365,6 +402,15 @@ public class NetworkBuilder {
 
 					syn.getPreSynapticNeuron().addSynapse(newSynapse);
 					net.addConnection(newSynapse);
+					if (!increaseExcitation) {
+						newSynapse = new Synapse(syn.getWeight(), syn.getPreSynapticNeuron(),
+								syn.getPostSynapticNeuron(), syn.getSTP(), syn.getPSP());
+						newSynapse.setTimeDelay(syn.getTimeDelay() + gen.nextInt(syn.getTimeDelay() / 2 + 1)
+								+ 1);
+
+						syn.getPreSynapticNeuron().addSynapse(newSynapse);
+						net.addConnection(newSynapse);
+					}
 
 				}
 			}
@@ -380,6 +426,7 @@ public class NetworkBuilder {
 		loadSimulationConfig(simConfigFile, synapseConfigFile, config);
 		Network net = new Network();
 		totalColumnNumber = config.getColListSize();
+		timeStep = timestep;
 		List<ColumnBuilder> builderList = new ArrayList<ColumnBuilder>();
 		// for each column
 		for (int colNumber = 0; colNumber < totalColumnNumber; colNumber++) {
@@ -409,6 +456,24 @@ public class NetworkBuilder {
 		}
 
 		return net;
+	}
+
+	private int calculateDelay(int[] pre, int post[], double timestep) {
+		double delay = 0;
+		int delayInSteps = 0;
+		int n = pre.length;
+		for (int i = 0; i < n; i++) {
+			delay = delay + (pre[i] - post[i]) * (pre[i] - post[i]); // microns
+		}
+		// ms -> how many steps
+		delayInSteps = (int) (Math.round(Math.sqrt(delay) / (1000 * 0.4 * timestep)));
+
+		if (delayInSteps <= 0) {
+			// System.out.println("dist in microns" + delay);
+			delayInSteps++;
+		}
+
+		return delayInSteps; // not ms, but the number of timesteps
 	}
 
 	class ModifyWeightPair {
