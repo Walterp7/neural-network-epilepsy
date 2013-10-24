@@ -166,6 +166,8 @@ public class ConsoleSimulator {
 				net.setInputs();
 				netBuilder.modifyWeights(net);
 				System.out.println("Network built");
+
+				net.saveToFile(pathName + "/connections.csv", Type.RS, Layer.V, 3);
 				allSynapses = net.getAllSynapses();
 				allNeurons = net.getAllNeurons();
 				// System.out.println(allNeurons.size());
@@ -173,7 +175,7 @@ public class ConsoleSimulator {
 				ArrayList<Integer> numOfNeuronsInColumn = net.getNumberOfNeuronsInColumn();
 
 				numOfColsS = numOfNeuronsInColumn.size();
-				System.out.println(numOfColsS);
+
 				/*
 				 * saving connections to a file
 				 */
@@ -183,7 +185,7 @@ public class ConsoleSimulator {
 
 			initializeSampleNeurons(2, numOfCols, net);
 
-			final int numThreads = 4;
+			final int numThreads = 20;
 
 			timeBarrier = new CyclicBarrier(numThreads + 1);
 			statsCreationBarrier = new CyclicBarrier(numThreads,
@@ -243,7 +245,7 @@ public class ConsoleSimulator {
 			System.out.println(simName + "  Initialization " + (t2 - t1) +
 					" Simulation " + (t3 - t2));
 			XYSeriesCollection[] allDatasetSpikes = new XYSeriesCollection[numOfCols];
-			System.out.println(numOfCols);
+
 			int count = 0;
 			for (XYSeries[] data : dataSeries) {
 				final XYSeriesCollection datasetSpikes = new XYSeriesCollection();

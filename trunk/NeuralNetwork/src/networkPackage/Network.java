@@ -9,11 +9,13 @@ import java.util.concurrent.CyclicBarrier;
 
 import neuronPackage.GaussianInputer;
 import neuronPackage.Inputer;
+import neuronPackage.Layer;
 import neuronPackage.NetworkNode;
 import neuronPackage.Neuron;
 import neuronPackage.PickInputer;
 import neuronPackage.Status;
 import neuronPackage.Synapse;
+import neuronPackage.Type;
 
 public class Network {
 	private final List<NeuronColumn> allColumns = new ArrayList<NeuronColumn>();
@@ -205,15 +207,42 @@ public class Network {
 		FileWriter outNeurons = new FileWriter(filename);
 		for (Neuron neuron : allNeurons) {
 			outNeurons.write(neuron.getId() + " " + neuron.getType() + " " + neuron.getLayer());
-			for (int i = 0; i < 3; i++) {
-				outNeurons.write(" " + neuron.getCoordinates()[i]);
-			}
+			// for (int i = 0; i < 3; i++) {
+			// outNeurons.write(" " + neuron.getCoordinates()[i]);
+			// }
 
 			for (Synapse syn : neuron.getNeuronConnections()) {
 				outNeurons.write(" " + syn.getPostSynapticNeuron().getId() + " " + syn.getWeight());
 			}
 			outNeurons.write("\r\n");
 		}
+		outNeurons.close();
+	}
+
+	public void saveToFile(String filename, Type type, Layer layer, int colnum) throws IOException {
+		FileWriter outNeurons = new FileWriter(filename);
+		for (NetworkNode node : allSynapses) {
+			if (node instanceof Synapse) {
+				Synapse syn = (Synapse) node;
+				if (syn.getPostSynapticNeuron().getLayer().equals(layer)
+						&& syn.getPostSynapticNeuron().getType().equals(type)
+						&& (syn.getPostSynapticNeuron().getColNum() == colnum)) {
+					if (syn.getPreSynapticNeuron() != null) {
+						outNeurons.write(syn.getPreSynapticNeuron().getId() + ", "
+								+ syn.getPreSynapticNeuron().getType()
+								+ ", " + syn.getPreSynapticNeuron().getLayer() + ", "
+								+ syn.getPreSynapticNeuron().getColNum());
+					} else {
+						outNeurons.write("thalamic");
+					}
+					outNeurons.write(", to, " + syn.getPostSynapticNeuron().getId() + ", ("
+							+ syn.getPostSynapticNeuron().getCoordinates()[0] + ", "
+							+ syn.getPostSynapticNeuron().getCoordinates()[1] + ")" + "\r\n");
+
+				}
+			}
+		}
+
 		outNeurons.close();
 	}
 
