@@ -189,7 +189,7 @@ public class NetworkBuilder {
 				// System.out.println("modifying weights");
 				List<NeuronTypePool> poolsToModify = new ArrayList<NeuronTypePool>();
 				if (desc.colNum > -1) {
-					System.out.println("column " + desc.colNum);
+
 					if (desc.layer != null) {
 						poolsToModify.add(net.getColumn(desc.colNum).getPool(desc.layer).getTypePool(desc.type));
 					} else {
@@ -208,7 +208,7 @@ public class NetworkBuilder {
 					}
 				} else {
 					for (int colNum = 0; colNum < net.getNumberOfColumns(); colNum++) {
-						System.out.println("column " + colNum);
+
 						if (desc.layer != null) {
 							poolsToModify.add(net.getColumn(colNum).getPool(desc.layer).getTypePool(desc.type));
 						} else {
