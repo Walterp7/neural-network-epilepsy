@@ -6,7 +6,7 @@ public class Synapse implements NetworkNode { // connects node with neuron
 	private double synapseWeight;
 	private int timeDelay; // in number of timeSteps
 	private Neuron postSynapticNeuron;
-	private final Neuron preSynapticNeuron;
+	private Neuron preSynapticNeuron;
 	// Neuron preSynapticNeuron;
 	// double ti, trec, tfac, U;
 	private final StpParameters stpParam;
@@ -144,6 +144,10 @@ public class Synapse implements NetworkNode { // connects node with neuron
 
 	public void setPostSynapticNeuron(Neuron n) {
 		postSynapticNeuron = n;
+	}
+
+	public void setPreSynapticNeuron(Neuron n) {
+		preSynapticNeuron = n;
 	}
 
 	public Neuron getPreSynapticNeuron() {

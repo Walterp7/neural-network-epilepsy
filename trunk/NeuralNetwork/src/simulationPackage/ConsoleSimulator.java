@@ -167,7 +167,8 @@ public class ConsoleSimulator {
 				netBuilder.modifyWeights(net);
 				System.out.println("Network built");
 
-				net.saveToFile(pathName + "/connections.csv", Type.RS, Layer.V, 3);
+				net.saveToFile(pathName + "/connections.csv", Type.RS,
+						Layer.V, 3);
 				allSynapses = net.getAllSynapses();
 				allNeurons = net.getAllNeurons();
 				// System.out.println(allNeurons.size());
@@ -185,7 +186,7 @@ public class ConsoleSimulator {
 
 			initializeSampleNeurons(2, numOfCols, net);
 
-			final int numThreads = 20;
+			final int numThreads = 4;
 
 			timeBarrier = new CyclicBarrier(numThreads + 1);
 			statsCreationBarrier = new CyclicBarrier(numThreads,
