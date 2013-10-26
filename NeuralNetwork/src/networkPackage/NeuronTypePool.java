@@ -44,7 +44,7 @@ public class NeuronTypePool {
 		this.type = type;
 	}
 
-	public Neuron getRandomNeuron(Random gen) {
-		return neurons.get(gen.nextInt(neurons.size()));
+	public Neuron getRandomNeuron(Random gen, double fraction) {
+		return neurons.get((int) (fraction * gen.nextInt(neurons.size())));
 	}
 }
