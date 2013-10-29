@@ -95,7 +95,7 @@ public class NetworkBuilder {
 			newLine = inSimConf.readLine();
 			parsedLine = newLine.split("\\s+");
 			percentRewired = Double.parseDouble(parsedLine[0]);
-			multiplyerRewired = Double.parseDouble(parsedLine[0]);
+			multiplyerRewired = Double.parseDouble(parsedLine[1]);
 			newLine = inSimConf.readLine();
 			while ((newLine.charAt(0) != '%')) {
 				parsedLine = newLine.trim().split("\\s+");
