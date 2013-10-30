@@ -11,14 +11,12 @@ import java.util.Random;
 
 import networkGUI.ColDescr;
 import networkGUI.ConfigurationUnit;
-import neuronPackage.Inputer;
 import neuronPackage.Layer;
 import neuronPackage.NetworkNode;
 import neuronPackage.Neuron;
 import neuronPackage.PSPparameters;
 import neuronPackage.StpParameters;
 import neuronPackage.Synapse;
-import neuronPackage.ThalamicInputer;
 import neuronPackage.Type;
 
 public class NetworkBuilder {
@@ -30,6 +28,7 @@ public class NetworkBuilder {
 	private double multiplyerRewired;
 	private boolean increaseExcitation = false;
 	private boolean increaseExcitation2Lts = false;
+	private int increaseLTS = 1;
 	// List<ColLayerPair> layersToRemove = new ArrayList<ColLayerPair>();
 	// integer is col num List contains layers
 	private final HashMap<Integer, List> layersToRemove = new HashMap<Integer, List>();
@@ -128,6 +127,8 @@ public class NetworkBuilder {
 		if (!newLine.startsWith("FALSE")) {
 
 			increaseExcitation2Lts = true;
+			parsedLine = newLine.trim().split("\\s+");
+			increaseLTS = Integer.parseInt(parsedLine[1]);
 
 		}
 		newLine = inSimConf.readLine();
@@ -381,59 +382,22 @@ public class NetworkBuilder {
 
 	}
 
-	private void increaseExcitation(Network net, Random gen) {
-		// System.out.println("increasing excitation");
-
-		List<NetworkNode> allSynapses = new ArrayList<NetworkNode>(net.getAllSynapses());
-
-		for (Inputer in : net.getAllInputs()) {
-			List<Synapse> newSynapses = new ArrayList<Synapse>();
-			if (in instanceof ThalamicInputer) {
-				for (Synapse syn : ((ThalamicInputer) in).getConnections()) {
-					int colNum = syn.getPostSynapticNeuron().getColNum();
-					if ((colNum > 0) && (colNum < 4) && (!syn.getPostSynapticNeuron().getLayer().equals(Layer.III))) {
-						if (gen.nextDouble() > 0.5) {
-							Synapse newSynapse = new Synapse(syn.getWeight(), null,
-									syn.getPostSynapticNeuron(), syn.getSTP(), syn.getPSP());
-							newSynapse.setTimeDelay(syn.getTimeDelay() + gen.nextInt(syn.getTimeDelay() / 2 + 1)
-									+ 1);
-							newSynapses.add(newSynapse);
-
-							net.addConnection(newSynapse);
-
-						}
-					}
-				}
-				for (Synapse s : newSynapses) {
-					((ThalamicInputer) in).getConnections().add(s);
-				}
-			}
-		}
-
-		for (NetworkNode synapse : allSynapses) {
-			Synapse syn = (Synapse) synapse;
-			if ((syn.getWeight() > 0) && !(syn.getPreSynapticNeuron() == null)) {
-				int colNum = syn.getPostSynapticNeuron().getColNum();
-				if ((colNum > 0) && (colNum < 4) && (!syn.getPostSynapticNeuron().getLayer().equals(Layer.III))) {
-					if (gen.nextDouble() > 0.5) {
-						Synapse newSynapse = new Synapse(syn.getWeight(), syn.getPreSynapticNeuron(),
-								syn.getPostSynapticNeuron(), syn.getSTP(), syn.getPSP());
-						newSynapse.setTimeDelay(syn.getTimeDelay() + gen.nextInt(syn.getTimeDelay() / 2 + 1)
-								+ 1);
-
-						syn.getPreSynapticNeuron().addSynapse(newSynapse);
-						net.addConnection(newSynapse);
-
-					}
-				}
-			}
-
-		}
-	}
-
+	/**
+	 * Increases excitation to LTS neurons in cols 2-4 only Note: HARDCODED -
+	 * should be changed
+	 * 
+	 * @param net
+	 * @param gen
+	 */
 	private void increaseExcitation2Lts(Network net, Random gen) {
 		// System.out.println("increasing lts excitation");
 
+		int howManyConAdd = increaseLTS - 1;
+		if (increaseExcitation) {
+			howManyConAdd = (howManyConAdd + 1) / 2;
+		}
+
+		// System.out.println("Adding to LTS " + howManyConAdd);
 		List<NetworkNode> allSynapses = new ArrayList<NetworkNode>(net.getAllSynapses());
 
 		for (NetworkNode synapse : allSynapses) {
@@ -442,15 +406,8 @@ public class NetworkBuilder {
 				int colNum = syn.getPostSynapticNeuron().getColNum();
 				if ((colNum > 0) && (colNum < 4) && (!syn.getPostSynapticNeuron().getLayer().equals(Layer.III))) {
 
-					Synapse newSynapse = new Synapse(syn.getWeight(), syn.getPreSynapticNeuron(),
-							syn.getPostSynapticNeuron(), syn.getSTP(), syn.getPSP());
-					newSynapse.setTimeDelay(syn.getTimeDelay() + gen.nextInt(syn.getTimeDelay() / 2 + 1)
-							+ 1);
-
-					syn.getPreSynapticNeuron().addSynapse(newSynapse);
-					net.addConnection(newSynapse);
-					if (!increaseExcitation) {
-						newSynapse = new Synapse(syn.getWeight(), syn.getPreSynapticNeuron(),
+					for (int i = 0; i < howManyConAdd; i++) {
+						Synapse newSynapse = new Synapse(syn.getWeight(), syn.getPreSynapticNeuron(),
 								syn.getPostSynapticNeuron(), syn.getSTP(), syn.getPSP());
 						newSynapse.setTimeDelay(syn.getTimeDelay() + gen.nextInt(syn.getTimeDelay() / 2 + 1)
 								+ 1);
@@ -494,9 +451,6 @@ public class NetworkBuilder {
 		inBuild.setInputs(inputs, stpParams, pspParams, secondaryPspParams, net, inDescriptor, totalTime);
 		Random gen = new Random(seed);
 		makeLessions(net, gen);
-		if (increaseExcitation) {
-			increaseExcitation(net, gen);
-		}
 
 		if (increaseExcitation2Lts) {
 			increaseExcitation2Lts(net, gen);
