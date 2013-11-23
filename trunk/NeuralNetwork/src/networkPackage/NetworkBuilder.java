@@ -28,7 +28,7 @@ public class NetworkBuilder {
 	private double multiplyerRewired;
 	private boolean increaseExcitation = false;
 	private boolean increaseExcitation2Lts = false;
-	private int increaseLTS = 1;
+	private double increaseLTS = 1;
 	// List<ColLayerPair> layersToRemove = new ArrayList<ColLayerPair>();
 	// integer is col num List contains layers
 	private final HashMap<Integer, List> layersToRemove = new HashMap<Integer, List>();
@@ -392,9 +392,15 @@ public class NetworkBuilder {
 	private void increaseExcitation2Lts(Network net, Random gen) {
 		// System.out.println("increasing lts excitation");
 
-		int howManyConAdd = increaseLTS - 1;
+		double howManyConAdd = increaseLTS - 1;
+		double reminder = 0.;
 		if (increaseExcitation) {
-			howManyConAdd = (howManyConAdd + 1) / 2;
+			double temp = (howManyConAdd - 1.5) / 1.5;
+			howManyConAdd = (int) (temp);
+			reminder = temp - Math.floor(temp);
+		} else {
+			reminder = howManyConAdd - Math.floor(howManyConAdd);
+			howManyConAdd = Math.floor(howManyConAdd);
 		}
 
 		// System.out.println("Adding to LTS " + howManyConAdd);
@@ -415,7 +421,17 @@ public class NetworkBuilder {
 						syn.getPreSynapticNeuron().addSynapse(newSynapse);
 						net.addConnection(newSynapse);
 					}
+					if (increaseExcitation) {
+						if (gen.nextDouble() < reminder) {
+							Synapse newSynapse = new Synapse(syn.getWeight(), syn.getPreSynapticNeuron(),
+									syn.getPostSynapticNeuron(), syn.getSTP(), syn.getPSP());
+							newSynapse.setTimeDelay(syn.getTimeDelay() + gen.nextInt(syn.getTimeDelay() / 2 + 1)
+									+ 1);
 
+							syn.getPreSynapticNeuron().addSynapse(newSynapse);
+							net.addConnection(newSynapse);
+						}
+					}
 				}
 			}
 
