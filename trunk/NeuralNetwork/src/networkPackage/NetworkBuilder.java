@@ -128,7 +128,7 @@ public class NetworkBuilder {
 
 			increaseExcitation2Lts = true;
 			parsedLine = newLine.trim().split("\\s+");
-			increaseLTS = Integer.parseInt(parsedLine[1]);
+			increaseLTS = Double.parseDouble(parsedLine[1]);
 
 		}
 		newLine = inSimConf.readLine();
