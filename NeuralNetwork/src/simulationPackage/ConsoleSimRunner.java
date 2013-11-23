@@ -106,7 +106,7 @@ public class ConsoleSimRunner {
 		}
 		else {
 			System.out.println("No name of simulation provided");
-			simUserName = "name";
+			simUserName = "sim";
 		}
 		int colNum = 5;
 		if (cmd.hasOption("c")) {
