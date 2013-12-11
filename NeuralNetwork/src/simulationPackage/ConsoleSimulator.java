@@ -7,6 +7,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.ExecutionException;
@@ -20,6 +21,7 @@ import networkGUI.SpikeChartCollection;
 import networkPackage.InputDescriptor;
 import networkPackage.Network;
 import networkPackage.NetworkBuilder;
+import networkPackage.NeuronColumn;
 import neuronPackage.Layer;
 import neuronPackage.NetworkNode;
 import neuronPackage.Neuron;
@@ -51,7 +53,7 @@ public class ConsoleSimulator {
 																			// inputs
 	private List<Neuron> allNeurons = new ArrayList<Neuron>();
 
-	// private Neuron[] sampleNeurons = null;
+	private Neuron[] sampleNeurons = null;
 
 	ConfigurationUnit configFromFiles;
 
@@ -381,8 +383,8 @@ public class ConsoleSimulator {
 													// local
 													// field
 		// potential
-		// double[] ipsps = new double[sampleNeurons.length];
-		// double[] epsps = new double[sampleNeurons.length];
+		double[] ipsps = new double[sampleNeurons.length];
+		double[] epsps = new double[sampleNeurons.length];
 
 		double[] pspPerColumn = new double[numOfCols];
 		double pspAll = 0;
@@ -456,16 +458,16 @@ public class ConsoleSimulator {
 
 					boolean assigned = false;
 					int i = 0;
-					// while ((!assigned) && (i < sampleNeurons.length)) {
-					// if (s.getNumber() == sampleNeurons[i].getId()) {
-					// ipsps[i] = s.getIPSP();
-					// epsps[i] = s.getEPSP();
-					// assigned = true;
-					//
-					// }
-					// i++;
-					//
-					// }
+					while ((!assigned) && (i < sampleNeurons.length)) {
+						if (s.getNumber() == sampleNeurons[i].getId()) {
+							ipsps[i] = s.getIPSP();
+							epsps[i] = s.getEPSP();
+							assigned = true;
+
+						}
+						i++;
+
+					}
 					psp = psp + s.getIPSP() + s.getEPSP();
 
 				}
@@ -484,12 +486,12 @@ public class ConsoleSimulator {
 			outFileEPSP.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation));
 			outFileEEG.write(MessageFormat.format("{0,number,#.#}", timeOfSimulation) + ", "
 					+ psp + "\r\n");
-			// for (int i = 0; i < sampleNeurons.length; i++) {
-			// outFileIPSP.write(","
-			// + MessageFormat.format("{0,number,#.######}", ipsps[i]));
-			// outFileEPSP.write(","
-			// + MessageFormat.format("{0,number,#.######}", epsps[i]));
-			// }
+			for (int i = 0; i < sampleNeurons.length; i++) {
+				outFileIPSP.write(","
+						+ MessageFormat.format("{0,number,#.######}", ipsps[i]));
+				outFileEPSP.write(","
+						+ MessageFormat.format("{0,number,#.######}", epsps[i]));
+			}
 			outFileIPSP.write("\n");
 			outFileEPSP.write("\n");
 
@@ -511,17 +513,17 @@ public class ConsoleSimulator {
 	}
 
 	void initializeSampleNeurons(int multiplier, int numberofcolumns, Network net) {
-		// sampleNeurons = new Neuron[numberofcolumns * multiplier];
-		// Random gen = new Random(122834762);
-		// for (int i = 0; i < numberofcolumns; i++) {
-		// NeuronColumn col = net.getAllColumns().get(i);
-		// List<Neuron> list =
-		// col.getPool(Layer.V).getTypePool(Type.RS).getNeurons();
-		// sampleNeurons[i] = list.get(gen.nextInt(list.size()));
-		// sampleNeurons[i + numberofcolumns] =
-		// list.get(gen.nextInt(list.size()));
+		sampleNeurons = new Neuron[numberofcolumns * multiplier];
+		Random gen = new Random(122834762);
+		for (int i = 0; i < numberofcolumns; i++) {
+			NeuronColumn col = net.getAllColumns().get(i);
+			List<Neuron> list =
+					col.getPool(Layer.V).getTypePool(Type.RS).getNeurons();
+			sampleNeurons[i] = list.get(gen.nextInt(list.size()));
+			sampleNeurons[i + numberofcolumns] =
+					list.get(gen.nextInt(list.size()));
 
-		// }
+		}
 
 	}
 

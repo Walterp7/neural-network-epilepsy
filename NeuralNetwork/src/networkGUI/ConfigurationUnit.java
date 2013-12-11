@@ -66,7 +66,7 @@ public class ConfigurationUnit {
 		colConfList.add(newDescr);
 	}
 
-	public void addSim2List(String strSim, String synConfig, String strName) {
+	public void addSim(String strSim, String synConfig, String strName) {
 		String[] newSimConf = new String[3];
 		newSimConf[0] = strSim;
 		newSimConf[1] = synConfig;
