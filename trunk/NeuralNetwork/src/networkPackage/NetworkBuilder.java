@@ -405,9 +405,10 @@ public class NetworkBuilder {
 
 		// System.out.println("Adding to LTS " + howManyConAdd);
 		List<NetworkNode> allSynapses = new ArrayList<NetworkNode>(net.getAllSynapses());
-
+		int counter = 0;
 		for (NetworkNode synapse : allSynapses) {
 			Synapse syn = (Synapse) synapse;
+			counter = 0;
 			if ((syn.getWeight() > 0) && (syn.getPostSynapticNeuron().getType() == Type.LTS)) {
 				int colNum = syn.getPostSynapticNeuron().getColNum();
 				if ((colNum > 0) && (colNum < 4) && (!syn.getPostSynapticNeuron().getLayer().equals(Layer.III))) {
@@ -420,6 +421,7 @@ public class NetworkBuilder {
 
 						syn.getPreSynapticNeuron().addSynapse(newSynapse);
 						net.addConnection(newSynapse);
+						counter++;
 					}
 					if (increaseExcitation) {
 						if (gen.nextDouble() < reminder) {
@@ -430,8 +432,10 @@ public class NetworkBuilder {
 
 							syn.getPreSynapticNeuron().addSynapse(newSynapse);
 							net.addConnection(newSynapse);
+							counter++;
 						}
 					}
+					System.out.println("Added " + counter);
 				}
 			}
 

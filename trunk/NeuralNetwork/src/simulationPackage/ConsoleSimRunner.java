@@ -132,7 +132,7 @@ public class ConsoleSimRunner {
 
 		confUnit.setTimeStep(0.1);
 
-		confUnit.addSim2List(simConfigFileName, synapseConfigFileName, simName);
+		confUnit.addSim(simConfigFileName, synapseConfigFileName, simName);
 		for (int i = 1; i <= colNum; i++) {
 			if (colConfigs.containsKey(i)) {
 				confUnit.addCol2List(colConfigs.get(i), numOfLayers);
@@ -150,13 +150,12 @@ public class ConsoleSimRunner {
 
 		ConsoleSimulator sim = new ConsoleSimulator(confUnit);
 		String pathName = fullSimName;
-		// String pathName = simName;
+
 		File file = new File(pathName);
 		if (!file.exists()) {
 			new File(file.getAbsolutePath()).mkdir();
 		}
-		// sim.runSimulation(seed, simName + "s" + seed);
-		// sim.runSimulation(seed, simName);
+
 		sim.runSimulation(seed, fullSimName);
 	}
 }
